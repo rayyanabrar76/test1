@@ -1,0 +1,174 @@
+/* --- TAILWIND LAYERS --- */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- GOD-TIER FOUNDATION --- */
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  /* Ultra-dark obsidian with a faint grain to feel like expensive matte metal */
+  background-color: #020202; 
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-blend-mode: overlay;
+  color: #ffffff;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- RESPONSIVE GLOBAL SCALE (NO JSX CHANGES) --- */
+@media (max-width: 1536px) {
+  html { font-size: 95%; }
+}
+
+@media (max-width: 1280px) {
+  html { font-size: 90%; }
+}
+
+@media (max-width: 1024px) {
+  html { font-size: 85%; }
+}
+
+@media (max-width: 768px) {
+  html { font-size: 80%; }
+}
+
+@media (max-width: 480px) {
+  html { font-size: 75%; }
+}
+
+/* --- SAFE TYPOGRAPHY CLAMPS --- */
+h1 {
+  font-size: clamp(3rem, 8vw, 7.5rem);
+}
+
+h2 {
+  font-size: clamp(2rem, 6vw, 4.5rem);
+}
+
+h3 {
+  font-size: clamp(1.2rem, 4vw, 2.5rem);
+}
+
+/* --- THE "POWER FLOW" ANIMATIONS --- */
+@keyframes liquid-light {
+  0% { transform: translateX(-200%) skewX(-40deg); opacity: 0; }
+  20% { opacity: 0.5; }
+  80% { opacity: 0.5; }
+  100% { transform: translateX(250%) skewX(-40deg); opacity: 0; }
+}
+
+.animate-liquid {
+  animation: liquid-light 14s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes power-bloom {
+  0%, 100% { 
+    filter: brightness(1) drop-shadow(0 0 5px rgba(220, 38, 38, 0.2));
+    transform: scale(1);
+  }
+  50% { 
+    filter: brightness(1.4) drop-shadow(0 0 20px rgba(220, 38, 38, 0.6));
+    transform: scale(1.02);
+  }
+}
+
+.animate-bloom {
+  animation: power-bloom 4s ease-in-out infinite;
+}
+
+/* --- LUXURY INTERFACE DESIGN --- */
+.glass-stealth {
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(40px) saturate(180%);
+  padding: 2.5rem 1.5rem; 
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.05),
+    0 20px 50px rgba(0, 0, 0, 0.6);
+  border-radius: 0px; 
+}
+
+/* --- MOBILE GLASS PADDING REDUCTION --- */
+@media (max-width: 768px) {
+  .glass-stealth {
+    padding: 1.5rem 1rem;
+    backdrop-filter: blur(24px) saturate(160%);
+  }
+}
+
+.logo-god-tier {
+  filter: contrast(1.1) brightness(1.1);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.logo-god-tier:hover {
+  filter: drop-shadow(0 0 30px rgba(220, 38, 38, 0.5)) brightness(1.2);
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* --- KINETIC TYPOGRAPHY --- */
+nav a {
+  font-weight: 900;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+nav a:hover {
+  color: #ffffff;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+/* --- MOBILE NAV TAP SAFETY --- */
+@media (max-width: 768px) {
+  nav a {
+    letter-spacing: 0.15em;
+  }
+}
+
+/* --- FLOATING ACTION BAR SAFETY (MOBILE) --- */
+@media (max-width: 768px) {
+  .fixed.bottom-8 {
+    bottom: 1rem;
+  }
+}
+
+/* --- PERFORMANCE MODE FOR LOW-END DEVICES --- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* --- THE GLOBAL SELECTION --- */
+::selection {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+/* --- SCROLLBAR CLEANUP --- */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #020202;
+}
+::-webkit-scrollbar-thumb {
+  background: #222;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #dc2626;
+}

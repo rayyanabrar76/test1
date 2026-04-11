@@ -1,0 +1,30 @@
+/* src/app/admin/admin.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg: #0d0d0d;
+  --surface: #171717;
+  --surface2: #212121;
+  --border: #2f2f2f;
+  --text: #ececec;
+  --text-muted: #8a8a8a;
+  --accent: #c96442;
+}
+
+/* We use a class to ensure these styles only apply to the Admin area */
+.admin-theme {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+.admin-theme * {
+  box-sizing: border-box;
+}
+
+/* Custom Scrollbar for Admin */
+.admin-theme ::-webkit-scrollbar { width: 5px; }
+.admin-theme ::-webkit-scrollbar-track { background: var(--bg); }
+.admin-theme ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }

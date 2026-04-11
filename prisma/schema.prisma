@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // REMOVED: url = env("DATABASE_URL") 
+  // In Prisma 7 with an adapter, the URL must NOT be here.
+}
+
+model User {
+  id             String    @id @default(cuid())
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  companyName    String?
+  accounts       Account[]
+  sessions       Session[]
+  quotes         Quote[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Product {
+  id          String   @id
+  slug        String   @unique
+  name        String
+  brand       String   @default("APS")
+  description String   @db.Text
+  price       Float    @default(0)
+  image       String
+  gallery     String[]
+  category    String   @default("General")
+  variants    Json?
+  pdf_link    String?
+  pdf_links   String[]
+  badges      String[]
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Quote {
+  id        String   @id @default(cuid())
+  userId    String?
+  items     Json
+  total     Float
+  status    String   @default("pending")
+  category  String   @default("standard")
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+}
