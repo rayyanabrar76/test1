@@ -109,6 +109,13 @@ function ProductContent({ product }: Props) {
       )
     : [];
 
+  // Only show models that have a corresponding PDF link
+  const hasAnyModelPdf =
+    tableData &&
+    tableData.length > 0 &&
+    product.pdf_links &&
+    product.pdf_links.some(Boolean);
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-sans antialiased selection:bg-white selection:text-black overflow-x-hidden">
       <script
@@ -433,37 +440,39 @@ function ProductContent({ product }: Props) {
 
             {/* BOTTOM SECTION */}
             <div className="mt-6 pt-6 border-t border-white/10 pb-28 lg:pb-10">
-              {tableData && tableData.length > 0 ? (
+              {hasAnyModelPdf ? (
                 <>
                   <h3 className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.4em] mb-4 text-white/40">
                     <Box size={14} /> Available Models
                   </h3>
                   <div className="space-y-1">
-                    {tableData.map((row, idx) => (
-                      <div
-                        key={idx}
-                        className="flex flex-col sm:flex-row justify-between py-5 border-b border-white/[0.04] group hover:bg-white/[0.01] transition-colors px-2 sm:items-center gap-3"
-                      >
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-[11px] font-black uppercase tracking-widest text-white">
-                            {row.Model}
-                          </span>
-                          <span className="text-[10px] text-white/30 uppercase font-medium">
-                            {Object.entries(row)
-                              .filter(([k]) => k !== "Model")
-                              .map(([k, v]) => `${k}: ${v}`)
-                              .join("  |  ")}
-                          </span>
-                        </div>
-                        <a
-                          href={product.pdf_links?.[idx]}
-                          target="_blank"
-                          className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.2em] text-white/30 hover:text-red-500 transition-colors"
+                    {tableData!.map((row, idx) =>
+                      product.pdf_links?.[idx] ? (
+                        <div
+                          key={idx}
+                          className="flex flex-col sm:flex-row justify-between py-5 border-b border-white/[0.04] group hover:bg-white/[0.01] transition-colors px-2 sm:items-center gap-3"
                         >
-                          Download <ExternalLink size={10} />
-                        </a>
-                      </div>
-                    ))}
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-[11px] font-black uppercase tracking-widest text-white">
+                              {row.Model}
+                            </span>
+                            <span className="text-[10px] text-white/30 uppercase font-medium">
+                              {Object.entries(row)
+                                .filter(([k]) => k !== "Model")
+                                .map(([k, v]) => `${k}: ${v}`)
+                                .join("  |  ")}
+                            </span>
+                          </div>
+                          <a
+                            href={product.pdf_links[idx]}
+                            target="_blank"
+                            className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.2em] text-white/30 hover:text-red-500 transition-colors"
+                          >
+                            Download <ExternalLink size={10} />
+                          </a>
+                        </div>
+                      ) : null
+                    )}
                   </div>
                 </>
               ) : (
