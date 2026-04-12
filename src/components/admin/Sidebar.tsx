@@ -28,19 +28,18 @@ export default function Sidebar() {
           <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Store</div>
           <div style={{ fontSize: '18px', fontWeight: '600', color: 'var(--text)', marginTop: '2px' }}>Admin Panel</div>
         </div>
-        {/* Close button — mobile only */}
         <button
           onClick={() => setOpen(false)}
+          className="sidebar-close-btn"
           style={{
-            display: 'none',
             background: 'none',
             border: 'none',
             color: 'var(--text-muted)',
             fontSize: '20px',
             cursor: 'pointer',
             lineHeight: 1,
+            display: 'none',
           }}
-          className="sidebar-close-btn"
         >
           ✕
         </button>
@@ -91,39 +90,44 @@ export default function Sidebar() {
   return (
     <>
       <style>{`
-        /* Hamburger button — hidden on desktop */
-        .sidebar-hamburger {
+        /* ---- Inject top padding on mobile so page content clears the top bar ---- */
+        @media (max-width: 768px) {
+          body {
+            padding-top: 56px !important;
+          }
+        }
+
+        .sidebar-close-btn { display: none !important; }
+
+        /* Mobile top bar — hidden on desktop */
+        .sidebar-topbar {
           display: none;
         }
 
-        /* Close button — hidden on desktop */
-        .sidebar-close-btn {
-          display: none !important;
-        }
-
         @media (max-width: 768px) {
-          /* Show hamburger on mobile */
-          .sidebar-hamburger {
+          /* Show close button inside drawer */
+          .sidebar-close-btn { display: block !important; }
+
+          /* Mobile top bar sits at the top, takes real space */
+          .sidebar-topbar {
             display: flex;
+            align-items: center;
+            gap: 12px;
             position: fixed;
-            top: 14px;
-            left: 14px;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
             z-index: 1000;
             background: var(--surface);
-            border: 1px solid var(--border);
-            color: var(--text);
-            width: 38px;
-            height: 38px;
-            border-radius: 8px;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            padding: 0 16px;
           }
 
-          /* Show close button on mobile */
-          .sidebar-close-btn {
-            display: block !important;
+          .sidebar-topbar-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
           }
 
           /* Desktop sidebar — hide on mobile */
@@ -162,6 +166,7 @@ export default function Sidebar() {
         }
 
         @media (min-width: 769px) {
+          .sidebar-topbar,
           .sidebar-drawer,
           .sidebar-backdrop {
             display: none !important;
@@ -169,14 +174,30 @@ export default function Sidebar() {
         }
       `}</style>
 
-      {/* Hamburger button (mobile only) */}
-      <button
-        className="sidebar-hamburger"
-        onClick={() => setOpen(true)}
-        aria-label="Open menu"
-      >
-        ☰
-      </button>
+      {/* ✅ Mobile top bar — takes real space, won't overlap content */}
+      <div className="sidebar-topbar">
+        <button
+          onClick={() => setOpen(true)}
+          aria-label="Open menu"
+          style={{
+            background: 'none',
+            border: '1px solid var(--border)',
+            color: 'var(--text)',
+            width: '34px',
+            height: '34px',
+            borderRadius: '7px',
+            fontSize: '16px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+        >
+          ☰
+        </button>
+        <span className="sidebar-topbar-title">Admin Panel</span>
+      </div>
 
       {/* Desktop sidebar */}
       <aside className="sidebar-desktop" style={{
