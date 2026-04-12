@@ -119,15 +119,11 @@ export default function ProductsPage() {
     setSaving(true)
     const method = editing ? 'PUT' : 'POST'
     const url = editing ? `/admin/api/products/${editing.slug}` : '/admin/api/products'
-
-    if (editing && editing.image && editing.image !== form.image) {
-      await deleteCloudinaryImage(editing.image)
-    }
+    if (editing && editing.image && editing.image !== form.image) await deleteCloudinaryImage(editing.image)
     if (editing && editing.gallery) {
       const removed = editing.gallery.filter(img => !form.gallery.includes(img))
       await Promise.all(removed.map(deleteCloudinaryImage))
     }
-
     await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
     await load(); setSaving(false); setModalOpen(false)
   }
@@ -147,92 +143,190 @@ export default function ProductsPage() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+      <style>{`
+        .prod-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 24px;
+          gap: 12px;
+        }
+        .prod-search {
+          width: 280px;
+        }
+        .prod-table-wrap {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        .prod-table {
+          width: 100%;
+          border-collapse: collapse;
+          min-width: 680px;
+        }
+
+        /* Mobile card list */
+        .prod-cards {
+          display: none;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .prod-card {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          padding: 12px 14px;
+          display: flex;
+          gap: 12px;
+          align-items: center;
+        }
+        .prod-card-info { flex: 1; min-width: 0; }
+        .prod-card-name {
+          font-weight: 500;
+          font-size: 14px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .prod-card-meta {
+          font-size: 12px;
+          color: var(--text-muted);
+          margin-top: 2px;
+        }
+        .prod-card-actions {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          flex-shrink: 0;
+        }
+
+        @media (max-width: 640px) {
+          .prod-search { width: 100%; margin-bottom: 12px; }
+          .prod-table-wrap { display: none; }
+          .prod-cards { display: flex; }
+          .prod-header { flex-wrap: wrap; }
+          .prod-header h1 { font-size: 20px; }
+        }
+      `}</style>
+
+      <div className="prod-header">
         <div>
           <h1 style={{ fontSize: '24px', fontWeight: '600' }}>Products</h1>
           <p style={{ color: 'var(--text-muted)', marginTop: '4px' }}>{products.length} products</p>
         </div>
-        <button onClick={openNew} style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: '8px', padding: '10px 18px', fontWeight: '500', cursor: 'pointer', fontSize: '14px' }}>
+        <button onClick={openNew} style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: '8px', padding: '10px 18px', fontWeight: '500', cursor: 'pointer', fontSize: '14px', whiteSpace: 'nowrap' }}>
           + Add Product
         </button>
       </div>
 
-      <input placeholder="Search products..." value={search} onChange={e => setSearch(e.target.value)}
-        style={{ padding: '9px 14px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '14px', width: '280px', background: 'var(--surface)', color: 'var(--text)', marginBottom: '16px' }} />
+      <input
+        className="prod-search"
+        placeholder="Search products..."
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        style={{ padding: '9px 14px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '14px', background: 'var(--surface)', color: 'var(--text)', marginBottom: '16px' }}
+      />
 
       {loading ? (
         <div style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading...</div>
       ) : (
-        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                {['Product', 'Brand', 'Category', 'Price', 'Gallery', 'PDF', 'Actions'].map(h => (
-                  <th key={h} style={{ padding: '12px 20px', textAlign: 'left', fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map(product => (
-                <tr key={product.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                  <td style={{ padding: '14px 20px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      {product.image ? (
-                        <img src={product.image} alt={product.name} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'cover', border: '1px solid var(--border)' }} />
-                      ) : (
-                        <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'var(--surface2)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>⊡</div>
-                      )}
-                      <div>
-                        <div style={{ fontWeight: '500' }}>{product.name}</div>
-                        <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{product.slug}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td style={{ padding: '14px 20px', color: 'var(--text-muted)' }}>{product.brand}</td>
-                  <td style={{ padding: '14px 20px', color: 'var(--text-muted)' }}>{product.category}</td>
-                  <td style={{ padding: '14px 20px', fontWeight: '500' }}>${product.price.toFixed(2)}</td>
-                  <td style={{ padding: '14px 20px', color: 'var(--text-muted)' }}>
-                    {product.gallery?.length > 0 ? (
-                      <div style={{ display: 'flex', gap: '4px' }}>
-                        {product.gallery.slice(0, 3).map((img, i) => (
-                          <img key={i} src={img} alt="" style={{ width: '24px', height: '24px', borderRadius: '4px', objectFit: 'cover', border: '1px solid var(--border)' }} />
-                        ))}
-                        {product.gallery.length > 3 && <span style={{ fontSize: '11px', color: 'var(--text-muted)', alignSelf: 'center' }}>+{product.gallery.length - 3}</span>}
-                      </div>
-                    ) : <span style={{ fontSize: '12px' }}>—</span>}
-                  </td>
-                  <td style={{ padding: '14px 20px' }}>
-                    {product.pdf_link ? (
-                      <a href={product.pdf_link} target="_blank" rel="noopener noreferrer"
-                        style={{ fontSize: '11px', color: '#e05252', fontWeight: '600', textDecoration: 'none' }}>
-                        📄 Datasheet
-                      </a>
-                    ) : (
-                      <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                        {product.pdf_links?.length ? `📄 ${product.pdf_links.length} PDFs` : '—'}
-                      </span>
-                    )}
-                  </td>
-                  <td style={{ padding: '14px 20px' }}>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <button onClick={() => openEdit(product)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text)', cursor: 'pointer', fontSize: '13px' }}>Edit</button>
-                      <button onClick={() => setDeleteConfirm(product.id)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #e0525220', background: '#e0525210', color: '#e05252', cursor: 'pointer', fontSize: '13px' }}>Delete</button>
-                    </div>
-                  </td>
+        <>
+          {/* Desktop Table */}
+          <div className="prod-table-wrap" style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
+            <table className="prod-table">
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                  {['Product', 'Brand', 'Category', 'Price', 'Gallery', 'PDF', 'Actions'].map(h => (
+                    <th key={h} style={{ padding: '12px 20px', textAlign: 'left', fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{h}</th>
+                  ))}
                 </tr>
-              ))}
-              {filtered.length === 0 && (
-                <tr><td colSpan={7} style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)' }}>No products found</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filtered.map(product => (
+                  <tr key={product.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                    <td style={{ padding: '14px 20px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        {product.image ? (
+                          <img src={product.image} alt={product.name} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'cover', border: '1px solid var(--border)', flexShrink: 0 }} />
+                        ) : (
+                          <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'var(--surface2)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>⊡</div>
+                        )}
+                        <div>
+                          <div style={{ fontWeight: '500', whiteSpace: 'nowrap' }}>{product.name}</div>
+                          <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{product.slug}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td style={{ padding: '14px 20px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{product.brand}</td>
+                    <td style={{ padding: '14px 20px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{product.category}</td>
+                    <td style={{ padding: '14px 20px', fontWeight: '500', whiteSpace: 'nowrap' }}>${product.price.toFixed(2)}</td>
+                    <td style={{ padding: '14px 20px', color: 'var(--text-muted)' }}>
+                      {product.gallery?.length > 0 ? (
+                        <div style={{ display: 'flex', gap: '4px' }}>
+                          {product.gallery.slice(0, 3).map((img, i) => (
+                            <img key={i} src={img} alt="" style={{ width: '24px', height: '24px', borderRadius: '4px', objectFit: 'cover', border: '1px solid var(--border)' }} />
+                          ))}
+                          {product.gallery.length > 3 && <span style={{ fontSize: '11px', color: 'var(--text-muted)', alignSelf: 'center' }}>+{product.gallery.length - 3}</span>}
+                        </div>
+                      ) : <span style={{ fontSize: '12px' }}>—</span>}
+                    </td>
+                    <td style={{ padding: '14px 20px', whiteSpace: 'nowrap' }}>
+                      {product.pdf_link ? (
+                        <a href={product.pdf_link} target="_blank" rel="noopener noreferrer"
+                          style={{ fontSize: '11px', color: '#e05252', fontWeight: '600', textDecoration: 'none' }}>
+                          📄 Datasheet
+                        </a>
+                      ) : (
+                        <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                          {product.pdf_links?.length ? `📄 ${product.pdf_links.length} PDFs` : '—'}
+                        </span>
+                      )}
+                    </td>
+                    <td style={{ padding: '14px 20px', whiteSpace: 'nowrap' }}>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button onClick={() => openEdit(product)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text)', cursor: 'pointer', fontSize: '13px' }}>Edit</button>
+                        <button onClick={() => setDeleteConfirm(product.id)} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #e0525220', background: '#e0525210', color: '#e05252', cursor: 'pointer', fontSize: '13px' }}>Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {filtered.length === 0 && (
+                  <tr><td colSpan={7} style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)' }}>No products found</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="prod-cards">
+            {filtered.map(product => (
+              <div key={product.id} className="prod-card">
+                {product.image ? (
+                  <img src={product.image} alt={product.name} style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover', border: '1px solid var(--border)', flexShrink: 0 }} />
+                ) : (
+                  <div style={{ width: '48px', height: '48px', borderRadius: '8px', background: 'var(--surface2)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>⊡</div>
+                )}
+                <div className="prod-card-info">
+                  <div className="prod-card-name">{product.name}</div>
+                  <div className="prod-card-meta">{product.brand} · {product.category} · ${product.price.toFixed(2)}</div>
+                </div>
+                <div className="prod-card-actions">
+                  <button onClick={() => openEdit(product)} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text)', cursor: 'pointer', fontSize: '12px' }}>Edit</button>
+                  <button onClick={() => setDeleteConfirm(product.id)} style={{ padding: '5px 10px', borderRadius: '6px', border: '1px solid #e0525220', background: '#e0525210', color: '#e05252', cursor: 'pointer', fontSize: '12px' }}>Delete</button>
+                </div>
+              </div>
+            ))}
+            {filtered.length === 0 && (
+              <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>No products found</div>
+            )}
+          </div>
+        </>
       )}
 
+      {/* Add/Edit Modal */}
       {modalOpen && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }} onClick={() => setModalOpen(false)}>
-          <div style={{ background: 'var(--surface)', borderRadius: '12px', width: '560px', maxWidth: '95vw', maxHeight: '90vh', overflowY: 'auto', border: '1px solid var(--border)' }} onClick={e => e.stopPropagation()}>
-            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '16px' }} onClick={() => setModalOpen(false)}>
+          <div style={{ background: 'var(--surface)', borderRadius: '12px', width: '560px', maxWidth: '100%', maxHeight: '90vh', overflowY: 'auto', border: '1px solid var(--border)' }} onClick={e => e.stopPropagation()}>
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, background: 'var(--surface)', zIndex: 1 }}>
               <h3 style={{ fontSize: '16px', fontWeight: '600' }}>{editing ? 'Edit Product' : 'Add Product'}</h3>
               <button onClick={() => setModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '20px', cursor: 'pointer' }}>×</button>
             </div>
@@ -249,7 +343,7 @@ export default function ProductsPage() {
                   <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>{field.label}</label>
                   <input value={form[field.key as keyof typeof form] as string} onChange={e => setForm(f => ({ ...f, [field.key]: e.target.value }))}
                     placeholder={field.placeholder}
-                    style={{ width: '100%', padding: '9px 12px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface2)', color: 'var(--text)', fontSize: '14px' }} />
+                    style={{ width: '100%', padding: '9px 12px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface2)', color: 'var(--text)', fontSize: '14px', boxSizing: 'border-box' }} />
                 </div>
               ))}
 
@@ -303,9 +397,7 @@ export default function ProductsPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface2)' }}>
                     <span style={{ fontSize: '20px' }}>📄</span>
                     <a href={form.pdf_link} target="_blank" rel="noopener noreferrer"
-                      style={{ fontSize: '13px', color: '#e05252', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      View PDF
-                    </a>
+                      style={{ fontSize: '13px', color: '#e05252', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>View PDF</a>
                     <button onClick={() => setForm(f => ({ ...f, pdf_link: '' }))}
                       style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '18px' }}>×</button>
                   </div>
@@ -350,7 +442,7 @@ export default function ProductsPage() {
                 <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Description</label>
                 <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                   placeholder="Product description..."
-                  style={{ width: '100%', padding: '9px 12px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface2)', color: 'var(--text)', fontSize: '14px', minHeight: '80px', resize: 'vertical' }} />
+                  style={{ width: '100%', padding: '9px 12px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface2)', color: 'var(--text)', fontSize: '14px', minHeight: '80px', resize: 'vertical', boxSizing: 'border-box' }} />
               </div>
 
               <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
@@ -365,9 +457,10 @@ export default function ProductsPage() {
         </div>
       )}
 
+      {/* Delete Confirm Modal */}
       {deleteConfirm && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }} onClick={() => setDeleteConfirm(null)}>
-          <div style={{ background: 'var(--surface)', borderRadius: '12px', width: '400px', padding: '24px', border: '1px solid var(--border)' }} onClick={e => e.stopPropagation()}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '16px' }} onClick={() => setDeleteConfirm(null)}>
+          <div style={{ background: 'var(--surface)', borderRadius: '12px', width: '400px', maxWidth: '100%', padding: '24px', border: '1px solid var(--border)' }} onClick={e => e.stopPropagation()}>
             <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px' }}>Delete Product?</h3>
             <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>This will delete the product and all its images permanently.</p>
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>

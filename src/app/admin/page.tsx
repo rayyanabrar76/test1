@@ -61,7 +61,7 @@ export default async function Dashboard() {
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden' }}>
         <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ fontSize: '15px', fontWeight: '600' }}>Recent Quotes</h2>
-          <Link href="/quotes"><span style={{ fontSize: '13px', color: 'var(--accent)' }}>View all →</span></Link>
+          <Link href="admin/quotes"><span style={{ fontSize: '13px', color: 'var(--accent)' }}>View all →</span></Link>
         </div>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>

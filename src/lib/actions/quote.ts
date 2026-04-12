@@ -151,7 +151,7 @@ export async function deleteQuoteAction(quoteId: string) {
     });
 
     revalidatePath("/dashboard");
-    revalidatePath("/admin/manifests");
+    revalidatePath("/admin/quotes");
     return { success: true };
   } catch (err) {
     return { error: "PURGE_FAILURE" };
@@ -175,7 +175,7 @@ export async function updateQuoteStatusAction(quoteId: string, newStatus: string
       data: { status: newStatus.toLowerCase() },
     });
     
-    revalidatePath("/admin/manifests");
+    revalidatePath("/admin/quotes");
     revalidatePath("/dashboard");
     
     return { success: true };
