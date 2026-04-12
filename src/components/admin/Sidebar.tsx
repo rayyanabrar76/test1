@@ -95,19 +95,16 @@ export default function Sidebar() {
             padding-top: 56px !important;
           }
 
-          /* Hide logo block inside drawer — topbar already shows title */
           .sidebar-logo-block {
             display: none !important;
           }
 
-          /* Show close button inside drawer */
           .sidebar-close-btn {
             display: block !important;
           }
 
-          /* Mobile top bar — transparent, takes real space */
           .sidebar-topbar {
-            display: flex;
+            display: flex !important;
             align-items: center;
             gap: 12px;
             position: fixed;
@@ -127,12 +124,10 @@ export default function Sidebar() {
             color: var(--text);
           }
 
-          /* Desktop sidebar — hide on mobile */
           .sidebar-desktop {
             display: none !important;
           }
 
-          /* Mobile drawer — starts below topbar */
           .sidebar-drawer {
             position: fixed;
             top: 56px;
@@ -152,7 +147,6 @@ export default function Sidebar() {
             transform: translateX(0);
           }
 
-          /* Backdrop */
           .sidebar-backdrop {
             display: block;
             position: fixed;
@@ -171,8 +165,8 @@ export default function Sidebar() {
         }
       `}</style>
 
-      {/* Mobile top bar */}
-      <div className="sidebar-topbar" style={{ display: 'none' }}>
+      {/* Mobile top bar — NO inline display:none so CSS can control it */}
+      <div className="sidebar-topbar">
         <button
           onClick={() => setOpen(true)}
           aria-label="Open menu"
