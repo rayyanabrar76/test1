@@ -176,7 +176,6 @@ export default function ProductsPage() {
           width: 100%;
           border-collapse: collapse;
         }
-        /* Mobile card list — hidden by default, shown on small screens */
         .product-cards {
           display: none;
           flex-direction: column;
@@ -264,10 +263,8 @@ export default function ProductsPage() {
           .products-search {
             width: 100%;
           }
-          /* Hide table, show cards */
           .products-table { display: none; }
           .product-cards { display: flex; }
-          /* Full-screen modal on mobile */
           .products-modal-inner {
             width: 100vw;
             max-width: 100vw;
@@ -280,6 +277,10 @@ export default function ProductsPage() {
           }
           .gallery-grid {
             grid-template-columns: repeat(3, 1fr);
+          }
+          /* Fix: push modal content above the bottom nav bar */
+          .products-modal-inner > div:last-child {
+            padding-bottom: 80px;
           }
         }
       `}</style>
