@@ -102,22 +102,22 @@ export default function Sidebar() {
         }
 
         @media (max-width: 768px) {
-          /* Show hamburger on mobile */
+          /* Show hamburger on mobile — top RIGHT */
           .sidebar-hamburger {
             display: flex;
             position: fixed;
             top: 14px;
-            left: 14px;
+            right: 14px;
             z-index: 1000;
             background: var(--surface);
             border: 1px solid var(--border);
             color: var(--text);
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             border-radius: 8px;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
             cursor: pointer;
           }
 
@@ -175,7 +175,7 @@ export default function Sidebar() {
         onClick={() => setOpen(true)}
         aria-label="Open menu"
       >
-        ☰
+        ≡
       </button>
 
       {/* Desktop sidebar */}
