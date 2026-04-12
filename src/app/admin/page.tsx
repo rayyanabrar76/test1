@@ -7,13 +7,12 @@ async function getStats() {
     prisma.quote.count(),
     prisma.user.count(),
   ])
-  const revenue = await prisma.quote.aggregate({ _sum: { total: true } })
   const recentQuotes = await prisma.quote.findMany({
     take: 5,
     orderBy: { createdAt: 'desc' },
     include: { user: true },
   })
-  return { products, quotes, customers, revenue: revenue._sum.total ?? 0, recentQuotes }
+  return { products, quotes, customers, recentQuotes }
 }
 
 const statusColor: Record<string, string> = {
@@ -49,7 +48,7 @@ export default async function Dashboard() {
         .dash-table {
           width: 100%;
           border-collapse: collapse;
-          min-width: 520px;
+          min-width: 400px;
         }
 
         @media (max-width: 768px) {
@@ -132,12 +131,11 @@ export default async function Dashboard() {
           </Link>
         </div>
 
-        {/* Scrollable table on mobile */}
         <div className="dash-table-wrap">
           <table className="dash-table">
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                {['Quote ID', 'Customer', 'Status', 'Total', 'Date'].map(h => (
+                {['Quote ID', 'Customer', 'Status', 'Date'].map(h => (
                   <th key={h} style={{
                     padding: '12px 24px',
                     textAlign: 'left',
@@ -171,9 +169,6 @@ export default async function Dashboard() {
                       borderRadius: '4px',
                     }}>{quote.status}</span>
                   </td>
-                  <td style={{ padding: '14px 24px', fontWeight: '500', whiteSpace: 'nowrap' }}>
-                    ${quote.total.toFixed(2)}
-                  </td>
                   <td style={{ padding: '14px 24px', color: 'var(--text-muted)', fontSize: '13px', whiteSpace: 'nowrap' }}>
                     {new Date(quote.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </td>
@@ -181,7 +176,7 @@ export default async function Dashboard() {
               ))}
               {stats.recentQuotes.length === 0 && (
                 <tr>
-                  <td colSpan={5} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  <td colSpan={4} style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
                     No quotes yet
                   </td>
                 </tr>
