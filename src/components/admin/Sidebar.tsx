@@ -103,25 +103,18 @@ export default function Sidebar() {
             display: block !important;
           }
 
+          /* Just a floating button, fully transparent */
           .sidebar-topbar {
             display: flex !important;
             align-items: center;
-            gap: 12px;
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
             height: 56px;
             z-index: 1000;
             background: transparent;
-            border-bottom: none;
+            border: none;
             padding: 0 16px;
-          }
-
-          .sidebar-topbar-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text);
           }
 
           .sidebar-desktop {
@@ -165,29 +158,27 @@ export default function Sidebar() {
         }
       `}</style>
 
-      {/* Mobile top bar — NO inline display:none so CSS can control it */}
+      {/* Mobile — just the ☰ button, no title, no background */}
       <div className="sidebar-topbar">
         <button
           onClick={() => setOpen(true)}
           aria-label="Open menu"
           style={{
             background: 'none',
-            border: '1px solid var(--border)',
+            border: 'none',
             color: 'var(--text)',
             width: '34px',
             height: '34px',
-            borderRadius: '7px',
-            fontSize: '16px',
+            fontSize: '22px',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            flexShrink: 0,
+            padding: 0,
           }}
         >
           ☰
         </button>
-        <span className="sidebar-topbar-title">Admin Panel</span>
       </div>
 
       {/* Desktop sidebar */}
