@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useState } from 'react'
 
 const nav = [
   { href: '/admin', label: 'Dashboard', icon: '⊞' },
@@ -11,26 +12,38 @@ const nav = [
 
 export default function Sidebar() {
   const path = usePathname()
+  const [open, setOpen] = useState(false)
 
-  return (
-    <aside style={{
-      width: '220px',
-      background: 'var(--surface)',
-      borderRight: '1px solid var(--border)',
-      height: '100vh',
-      position: 'sticky',
-      top: 0,
-      display: 'flex',
-      flexDirection: 'column',
-      flexShrink: 0,
-    }}>
+  const SidebarContent = () => (
+    <>
       {/* Logo */}
       <div style={{
         padding: '24px 20px',
         borderBottom: '1px solid var(--border)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
       }}>
-        <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Store</div>
-        <div style={{ fontSize: '18px', fontWeight: '600', color: 'var(--text)', marginTop: '2px' }}>Admin Panel</div>
+        <div>
+          <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Store</div>
+          <div style={{ fontSize: '18px', fontWeight: '600', color: 'var(--text)', marginTop: '2px' }}>Admin Panel</div>
+        </div>
+        {/* Close button — mobile only */}
+        <button
+          onClick={() => setOpen(false)}
+          style={{
+            display: 'none',
+            background: 'none',
+            border: 'none',
+            color: 'var(--text-muted)',
+            fontSize: '20px',
+            cursor: 'pointer',
+            lineHeight: 1,
+          }}
+          className="sidebar-close-btn"
+        >
+          ✕
+        </button>
       </div>
 
       {/* Nav */}
@@ -38,7 +51,7 @@ export default function Sidebar() {
         {nav.map(({ href, label, icon }) => {
           const active = path === href || (href !== '/' && path.startsWith(href))
           return (
-            <Link key={href} href={href}>
+            <Link key={href} href={href} onClick={() => setOpen(false)}>
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -72,6 +85,121 @@ export default function Sidebar() {
         Connected to<br />
         <span style={{ color: 'var(--accent)', fontFamily: 'monospace' }}>Neon Database</span>
       </div>
-    </aside>
+    </>
+  )
+
+  return (
+    <>
+      <style>{`
+        /* Hamburger button — hidden on desktop */
+        .sidebar-hamburger {
+          display: none;
+        }
+
+        /* Close button — hidden on desktop */
+        .sidebar-close-btn {
+          display: none !important;
+        }
+
+        @media (max-width: 768px) {
+          /* Show hamburger on mobile */
+          .sidebar-hamburger {
+            display: flex;
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 1000;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+          }
+
+          /* Show close button on mobile */
+          .sidebar-close-btn {
+            display: block !important;
+          }
+
+          /* Desktop sidebar — hide on mobile */
+          .sidebar-desktop {
+            display: none !important;
+          }
+
+          /* Mobile drawer */
+          .sidebar-drawer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 240px;
+            z-index: 999;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            transform: translateX(-100%);
+            transition: transform 0.25s ease;
+          }
+
+          .sidebar-drawer.open {
+            transform: translateX(0);
+          }
+
+          /* Backdrop */
+          .sidebar-backdrop {
+            display: block;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 998;
+          }
+        }
+
+        @media (min-width: 769px) {
+          .sidebar-drawer,
+          .sidebar-backdrop {
+            display: none !important;
+          }
+        }
+      `}</style>
+
+      {/* Hamburger button (mobile only) */}
+      <button
+        className="sidebar-hamburger"
+        onClick={() => setOpen(true)}
+        aria-label="Open menu"
+      >
+        ☰
+      </button>
+
+      {/* Desktop sidebar */}
+      <aside className="sidebar-desktop" style={{
+        width: '220px',
+        background: 'var(--surface)',
+        borderRight: '1px solid var(--border)',
+        height: '100vh',
+        position: 'sticky',
+        top: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        flexShrink: 0,
+      }}>
+        <SidebarContent />
+      </aside>
+
+      {/* Mobile backdrop */}
+      {open && <div className="sidebar-backdrop" onClick={() => setOpen(false)} />}
+
+      {/* Mobile drawer */}
+      <aside className={`sidebar-drawer ${open ? 'open' : ''}`}>
+        <SidebarContent />
+      </aside>
+    </>
   )
 }

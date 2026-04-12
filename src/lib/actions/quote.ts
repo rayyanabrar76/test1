@@ -5,23 +5,15 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { Resend } from "resend";
 
-// --- INITIALIZE RESEND ---
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-/**
- * EMAIL CONFIGURATION
- */
 const RESEND_SENDER_EMAIL = "rayyanabrar76@gmail.com";
 
-/**
- * AUTHORITY CONFIGURATION
- */
-const ROOT_ADMIN_EMAIL = "rayyanabrar456@gmail.com";
+// Read from .env instead of hardcoded
+const ROOT_ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "")
+  .split(",")
+  .map(e => e.trim());
 
-/**
- * INTERNAL HELPER: SEND EMAIL
- * Updated to display all user details: Name, Phone, Subject, and Notes.
- */
 async function sendInquiryEmail(
   quoteId: string, 
   cartItems: any[], 
@@ -172,9 +164,9 @@ export async function deleteQuoteAction(quoteId: string) {
 export async function updateQuoteStatusAction(quoteId: string, newStatus: string) {
   const session = await auth();
   
-  if (session?.user?.email !== ROOT_ADMIN_EMAIL) {
+  if (!ROOT_ADMIN_EMAILS.includes(session?.user?.email ?? "")) {
     console.warn(`🚨 SECURITY_ALERT: Unauthorized status change attempt by ${session?.user?.email}`);
-    return { error: "ACCESS_DENIED: Root Authority (456) Required." };
+    return { error: "ACCESS_DENIED: Root Authority Required." };
   }
 
   try {
