@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import PerkinsClient from "./PerkinsClient";
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "Perkins Diesel Generator Price in Pakistan | 10kVA - 1375kVA",

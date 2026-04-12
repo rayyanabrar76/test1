@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import InventoryClient from "./InventoryClient";
-import { Product } from "@/types/store";
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.aps.com.pk"),

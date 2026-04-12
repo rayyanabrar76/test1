@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import PanelClient from "./panelClient";
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "Industrial Switchgear & Power Panels | LV/MV Distribution Solutions",

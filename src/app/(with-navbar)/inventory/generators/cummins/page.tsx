@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import CumminsClient from "./CumminsClient";
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "Cummins Diesel Generator Price in Pakistan | 25kVA - 2500kVA",

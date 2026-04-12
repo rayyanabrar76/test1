@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import GeneratorsClient from "./ClientGenerator";
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "Power Systems & Industrial Generators | Perkins & Cummins",
