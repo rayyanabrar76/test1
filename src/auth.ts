@@ -37,9 +37,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.id = user.id;
         
         // 2. ADMIN CLEARANCE LOGIC
-        // Hardcoded root admin check. Everyone else defaults to "OPERATOR".
-        const rootEmail = "rayyanabrar456@gmail.com";
-        const isRoot = user.email === rootEmail;
+        // Reads admin emails from .env — supports multiple emails comma separated
+        const rootEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "")
+          .split(",")
+          .map(e => e.trim());
+        const isRoot = rootEmails.includes(user.email ?? "");
         
         // Note: You may need to extend the Session type in a next-auth.d.ts file 
         // if TypeScript complains about .role
