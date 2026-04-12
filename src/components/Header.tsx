@@ -22,9 +22,6 @@ const STORAGE_KEY = "recently_viewed_assets";
 const MAX_ITEMS = 10;
 const RECENT_UPDATED_EVENT = "recent_viewed_updated";
 
-/**
- * UPDATED APS RED & BLACK LOGIN MODAL
- */
 function LoginModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
@@ -49,7 +46,6 @@ function LoginModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
             onClick={onClose}
             className="absolute inset-0 bg-black/90 backdrop-blur-md"
           />
-
           <motion.div 
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -60,7 +56,6 @@ function LoginModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
             <button onClick={onClose} className="absolute top-6 right-6 text-white/20 hover:text-red-500 transition-colors">
               <X size={20} />
             </button>
-
             <div className="flex justify-center mb-8">
               <img 
                 src="/aps-logo.png" 
@@ -68,12 +63,10 @@ function LoginModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
                 className="h-16 w-auto brightness-125 drop-shadow-[0_0_15px_rgba(220,38,38,0.2)]" 
               />
             </div>
-
             <div className="mb-8">
               <h2 className="text-2xl font-black uppercase italic tracking-tighter text-white">Secure Access</h2>
               <p className="text-[8px] uppercase tracking-[0.4em] text-red-600/60 font-black mt-2">Authorization Required</p>
             </div>
-
             <div className="space-y-3">
               <button
                 onClick={() => handleLogin('google')}
@@ -94,17 +87,12 @@ function LoginModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
                 )}
               </button>
             </div>
-
             <div className="mt-10 flex flex-col items-center gap-4">
               <div className="flex items-center gap-2 opacity-20">
                 <Lock size={10} className="text-white" />
-                <span className="text-[7px] font-bold uppercase tracking-[0.3em] text-white">
-                  Encrypted Session
-                </span>
+                <span className="text-[7px] font-bold uppercase tracking-[0.3em] text-white">Encrypted Session</span>
               </div>
-              <p className="text-[6px] text-white/10 font-bold uppercase tracking-widest">
-                APS Industries © 2026
-              </p>
+              <p className="text-[6px] text-white/10 font-bold uppercase tracking-widest">APS Industries © 2026</p>
             </div>
           </motion.div>
         </div>
@@ -127,7 +115,6 @@ export function Header() {
   const [deferredQuery, setDeferredQuery] = useState("");
   const [isPending, startTransition] = useTransition();
   const [recentProducts, setRecentProducts] = useState<SearchableProduct[]>([]);
-
   const [allProducts, setAllProducts] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -141,6 +128,27 @@ export function Header() {
   const inputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
+  // ── BODY SCROLL LOCK ──
+  // Lock body scroll whenever any mobile modal/overlay is open
+  useEffect(() => {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+    const anyModalOpen = mobileMenuOpen || showLoginModal || (isSearchOpen && isMobile);
+    
+    if (anyModalOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    };
+  }, [mobileMenuOpen, showLoginModal, isSearchOpen]);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
@@ -149,13 +157,9 @@ export function Header() {
         }
       }
     }
-    
     function handleEsc(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        setIsSearchOpen(false);
-      }
+      if (event.key === 'Escape') setIsSearchOpen(false);
     }
-
     if (isSearchOpen) {
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("keydown", handleEsc);
@@ -182,9 +186,7 @@ export function Header() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      startTransition(() => {
-        setDeferredQuery(query);
-      });
+      startTransition(() => setDeferredQuery(query));
     }, 50); 
     return () => clearTimeout(timer);
   }, [query]);
@@ -194,12 +196,8 @@ export function Header() {
       if (typeof window === 'undefined') return;
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          setRecentProducts(parsed);
-        } catch (e) {
-          console.error("Failed to parse recents", e);
-        }
+        try { setRecentProducts(JSON.parse(saved)); } 
+        catch (e) { console.error("Failed to parse recents", e); }
       }
     };
     loadRecents();
@@ -213,9 +211,7 @@ export function Header() {
   };
 
   const handleMouseLeave = () => {
-    timerRef.current = setTimeout(() => {
-      setIsAuthOpen(false);
-    }, 250);
+    timerRef.current = setTimeout(() => setIsAuthOpen(false), 250);
   };
 
   const isAuthenticated = status === "authenticated";
@@ -248,24 +244,18 @@ export function Header() {
   }, [deferredQuery, allProducts, recentProducts]);
 
   useEffect(() => {
-    const handleScroll = () => {
-        requestAnimationFrame(() => setScrolled(window.scrollY > 20));
-    };
+    const handleScroll = () => requestAnimationFrame(() => setScrolled(window.scrollY > 20));
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
-  };
+  const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       inputRef.current?.blur();
-      if (document.activeElement instanceof HTMLElement) {
-        document.activeElement.blur();
-      }
+      if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     }
   };
 
@@ -327,9 +317,7 @@ export function Header() {
 
           {/* ── RIGHT ACTIONS ── */}
           <div className="flex-1 flex items-center justify-end h-full gap-4 md:gap-8">
-
             <div className="hidden lg:flex items-center gap-6 border-r border-white/5 pr-8 relative h-full">
-
               <motion.div
                 animate={{
                   opacity: isSearchOpen ? 0 : 1,
@@ -364,7 +352,7 @@ export function Header() {
                             )}
                             <Link href="/dashboard" className="px-4 py-3 flex items-center gap-3 hover:bg-white hover:text-black transition-colors group">
                               <LayoutDashboard size={14} className="opacity-50 group-hover:opacity-100" />
-                              <span className="text-[9px] font-bold uppercase tracking-widest">My Inquries</span>
+                              <span className="text-[9px] font-bold uppercase tracking-widest">My Inquiries</span>
                             </Link>
                             <Link href="/checkout" className="px-4 py-3 flex items-center gap-3 hover:bg-white hover:text-black transition-colors group">
                               <MessageSquare size={14} className="opacity-50 group-hover:opacity-100" />
@@ -448,7 +436,6 @@ export function Header() {
               className="absolute inset-0 z-[110] hidden lg:flex items-center justify-center bg-transparent px-4 md:px-12 lg:px-24"
             >
               <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-red-600/40 to-transparent" />
-
               <div ref={searchContainerRef} className="relative w-full max-w-4xl flex flex-col items-center">
                 <motion.div
                   initial={{ opacity: 0, y: 6 }}
@@ -539,6 +526,8 @@ export function Header() {
             exit={{ opacity: 0, x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed inset-0 z-[1000] bg-black flex flex-col overflow-hidden"
+            // Stop touch events from reaching the background
+            onTouchMove={(e) => e.stopPropagation()}
           >
             <div className="px-6 pt-12 pb-6 border-b border-red-900/30 bg-[#050505] shrink-0">
               <div className="flex justify-between items-center mb-6">
@@ -555,7 +544,6 @@ export function Header() {
                   <X size={20}/>
                 </button>
               </div>
-
               <div className="relative group">
                 <div className="absolute -inset-[1px] bg-red-600/30 rounded-xl blur-[2px] opacity-100" />
                 <div className="relative flex items-center bg-[#0a0a0a] border border-white/10 rounded-xl px-4 py-4">
@@ -574,6 +562,7 @@ export function Header() {
               </div>
             </div>
             
+            {/* ScrollArea handles its own scroll — background stays locked */}
             <ScrollArea className="flex-1 bg-[#050505]">
               <div className="px-4 py-6 space-y-2 pb-32">
                 {displayProducts.map((item, idx) => (
@@ -602,7 +591,6 @@ export function Header() {
                     </div>
                   </motion.div>
                 ))}
-
                 {displayProducts.length === 0 && (
                   <div className="py-20 flex flex-col items-center">
                     <div className="w-12 h-[1px] bg-red-600/30 mb-4" />
@@ -627,19 +615,34 @@ export function Header() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <div className="fixed inset-0 z-[200] lg:hidden">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setMobileMenuOpen(false)} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-            <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ type: "spring", damping: 30, stiffness: 300 }} className="absolute top-0 right-0 w-[85%] h-full bg-black/95 backdrop-blur-xl flex flex-col border-l border-white/5 shadow-2xl">
-              
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              onClick={() => setMobileMenuOpen(false)} 
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
+            />
+            <motion.div 
+              initial={{ x: "100%" }} 
+              animate={{ x: 0 }} 
+              exit={{ x: "100%" }} 
+              transition={{ type: "spring", damping: 30, stiffness: 300 }} 
+              className="absolute top-0 right-0 w-[85%] h-full bg-black/95 backdrop-blur-xl flex flex-col border-l border-white/5 shadow-2xl"
+              // Stop touch from bleeding through to background
+              onTouchMove={(e) => e.stopPropagation()}
+            >
               {/* Header */}
               <div className="flex justify-between items-center p-6 border-b-[1px] border-white/[0.03] shrink-0">
                 <div className="flex items-center gap-2">
                   <div className={cn("w-1.5 h-1.5 rounded-full", isAuthenticated ? "bg-white shadow-[0_0_5px_white]" : "bg-white/20")} />
                   <span className="text-[8px] font-black tracking-widest text-white/40 uppercase italic">{isAuthenticated ? "Signed In" : "Navigation"}</span>
                 </div>
-                <button onClick={() => setMobileMenuOpen(false)} className="w-10 h-10 flex items-center justify-center border-[1px] border-white/[0.08] rounded-full text-white/40"><X size={20} /></button>
+                <button onClick={() => setMobileMenuOpen(false)} className="w-10 h-10 flex items-center justify-center border-[1px] border-white/[0.08] rounded-full text-white/40">
+                  <X size={20} />
+                </button>
               </div>
 
-              <div className="flex-1 flex flex-col px-8 py-8 overflow-y-auto">
+              <div className="flex-1 flex flex-col px-8 py-8 overflow-y-auto overscroll-contain">
 
                 {/* USER INFO / SIGN IN */}
                 <div className="mb-8">
@@ -667,39 +670,24 @@ export function Header() {
                   )}
                 </div>
 
-                {/* ACCOUNT LINKS — only when signed in */}
+                {/* ACCOUNT LINKS */}
                 {isAuthenticated && (
                   <div className="mb-8 border border-white/5 rounded-2xl overflow-hidden">
                     {isRoot && (
-                      <Link
-                        href="/admin"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 px-5 py-4 bg-red-600/10 border-b border-white/5 hover:bg-red-600 hover:text-white transition-colors group"
-                      >
+                      <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-5 py-4 bg-red-600/10 border-b border-white/5 hover:bg-red-600 hover:text-white transition-colors group">
                         <ClipboardList size={14} className="text-red-600 group-hover:text-white" />
                         <span className="text-[10px] font-black uppercase tracking-widest text-white">Admin Panel</span>
                       </Link>
                     )}
-                    <Link
-                      href="/dashboard"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-5 py-4 border-b border-white/5 hover:bg-white/5 transition-colors"
-                    >
+                    <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-5 py-4 border-b border-white/5 hover:bg-white/5 transition-colors">
                       <LayoutDashboard size={14} className="text-white/40" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-white/70">My Inquiries</span>
                     </Link>
-                    <Link
-                      href="/checkout"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-5 py-4 border-b border-white/5 hover:bg-white/5 transition-colors"
-                    >
+                    <Link href="/checkout" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-5 py-4 border-b border-white/5 hover:bg-white/5 transition-colors">
                       <MessageSquare size={14} className="text-white/40" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-white/70">Request a Free Quote</span>
                     </Link>
-                    <button
-                      onClick={() => { setMobileMenuOpen(false); signOut(); }}
-                      className="w-full flex items-center gap-3 px-5 py-4 hover:bg-red-600 hover:text-white transition-colors group"
-                    >
+                    <button onClick={() => { setMobileMenuOpen(false); signOut(); }} className="w-full flex items-center gap-3 px-5 py-4 hover:bg-red-600 hover:text-white transition-colors group">
                       <LogOut size={14} className="text-white/40 group-hover:text-white" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-white/70 group-hover:text-white">Sign Out</span>
                     </button>
@@ -733,4 +721,3 @@ export function Header() {
     </>
   );
 }
-

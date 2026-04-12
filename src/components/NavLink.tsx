@@ -120,6 +120,26 @@ export function Navbar() {
   const inputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
+  // ── BODY SCROLL LOCK ──
+  // Lock body scroll whenever any mobile modal/overlay is open
+  useEffect(() => {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+    const anyModalOpen = mobileMenuOpen || showLoginModal || (isSearchOpen && isMobile);
+
+    if (anyModalOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    };
+  }, [mobileMenuOpen, showLoginModal, isSearchOpen]);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
@@ -311,7 +331,7 @@ export function Navbar() {
                             )}
                             <Link href="/dashboard" className="px-4 py-3 flex items-center gap-3 hover:bg-white hover:text-black transition-colors group">
                               <LayoutDashboard size={14} className="opacity-50 group-hover:opacity-100" />
-                              <span className="text-[9px] font-bold uppercase tracking-widest">My Inquries</span>
+                              <span className="text-[9px] font-bold uppercase tracking-widest">My Inquiries</span>
                             </Link>
                             <Link href="/checkout" className="px-4 py-3 flex items-center gap-3 hover:bg-white hover:text-black transition-colors group">
                               <MessageSquare size={14} className="opacity-50 group-hover:opacity-100" />
@@ -408,7 +428,6 @@ export function Navbar() {
                     <X size={16} />
                   </button>
                 </motion.div>
-
                 <AnimatePresence>
                   {query.length > 0 && (
                     <motion.div
@@ -477,6 +496,7 @@ export function Navbar() {
             exit={{ opacity: 0, x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed inset-0 z-[1000] bg-black flex flex-col overflow-hidden"
+            onTouchMove={(e) => e.stopPropagation()}
           >
             <div className="px-6 pt-12 pb-6 border-b border-red-900/30 bg-[#050505] shrink-0">
               <div className="flex justify-between items-center mb-6">
@@ -563,21 +583,32 @@ export function Navbar() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <div className="fixed inset-0 z-[200] lg:hidden">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setMobileMenuOpen(false)} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-            <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ type: "spring", damping: 30, stiffness: 300 }} className="absolute top-0 right-0 w-[85%] h-full bg-black/95 backdrop-blur-xl flex flex-col border-l border-white/5 shadow-2xl">
-              
-              {/* Header */}
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              onClick={() => setMobileMenuOpen(false)} 
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
+            />
+            <motion.div 
+              initial={{ x: "100%" }} 
+              animate={{ x: 0 }} 
+              exit={{ x: "100%" }} 
+              transition={{ type: "spring", damping: 30, stiffness: 300 }} 
+              className="absolute top-0 right-0 w-[85%] h-full bg-black/95 backdrop-blur-xl flex flex-col border-l border-white/5 shadow-2xl"
+              onTouchMove={(e) => e.stopPropagation()}
+            >
               <div className="flex justify-between items-center p-6 border-b-[1px] border-white/[0.03] shrink-0">
                 <div className="flex items-center gap-2">
                   <div className={cn("w-1.5 h-1.5 rounded-full", isAuthenticated ? "bg-white shadow-[0_0_5px_white]" : "bg-white/20")} />
                   <span className="text-[8px] font-black tracking-widest text-white/40 uppercase italic">{isAuthenticated ? "Signed In" : "Navigation"}</span>
                 </div>
-                <button onClick={() => setMobileMenuOpen(false)} className="w-10 h-10 flex items-center justify-center border-[1px] border-white/[0.08] rounded-full text-white/40"><X size={20} /></button>
+                <button onClick={() => setMobileMenuOpen(false)} className="w-10 h-10 flex items-center justify-center border-[1px] border-white/[0.08] rounded-full text-white/40">
+                  <X size={20} />
+                </button>
               </div>
 
-              <div className="flex-1 flex flex-col px-8 py-8 overflow-y-auto">
-
-                {/* USER INFO / SIGN IN */}
+              <div className="flex-1 flex flex-col px-8 py-8 overflow-y-auto overscroll-contain">
                 <div className="mb-8">
                   <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest mb-2 block">
                     {isRoot ? "Admin" : isAuthenticated ? "Account" : "Get Started"}
@@ -603,46 +634,29 @@ export function Navbar() {
                   )}
                 </div>
 
-                {/* ACCOUNT LINKS — only when signed in */}
                 {isAuthenticated && (
                   <div className="mb-8 border border-white/5 rounded-2xl overflow-hidden">
                     {isRoot && (
-                      <Link
-                        href="/admin"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 px-5 py-4 bg-red-600/10 border-b border-white/5 hover:bg-red-600 hover:text-white transition-colors group"
-                      >
+                      <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-5 py-4 bg-red-600/10 border-b border-white/5 hover:bg-red-600 hover:text-white transition-colors group">
                         <ClipboardList size={14} className="text-red-600 group-hover:text-white" />
                         <span className="text-[10px] font-black uppercase tracking-widest text-white">Admin Panel</span>
                       </Link>
                     )}
-                    <Link
-                      href="/dashboard"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-5 py-4 border-b border-white/5 hover:bg-white/5 transition-colors"
-                    >
+                    <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-5 py-4 border-b border-white/5 hover:bg-white/5 transition-colors">
                       <LayoutDashboard size={14} className="text-white/40" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-white/70">My Inquiries</span>
                     </Link>
-                    <Link
-                      href="/checkout"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-5 py-4 border-b border-white/5 hover:bg-white/5 transition-colors"
-                    >
+                    <Link href="/checkout" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-5 py-4 border-b border-white/5 hover:bg-white/5 transition-colors">
                       <MessageSquare size={14} className="text-white/40" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-white/70">Request a Free Quote</span>
                     </Link>
-                    <button
-                      onClick={() => { setMobileMenuOpen(false); signOut(); }}
-                      className="w-full flex items-center gap-3 px-5 py-4 hover:bg-red-600 hover:text-white transition-colors group"
-                    >
+                    <button onClick={() => { setMobileMenuOpen(false); signOut(); }} className="w-full flex items-center gap-3 px-5 py-4 hover:bg-red-600 hover:text-white transition-colors group">
                       <LogOut size={14} className="text-white/40 group-hover:text-white" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-white/70 group-hover:text-white">Sign Out</span>
                     </button>
                   </div>
                 )}
 
-                {/* NAV LINKS */}
                 <div className="flex flex-col justify-center space-y-8 mt-2">
                   <div className="h-[1px] w-8 bg-white/10" />
                   <Link href="/services" onClick={() => setMobileMenuOpen(false)} className="text-3xl font-black uppercase italic tracking-tighter text-white/90 leading-none">Services</Link>
@@ -651,7 +665,6 @@ export function Navbar() {
                 </div>
               </div>
 
-              {/* CART */}
               <div
                 onClick={() => { setMobileMenuOpen(false); setIsCartOpen(true); }}
                 className={cn("p-8 flex items-center justify-between border-t-[1px] border-white/[0.05] shrink-0 cursor-pointer", hasItems ? "bg-white/10 backdrop-blur-lg text-white" : "bg-white/[0.02] text-white/10")}
