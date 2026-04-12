@@ -52,6 +52,7 @@ export default function AirCompressorClient({ allProductsFromDb }: AirCompressor
           alt={alt}
           fill
           priority={back}
+          unoptimized
           className="object-contain object-left"
         />
       </div>
