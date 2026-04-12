@@ -1,8 +1,6 @@
 'use client'
-
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState, useEffect } from 'react'
 
 const nav = [
   { href: '/admin', label: 'Dashboard', icon: '⊞' },
@@ -13,143 +11,119 @@ const nav = [
 
 export default function Sidebar() {
   const path = usePathname()
-  const [isOpen, setIsOpen] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
-
-  // 1. Detect screen size for responsive behavior
-  useEffect(() => {
-    const checkMobile = () => {
-      const mobile = window.innerWidth < 1024
-      setIsMobile(mobile)
-      if (!mobile) setIsOpen(false) // Reset menu state if resizing to desktop
-    }
-    
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
-
-  // 2. Close sidebar automatically when navigating on mobile
-  useEffect(() => {
-    setIsOpen(false)
-  }, [path])
-
-  // Common styles for transitions
-  const transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
 
   return (
     <>
-      {/* MOBILE TOP BAR (Hidden on Desktop) */}
-      {isMobile && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: '56px',
-          background: 'var(--surface)',
-          borderBottom: '1px solid var(--border)',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0 16px',
-          zIndex: 40,
-          justifyContent: 'space-between'
-        }}>
-          <button 
-            onClick={() => setIsOpen(true)}
-            style={{ 
-              background: 'none', 
-              border: 'none', 
-              fontSize: '24px', 
-              color: 'var(--text)', 
-              cursor: 'pointer',
-              padding: '8px'
-            }}
-          >
-            ☰
-          </button>
-          <span style={{ fontWeight: '600', fontSize: '14px', color: 'var(--text)' }}>Admin Panel</span>
-          <div style={{ width: '40px' }} /> {/* Visual balance spacer */}
-        </div>
-      )}
+      <style>{`
+        .bottom-nav {
+          display: none;
+        }
 
-      {/* OVERLAY / BACKDROP (Mobile only) */}
-      {isMobile && isOpen && (
-        <div 
-          onClick={() => setIsOpen(false)}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.5)',
-            backdropFilter: 'blur(4px)',
-            zIndex: 45,
-            transition: 'opacity 0.3s ease'
-          }}
-        />
-      )}
+        @media (max-width: 768px) {
+          /* Hide desktop sidebar on mobile */
+          .sidebar-desktop {
+            display: none !important;
+          }
 
-      {/* THE SIDEBAR */}
-      <aside style={{
-        width: '240px',
+          /* Bottom nav bar */
+          .bottom-nav {
+            display: flex;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            height: 62px;
+            align-items: stretch;
+          }
+
+          .bottom-nav a {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 500;
+            transition: color 0.15s;
+            padding-bottom: env(safe-area-inset-bottom);
+          }
+
+          .bottom-nav a.active {
+            color: var(--accent);
+          }
+
+          .bottom-nav a .nav-icon {
+            font-size: 18px;
+            line-height: 1;
+          }
+
+          .bottom-nav a .nav-label {
+            font-size: 10px;
+            letter-spacing: 0.02em;
+          }
+
+          /* Push page content above the bottom nav */
+          main, .admin-main {
+            padding-bottom: 70px !important;
+          }
+        }
+
+        @media (min-width: 769px) {
+          .bottom-nav {
+            display: none !important;
+          }
+        }
+      `}</style>
+
+      {/* Desktop sidebar */}
+      <aside className="sidebar-desktop" style={{
+        width: '220px',
         background: 'var(--surface)',
         borderRight: '1px solid var(--border)',
         height: '100vh',
-        position: isMobile ? 'fixed' : 'sticky',
+        position: 'sticky',
         top: 0,
-        left: 0,
-        zIndex: 50,
         display: 'flex',
         flexDirection: 'column',
         flexShrink: 0,
-        transition: transition,
-        transform: isMobile && !isOpen ? 'translateX(-100%)' : 'translateX(0)',
       }}>
-        
-        {/* Logo Section */}
+        {/* Logo */}
         <div style={{
           padding: '24px 20px',
           borderBottom: '1px solid var(--border)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
         }}>
-          <div>
-            <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Store</div>
-            <div style={{ fontSize: '18px', fontWeight: '600', color: 'var(--text)', marginTop: '2px' }}>Admin Panel</div>
-          </div>
-          {isMobile && (
-            <button 
-              onClick={() => setIsOpen(false)} 
-              style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '20px', cursor: 'pointer' }}
-            >
-              ✕
-            </button>
-          )}
+          <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Store</div>
+          <div style={{ fontSize: '18px', fontWeight: '600', color: 'var(--text)', marginTop: '2px' }}>Admin Panel</div>
         </div>
 
-        {/* Navigation Links */}
-        <nav style={{ padding: '12px 10px', flex: 1, overflowY: 'auto' }}>
+        {/* Nav */}
+        <nav style={{ padding: '12px 10px', flex: 1 }}>
           {nav.map(({ href, label, icon }) => {
             const active = path === href || (href !== '/admin' && path.startsWith(href))
-            
             return (
-              <Link key={href} href={href} style={{ textDecoration: 'none' }}>
+              <Link key={href} href={href}>
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '12px',
-                  padding: '10px 14px',
+                  gap: '10px',
+                  padding: '9px 12px',
                   borderRadius: '8px',
-                  marginBottom: '4px',
+                  marginBottom: '2px',
                   background: active ? 'var(--surface2)' : 'transparent',
                   color: active ? 'var(--text)' : 'var(--text-muted)',
                   fontWeight: active ? '500' : '400',
                   fontSize: '14px',
                   transition: 'all 0.15s',
                   cursor: 'pointer',
-                  borderLeft: active ? '3px solid var(--accent)' : '3px solid transparent',
+                  borderLeft: active ? '2px solid var(--accent)' : '2px solid transparent',
                 }}>
-                  <span style={{ fontSize: '18px', opacity: active ? 1 : 0.7 }}>{icon}</span>
+                  <span>{icon}</span>
                   {label}
                 </div>
               </Link>
@@ -165,12 +139,22 @@ export default function Sidebar() {
           color: 'var(--text-muted)',
         }}>
           Connected to<br />
-          <span style={{ color: 'var(--accent)', fontFamily: 'monospace', fontWeight: '600' }}>Neon Database</span>
+          <span style={{ color: 'var(--accent)', fontFamily: 'monospace' }}>Neon Database</span>
         </div>
       </aside>
 
-      {/* CONTENT SPACER (Prevents content from being hidden under the mobile top bar) */}
-      {isMobile && <div style={{ height: '56px', width: '100%' }} />}
+      {/* Mobile bottom nav */}
+      <nav className="bottom-nav">
+        {nav.map(({ href, label, icon }) => {
+          const active = path === href || (href !== '/admin' && path.startsWith(href))
+          return (
+            <Link key={href} href={href} className={active ? 'active' : ''}>
+              <span className="nav-icon">{icon}</span>
+              <span className="nav-label">{label}</span>
+            </Link>
+          )
+        })}
+      </nav>
     </>
   )
 }
