@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 
 interface Product {
   id: string; slug: string; name: string; brand: string;
-  description: string; price: number;
+  description: string;
   image: string; gallery: string[]; category: string; createdAt: string;
   pdf_link?: string; pdf_links?: string[];
 }
@@ -21,7 +21,7 @@ export default function ProductsPage() {
   const [uploadingPdf, setUploadingPdf] = useState(false)
   const [uploadingPdfLinks, setUploadingPdfLinks] = useState(false)
   const [form, setForm] = useState({
-    name: '', slug: '', brand: 'APS', description: '', price: '',
+    name: '', slug: '', brand: 'APS', description: '',
     image: '', gallery: [] as string[], category: '',
     pdf_link: '', pdf_links: [] as string[],
   })
@@ -38,7 +38,7 @@ export default function ProductsPage() {
 
   const openNew = () => {
     setEditing(null)
-    setForm({ name: '', slug: '', brand: 'APS', description: '', price: '', image: '', gallery: [], category: '', pdf_link: '', pdf_links: [] })
+    setForm({ name: '', slug: '', brand: 'APS', description: '', image: '', gallery: [], category: '', pdf_link: '', pdf_links: [] })
     setModalOpen(true)
   }
 
@@ -46,7 +46,7 @@ export default function ProductsPage() {
     setEditing(p)
     setForm({
       name: p.name, slug: p.slug, brand: p.brand, description: p.description,
-      price: p.price.toString(), image: p.image, gallery: p.gallery || [],
+      image: p.image, gallery: p.gallery || [],
       category: p.category, pdf_link: p.pdf_link || '', pdf_links: p.pdf_links || [],
     })
     setModalOpen(true)
@@ -231,10 +231,6 @@ export default function ProductsPage() {
           margin-top: 8px;
           flex-wrap: wrap;
         }
-        .product-card-price {
-          font-weight: 600;
-          font-size: 13px;
-        }
         .product-card-actions {
           display: flex;
           gap: 6px;
@@ -296,7 +292,7 @@ export default function ProductsPage() {
           <table className="products-table">
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                {['Product', 'Brand', 'Category', 'Price', 'Gallery', 'PDF', 'Actions'].map(h => (
+                {['Product', 'Brand', 'Category', 'Gallery', 'PDF', 'Actions'].map(h => (
                   <th key={h} style={{ padding: '12px 20px', textAlign: 'left', fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</th>
                 ))}
               </tr>
@@ -319,7 +315,6 @@ export default function ProductsPage() {
                   </td>
                   <td style={{ padding: '14px 20px', color: 'var(--text-muted)' }}>{product.brand}</td>
                   <td style={{ padding: '14px 20px', color: 'var(--text-muted)' }}>{product.category}</td>
-                  <td style={{ padding: '14px 20px', fontWeight: '500' }}>${product.price.toFixed(2)}</td>
                   <td style={{ padding: '14px 20px', color: 'var(--text-muted)' }}>
                     {product.gallery?.length > 0 ? (
                       <div style={{ display: 'flex', gap: '4px' }}>
@@ -362,7 +357,7 @@ export default function ProductsPage() {
                 }
                 <div className="product-card-body">
                   <div className="product-card-name">{product.name}</div>
-                  <div className="product-card-meta">{product.brand} · {product.category} · <span className="product-card-price">${product.price.toFixed(2)}</span></div>
+                  <div className="product-card-meta">{product.brand} · {product.category}</div>
                   <div className="product-card-row">
                     {product.gallery?.length > 0 && (
                       <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>🖼 {product.gallery.length} images</span>
@@ -399,7 +394,6 @@ export default function ProductsPage() {
                 { label: 'Slug', key: 'slug', placeholder: 'e.g. industrial-valve' },
                 { label: 'Brand', key: 'brand', placeholder: 'APS' },
                 { label: 'Category', key: 'category', placeholder: 'e.g. Valves' },
-                { label: 'Price', key: 'price', placeholder: '0.00' },
               ].map(field => (
                 <div key={field.key}>
                   <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>{field.label}</label>
