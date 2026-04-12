@@ -16,8 +16,8 @@ export default function Sidebar() {
 
   const SidebarContent = () => (
     <>
-      {/* Logo — hidden on mobile since topbar shows it */}
-      <div className="sidebar-logo-block" style={{
+      {/* Logo */}
+      <div style={{
         padding: '24px 20px',
         borderBottom: '1px solid var(--border)',
         display: 'flex',
@@ -28,18 +28,19 @@ export default function Sidebar() {
           <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Store</div>
           <div style={{ fontSize: '18px', fontWeight: '600', color: 'var(--text)', marginTop: '2px' }}>Admin Panel</div>
         </div>
+        {/* Close button — mobile only */}
         <button
           onClick={() => setOpen(false)}
-          className="sidebar-close-btn"
           style={{
+            display: 'none',
             background: 'none',
             border: 'none',
             color: 'var(--text-muted)',
             fontSize: '20px',
             cursor: 'pointer',
             lineHeight: 1,
-            display: 'none',
           }}
+          className="sidebar-close-btn"
         >
           ✕
         </button>
@@ -90,42 +91,52 @@ export default function Sidebar() {
   return (
     <>
       <style>{`
+        /* Hamburger button — hidden on desktop */
+        .sidebar-hamburger {
+          display: none;
+        }
+
+        /* Close button — hidden on desktop */
+        .sidebar-close-btn {
+          display: none !important;
+        }
+
         @media (max-width: 768px) {
-          body {
-            padding-top: 56px !important;
+          /* Show hamburger on mobile */
+          .sidebar-hamburger {
+            display: flex;
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 1000;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
           }
 
-          .sidebar-logo-block {
-            display: none !important;
-          }
-
+          /* Show close button on mobile */
           .sidebar-close-btn {
             display: block !important;
           }
 
-          /* Just a floating button, fully transparent */
-          .sidebar-topbar {
-            display: flex !important;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 56px;
-            z-index: 1000;
-            background: transparent;
-            border: none;
-            padding: 0 16px;
-          }
-
+          /* Desktop sidebar — hide on mobile */
           .sidebar-desktop {
             display: none !important;
           }
 
+          /* Mobile drawer */
           .sidebar-drawer {
             position: fixed;
-            top: 56px;
+            top: 0;
             left: 0;
-            height: calc(100vh - 56px);
+            height: 100vh;
             width: 240px;
             z-index: 999;
             background: var(--surface);
@@ -140,6 +151,7 @@ export default function Sidebar() {
             transform: translateX(0);
           }
 
+          /* Backdrop */
           .sidebar-backdrop {
             display: block;
             position: fixed;
@@ -150,7 +162,6 @@ export default function Sidebar() {
         }
 
         @media (min-width: 769px) {
-          .sidebar-topbar,
           .sidebar-drawer,
           .sidebar-backdrop {
             display: none !important;
@@ -158,28 +169,14 @@ export default function Sidebar() {
         }
       `}</style>
 
-      {/* Mobile — just the ☰ button, no title, no background */}
-      <div className="sidebar-topbar">
-        <button
-          onClick={() => setOpen(true)}
-          aria-label="Open menu"
-          style={{
-            background: 'none',
-            border: 'none',
-            color: 'var(--text)',
-            width: '34px',
-            height: '34px',
-            fontSize: '22px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 0,
-          }}
-        >
-          ☰
-        </button>
-      </div>
+      {/* Hamburger button (mobile only) */}
+      <button
+        className="sidebar-hamburger"
+        onClick={() => setOpen(true)}
+        aria-label="Open menu"
+      >
+        ☰
+      </button>
 
       {/* Desktop sidebar */}
       <aside className="sidebar-desktop" style={{
