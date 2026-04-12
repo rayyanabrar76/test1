@@ -128,7 +128,6 @@ export function Header() {
   const [isPending, startTransition] = useTransition();
   const [recentProducts, setRecentProducts] = useState<SearchableProduct[]>([]);
 
-  // ✅ Products now fetched from Prisma API — no static file import
   const [allProducts, setAllProducts] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -290,7 +289,7 @@ export function Header() {
               : "bg-transparent max-w-7xl px-4 md:px-8"
         )}>
 
-          {/* ── LOGO — always visible, slides left when search opens ── */}
+          {/* ── LOGO ── */}
           <motion.div
             animate={{
               x: isSearchOpen ? -12 : 0,
@@ -309,7 +308,7 @@ export function Header() {
             </Link>
           </motion.div>
 
-          {/* ── NAV — fades + collapses when search opens ── */}
+          {/* ── NAV ── */}
           <motion.nav
             animate={{
               opacity: isSearchOpen ? 0 : 1,
@@ -326,13 +325,11 @@ export function Header() {
             <Link href="/company" className="px-2 py-2 text-[9px] font-bold uppercase tracking-[0.4em] text-white/30 hover:text-red-500 transition-all">Company</Link>
           </motion.nav>
 
-          {/* ── RIGHT ACTIONS — auth + search icon + cart ── */}
+          {/* ── RIGHT ACTIONS ── */}
           <div className="flex-1 flex items-center justify-end h-full gap-4 md:gap-8">
 
-            {/* Desktop: auth + search icon group */}
             <div className="hidden lg:flex items-center gap-6 border-r border-white/5 pr-8 relative h-full">
 
-              {/* Auth block — fades out when search open */}
               <motion.div
                 animate={{
                   opacity: isSearchOpen ? 0 : 1,
@@ -391,7 +388,6 @@ export function Header() {
                 )}
               </motion.div>
 
-              {/* ── SEARCH ICON ── */}
               <motion.button
                 onClick={() => setIsSearchOpen(true)}
                 animate={{
@@ -451,7 +447,6 @@ export function Header() {
               style={{ originX: 1 }}
               className="absolute inset-0 z-[110] hidden lg:flex items-center justify-center bg-transparent px-4 md:px-12 lg:px-24"
             >
-              {/* subtle red line at top */}
               <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-red-600/40 to-transparent" />
 
               <div ref={searchContainerRef} className="relative w-full max-w-4xl flex flex-col items-center">
@@ -463,7 +458,6 @@ export function Header() {
                   className="w-full flex items-center gap-4 border border-white/10 rounded-full py-3 px-6 focus-within:border-red-600/60 transition-all duration-300"
                 >
                   <Search className="h-4 w-4 text-red-600 shrink-0" />
-
                   <input
                     ref={inputRef}
                     placeholder="ENTER PROTOCOL OR ASSET NAME..."
@@ -472,16 +466,11 @@ export function Header() {
                     onChange={handleQueryChange}
                     onKeyDown={handleKeyDown}
                   />
-
-                  <button
-                    onClick={closeSearch}
-                    className="shrink-0 text-white/20 hover:text-red-600 transition-colors"
-                  >
+                  <button onClick={closeSearch} className="shrink-0 text-white/20 hover:text-red-600 transition-colors">
                     <X size={16} />
                   </button>
                 </motion.div>
 
-                {/* Results dropdown */}
                 <AnimatePresence>
                   {query.length > 0 && (
                     <motion.div
@@ -541,7 +530,7 @@ export function Header() {
       {/* LOGIN MODAL */}
       <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
 
-      {/* MOBILE ONLY SEARCH MODAL (TACTICAL OVERHAUL) */}
+      {/* MOBILE ONLY SEARCH MODAL */}
       <AnimatePresence>
         {isSearchOpen && (typeof window !== 'undefined' && window.innerWidth < 1024) && (
           <motion.div 
@@ -551,7 +540,6 @@ export function Header() {
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed inset-0 z-[1000] bg-black flex flex-col overflow-hidden"
           >
-            {/* 1. TACTICAL HEADER BAR */}
             <div className="px-6 pt-12 pb-6 border-b border-red-900/30 bg-[#050505] shrink-0">
               <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-3">
@@ -563,15 +551,11 @@ export function Header() {
                     <span className="text-[6px] font-bold text-white/30 uppercase tracking-[0.5em] mt-1 ml-3">Node: APS_SECURE_01</span>
                   </div>
                 </div>
-                <button 
-                  onClick={closeSearch} 
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-white/[0.03] border border-white/10 text-white/40 active:scale-90"
-                >
+                <button onClick={closeSearch} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/[0.03] border border-white/10 text-white/40 active:scale-90">
                   <X size={20}/>
                 </button>
               </div>
 
-              {/* 2. GLOWING INPUT FIELD */}
               <div className="relative group">
                 <div className="absolute -inset-[1px] bg-red-600/30 rounded-xl blur-[2px] opacity-100" />
                 <div className="relative flex items-center bg-[#0a0a0a] border border-white/10 rounded-xl px-4 py-4">
@@ -590,7 +574,6 @@ export function Header() {
               </div>
             </div>
             
-            {/* 3. LIST RESULTS AREA */}
             <ScrollArea className="flex-1 bg-[#050505]">
               <div className="px-4 py-6 space-y-2 pb-32">
                 {displayProducts.map((item, idx) => (
@@ -599,28 +582,21 @@ export function Header() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.03 }}
-                    onClick={(e) => {
-                      e.stopPropagation(); 
-                      handleProductSelect(item);
-                    }} 
+                    onClick={(e) => { e.stopPropagation(); handleProductSelect(item); }} 
                     className="group relative w-full p-2 flex items-center gap-4 bg-white/[0.02] border border-white/5 rounded-lg active:bg-white/[0.08] active:border-red-600/50 transition-all"
                   >
                     <div className="h-14 w-16 bg-black border border-white/10 relative shrink-0 rounded overflow-hidden">
                       <Image src={item.image} alt={item.name} fill sizes="100px" className="object-contain p-2" />
                       <div className="absolute bottom-0 left-0 w-full h-[2px] bg-red-600/20" />
                     </div>
-
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
                         <span className="text-[6px] font-bold text-red-600 uppercase tracking-widest">Active_Asset</span>
                         <div className="h-[1px] w-4 bg-white/10" />
                       </div>
-                      <h3 className="text-[11px] font-black text-white uppercase italic leading-tight line-clamp-1 tracking-tighter">
-                        {item.name}
-                      </h3>
+                      <h3 className="text-[11px] font-black text-white uppercase italic leading-tight line-clamp-1 tracking-tighter">{item.name}</h3>
                       <p className="text-[8px] font-bold uppercase text-white/30 tracking-[0.2em] mt-1">{item.category}</p>
                     </div>
-
                     <div className="pr-2">
                       <ArrowRight size={14} className="text-white/10 group-active:text-red-600" />
                     </div>
@@ -636,7 +612,6 @@ export function Header() {
               </div>
             </ScrollArea>
 
-            {/* 4. SYSTEM STATUS FOOTER */}
             <div className="p-4 border-t border-white/5 bg-black flex justify-between items-center shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-1 h-3 bg-red-600" />
@@ -654,6 +629,8 @@ export function Header() {
           <div className="fixed inset-0 z-[200] lg:hidden">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setMobileMenuOpen(false)} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
             <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ type: "spring", damping: 30, stiffness: 300 }} className="absolute top-0 right-0 w-[85%] h-full bg-black/95 backdrop-blur-xl flex flex-col border-l border-white/5 shadow-2xl">
+              
+              {/* Header */}
               <div className="flex justify-between items-center p-6 border-b-[1px] border-white/[0.03] shrink-0">
                 <div className="flex items-center gap-2">
                   <div className={cn("w-1.5 h-1.5 rounded-full", isAuthenticated ? "bg-white shadow-[0_0_5px_white]" : "bg-white/20")} />
@@ -661,28 +638,94 @@ export function Header() {
                 </div>
                 <button onClick={() => setMobileMenuOpen(false)} className="w-10 h-10 flex items-center justify-center border-[1px] border-white/[0.08] rounded-full text-white/40"><X size={20} /></button>
               </div>
-              <div className="flex-1 flex flex-col px-8 py-10">
-                <div className="mb-auto">
-                  <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest mb-1 block">{isRoot ? "Admin" : isAuthenticated ? "Account" : "Get Started"}</span>
-                  <div onClick={() => { if(!isAuthenticated) { setMobileMenuOpen(false); setShowLoginModal(true); }}} className="text-2xl font-black uppercase italic tracking-tighter text-white flex items-center gap-3 cursor-pointer">
-                    <span className="max-w-[200px] break-words">{isAuthenticated ? session?.user?.name?.split(' ')[0] : "Sign In"}</span>
-                    {isRoot ? <ShieldCheck size={24} className="text-white shrink-0" /> : <User size={24} className="text-white shrink-0" />}
-                  </div>
+
+              <div className="flex-1 flex flex-col px-8 py-8 overflow-y-auto">
+
+                {/* USER INFO / SIGN IN */}
+                <div className="mb-8">
+                  <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest mb-2 block">
+                    {isRoot ? "Admin" : isAuthenticated ? "Account" : "Get Started"}
+                  </span>
+                  {isAuthenticated ? (
+                    <div className="flex items-center gap-3">
+                      <div className="flex flex-col">
+                        <span className="text-2xl font-black uppercase italic tracking-tighter text-white">
+                          {session?.user?.name?.split(' ')[0]}
+                        </span>
+                        <span className="text-[10px] text-white/30 mt-0.5">{session?.user?.email}</span>
+                      </div>
+                      {isRoot ? <ShieldCheck size={24} className="text-red-600 shrink-0" /> : <User size={24} className="text-white/40 shrink-0" />}
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => { setMobileMenuOpen(false); setShowLoginModal(true); }}
+                      className="text-2xl font-black uppercase italic tracking-tighter text-white flex items-center gap-3 cursor-pointer"
+                    >
+                      <span>Sign In</span>
+                      <User size={24} className="text-white shrink-0" />
+                    </div>
+                  )}
                 </div>
-                <div className="flex-1 flex flex-col justify-center space-y-10">
+
+                {/* ACCOUNT LINKS — only when signed in */}
+                {isAuthenticated && (
+                  <div className="mb-8 border border-white/5 rounded-2xl overflow-hidden">
+                    {isRoot && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-3 px-5 py-4 bg-red-600/10 border-b border-white/5 hover:bg-red-600 hover:text-white transition-colors group"
+                      >
+                        <ClipboardList size={14} className="text-red-600 group-hover:text-white" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white">Admin Panel</span>
+                      </Link>
+                    )}
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-3 px-5 py-4 border-b border-white/5 hover:bg-white/5 transition-colors"
+                    >
+                      <LayoutDashboard size={14} className="text-white/40" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white/70">My Inquiries</span>
+                    </Link>
+                    <Link
+                      href="/checkout"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-3 px-5 py-4 border-b border-white/5 hover:bg-white/5 transition-colors"
+                    >
+                      <MessageSquare size={14} className="text-white/40" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white/70">Request a Free Quote</span>
+                    </Link>
+                    <button
+                      onClick={() => { setMobileMenuOpen(false); signOut(); }}
+                      className="w-full flex items-center gap-3 px-5 py-4 hover:bg-red-600 hover:text-white transition-colors group"
+                    >
+                      <LogOut size={14} className="text-white/40 group-hover:text-white" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white/70 group-hover:text-white">Sign Out</span>
+                    </button>
+                  </div>
+                )}
+
+                {/* NAV LINKS */}
+                <div className="flex flex-col justify-center space-y-8 mt-2">
                   <div className="h-[1px] w-8 bg-white/10" />
                   <Link href="/services" onClick={() => setMobileMenuOpen(false)} className="text-3xl font-black uppercase italic tracking-tighter text-white/90 leading-none">Services</Link>
                   <div className="text-3xl font-black uppercase italic tracking-tighter text-white/90 leading-none"><SolutionsMenu /></div>
                   <Link href="/company" onClick={() => setMobileMenuOpen(false)} className="text-3xl font-black uppercase italic tracking-tighter text-white/90 leading-none">Company</Link>
                 </div>
               </div>
-              <div onClick={() => { setMobileMenuOpen(false); setIsCartOpen(true); }} className={cn("p-8 flex items-center justify-between border-t-[1px] border-white/[0.05] shrink-0", hasItems ? "bg-white/10 backdrop-blur-lg text-white" : "bg-white/[0.02] text-white/10")}>
+
+              {/* CART */}
+              <div
+                onClick={() => { setMobileMenuOpen(false); setIsCartOpen(true); }}
+                className={cn("p-8 flex items-center justify-between border-t-[1px] border-white/[0.05] shrink-0 cursor-pointer", hasItems ? "bg-white/10 backdrop-blur-lg text-white" : "bg-white/[0.02] text-white/10")}
+              >
                 <div>
                   <span className="block text-[8px] font-black tracking-widest opacity-50 uppercase">Secured Quote</span>
                   <span className="text-2xl font-black uppercase italic tracking-tighter">Cart ({displayCount})</span>
                 </div>
                 <ShoppingBag strokeWidth={1.5} className="w-8 h-8" />
-              </div>  
+              </div>
             </motion.div>
           </div>
         )}
@@ -690,3 +733,4 @@ export function Header() {
     </>
   );
 }
+
