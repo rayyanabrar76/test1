@@ -147,7 +147,6 @@ export default function ProductsPage() {
 
   return (
     <div>
-      {/* ── Responsive styles ── */}
       <style>{`
         .products-header {
           display: flex;
@@ -257,12 +256,8 @@ export default function ProductsPage() {
           margin-bottom: 8px;
         }
         @media (max-width: 640px) {
-          .products-header {
-            flex-wrap: wrap;
-          }
-          .products-search {
-            width: 100%;
-          }
+          .products-header { flex-wrap: wrap; }
+          .products-search { width: 100%; }
           .products-table { display: none; }
           .product-cards { display: flex; }
           .products-modal-inner {
@@ -275,13 +270,9 @@ export default function ProductsPage() {
             border-right: none;
             border-bottom: none;
           }
-          .gallery-grid {
-            grid-template-columns: repeat(3, 1fr);
-          }
-          /* Fix: push modal content above the bottom nav bar */
-          .products-modal-inner > div:last-child {
-            padding-bottom: 80px;
-          }
+          .gallery-grid { grid-template-columns: repeat(3, 1fr); }
+          /* Fix: push content above navbar */
+          .modal-form-content { padding-bottom: 80px !important; }
         }
       `}</style>
 
@@ -302,7 +293,6 @@ export default function ProductsPage() {
         <div style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading...</div>
       ) : (
         <div className="products-table-wrap">
-          {/* ── Desktop table ── */}
           <table className="products-table">
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)' }}>
@@ -360,13 +350,9 @@ export default function ProductsPage() {
                   </td>
                 </tr>
               ))}
-              {filtered.length === 0 && (
-                <tr><td colSpan={7} style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)' }}>No products found</td></tr>
-              )}
             </tbody>
           </table>
 
-          {/* ── Mobile card list ── */}
           <div className="product-cards">
             {filtered.map(product => (
               <div key={product.id} className="product-card">
@@ -385,9 +371,6 @@ export default function ProductsPage() {
                       <a href={product.pdf_link} target="_blank" rel="noopener noreferrer"
                         style={{ fontSize: '11px', color: '#e05252', fontWeight: '600', textDecoration: 'none' }}>📄 Datasheet</a>
                     )}
-                    {!product.pdf_link && product.pdf_links?.length ? (
-                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>📄 {product.pdf_links.length} PDFs</span>
-                    ) : null}
                   </div>
                   <div className="product-card-actions">
                     <button onClick={() => openEdit(product)} style={{ flex: 1, padding: '7px 0', borderRadius: '6px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text)', cursor: 'pointer', fontSize: '13px' }}>Edit</button>
@@ -396,21 +379,20 @@ export default function ProductsPage() {
                 </div>
               </div>
             ))}
-            {filtered.length === 0 && (
-              <div style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)' }}>No products found</div>
-            )}
           </div>
         </div>
       )}
 
+      {/* --- MODALS WITH Z-INDEX FIX --- */}
       {modalOpen && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }} onClick={() => setModalOpen(false)}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100 }} onClick={() => setModalOpen(false)}>
           <div className="products-modal-inner" onClick={e => e.stopPropagation()}>
             <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3 style={{ fontSize: '16px', fontWeight: '600' }}>{editing ? 'Edit Product' : 'Add Product'}</h3>
               <button onClick={() => setModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '20px', cursor: 'pointer' }}>×</button>
             </div>
-            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            
+            <div className="modal-form-content" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
               {[
                 { label: 'Product Name', key: 'name', placeholder: 'e.g. Industrial Valve' },
@@ -427,7 +409,6 @@ export default function ProductsPage() {
                 </div>
               ))}
 
-              {/* Main Image */}
               <div>
                 <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Main Image</label>
                 {form.image ? (
@@ -446,11 +427,8 @@ export default function ProductsPage() {
                   onChange={e => { const f = e.target.files?.[0]; if (f) handleMainImage(f) }} />
               </div>
 
-              {/* Gallery Images */}
               <div>
-                <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>
-                  Gallery Images ({form.gallery.length})
-                </label>
+                <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Gallery Images ({form.gallery.length})</label>
                 <div className="gallery-grid">
                   {form.gallery.map((img, i) => (
                     <div key={i} style={{ position: 'relative' }}>
@@ -461,65 +439,30 @@ export default function ProductsPage() {
                   ))}
                   <div onClick={() => galleryRef.current?.click()}
                     style={{ border: '2px dashed var(--border)', borderRadius: '6px', height: '70px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '12px', gap: '4px' }}>
-                    {uploadingGallery ? 'Uploading...' : <><span style={{ fontSize: '18px' }}>+</span><span>Add</span></>}
+                    {uploadingGallery ? '...' : <><span style={{ fontSize: '18px' }}>+</span><span>Add</span></>}
                   </div>
                 </div>
                 <input ref={galleryRef} type="file" accept="image/*" multiple style={{ display: 'none' }}
                   onChange={e => { if (e.target.files) handleGalleryImages(e.target.files) }} />
               </div>
 
-              {/* Main Datasheet PDF */}
               <div>
-                <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>
-                  Main Datasheet (PDF)
-                </label>
+                <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Main Datasheet (PDF)</label>
                 {form.pdf_link ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface2)' }}>
                     <span style={{ fontSize: '20px' }}>📄</span>
-                    <a href={form.pdf_link} target="_blank" rel="noopener noreferrer"
-                      style={{ fontSize: '13px', color: '#e05252', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      View PDF
-                    </a>
-                    <button onClick={() => setForm(f => ({ ...f, pdf_link: '' }))}
-                      style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '18px' }}>×</button>
+                    <a href={form.pdf_link} target="_blank" rel="noopener noreferrer" style={{ fontSize: '13px', color: '#e05252', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>View PDF</a>
+                    <button onClick={() => setForm(f => ({ ...f, pdf_link: '' }))} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '18px' }}>×</button>
                   </div>
                 ) : (
-                  <div onClick={() => pdfRef.current?.click()}
-                    style={{ border: '2px dashed var(--border)', borderRadius: '8px', padding: '20px', textAlign: 'center', cursor: 'pointer', color: 'var(--text-muted)' }}>
-                    {uploadingPdf ? 'Uploading PDF...' : <><div style={{ fontSize: '24px', marginBottom: '6px' }}>📄</div><div style={{ fontSize: '13px', fontWeight: '500' }}>Click to upload datasheet PDF</div></>}
+                  <div onClick={() => pdfRef.current?.click()} style={{ border: '2px dashed var(--border)', borderRadius: '8px', padding: '20px', textAlign: 'center', cursor: 'pointer', color: 'var(--text-muted)' }}>
+                    {uploadingPdf ? '...' : <><div style={{ fontSize: '24px', marginBottom: '6px' }}>📄</div><div style={{ fontSize: '13px', fontWeight: '500' }}>Click to upload PDF</div></>}
                   </div>
                 )}
                 <input ref={pdfRef} type="file" accept="application/pdf" style={{ display: 'none' }}
                   onChange={e => { const f = e.target.files?.[0]; if (f) handleMainPdf(f) }} />
               </div>
 
-              {/* Model PDFs */}
-              <div>
-                <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>
-                  Model PDFs ({form.pdf_links.length}) — one per model
-                </label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '8px' }}>
-                  {form.pdf_links.map((url, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface2)' }}>
-                      <span style={{ fontSize: '16px' }}>📄</span>
-                      <a href={url} target="_blank" rel="noopener noreferrer"
-                        style={{ fontSize: '12px', color: '#e05252', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        Model PDF {i + 1}
-                      </a>
-                      <button onClick={() => removePdfLink(i)}
-                        style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '16px' }}>×</button>
-                    </div>
-                  ))}
-                  <div onClick={() => pdfLinksRef.current?.click()}
-                    style={{ border: '2px dashed var(--border)', borderRadius: '8px', padding: '14px', textAlign: 'center', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '13px' }}>
-                    {uploadingPdfLinks ? 'Uploading...' : '+ Add Model PDF(s)'}
-                  </div>
-                </div>
-                <input ref={pdfLinksRef} type="file" accept="application/pdf" multiple style={{ display: 'none' }}
-                  onChange={e => { if (e.target.files) handlePdfLinks(e.target.files) }} />
-              </div>
-
-              {/* Description */}
               <div>
                 <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Description</label>
                 <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
@@ -540,7 +483,7 @@ export default function ProductsPage() {
       )}
 
       {deleteConfirm && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }} onClick={() => setDeleteConfirm(null)}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100 }} onClick={() => setDeleteConfirm(null)}>
           <div style={{ background: 'var(--surface)', borderRadius: '12px', width: '400px', maxWidth: '90vw', padding: '24px', border: '1px solid var(--border)' }} onClick={e => e.stopPropagation()}>
             <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px' }}>Delete Product?</h3>
             <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>This will delete the product and all its images permanently.</p>
