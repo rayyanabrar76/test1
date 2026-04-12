@@ -26,10 +26,9 @@ export default async function Dashboard() {
   const stats = await getStats()
 
   const cards = [
-    { label: 'Products', value: stats.products, href: '/products' },
-    { label: 'Quotes', value: stats.quotes, href: '/quotes' },
-    { label: 'Customers', value: stats.customers, href: '/customers' },
-    { label: 'Revenue', value: `$${stats.revenue.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, href: '/quotes' },
+    { label: 'Products', value: stats.products, href: 'admin/products' },
+    { label: 'Quotes', value: stats.quotes, href: 'admin/quotes' },
+    { label: 'Customers', value: stats.customers, href: 'admin/customers' },
   ]
 
   return (
