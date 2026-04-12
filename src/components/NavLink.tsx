@@ -120,12 +120,9 @@ export function Navbar() {
   const inputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
-  // ── BODY SCROLL LOCK ──
-  // Lock body scroll whenever any mobile modal/overlay is open
   useEffect(() => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
     const anyModalOpen = mobileMenuOpen || showLoginModal || (isSearchOpen && isMobile);
-
     if (anyModalOpen) {
       document.body.style.overflow = 'hidden';
       document.body.style.touchAction = 'none';
@@ -133,7 +130,6 @@ export function Navbar() {
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
     }
-
     return () => {
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
@@ -598,6 +594,7 @@ export function Navbar() {
               className="absolute top-0 right-0 w-[85%] h-full bg-black/95 backdrop-blur-xl flex flex-col border-l border-white/5 shadow-2xl"
               onTouchMove={(e) => e.stopPropagation()}
             >
+              {/* Header */}
               <div className="flex justify-between items-center p-6 border-b-[1px] border-white/[0.03] shrink-0">
                 <div className="flex items-center gap-2">
                   <div className={cn("w-1.5 h-1.5 rounded-full", isAuthenticated ? "bg-white shadow-[0_0_5px_white]" : "bg-white/20")} />
@@ -608,7 +605,10 @@ export function Navbar() {
                 </button>
               </div>
 
+              {/* Scrollable content */}
               <div className="flex-1 flex flex-col px-8 py-8 overflow-y-auto overscroll-contain">
+
+                {/* USER INFO */}
                 <div className="mb-8">
                   <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest mb-2 block">
                     {isRoot ? "Admin" : isAuthenticated ? "Account" : "Get Started"}
@@ -634,6 +634,7 @@ export function Navbar() {
                   )}
                 </div>
 
+                {/* ACCOUNT LINKS — compact, no sign out here */}
                 {isAuthenticated && (
                   <div className="mb-8 border border-white/5 rounded-2xl overflow-hidden">
                     {isRoot && (
@@ -646,25 +647,37 @@ export function Navbar() {
                       <LayoutDashboard size={14} className="text-white/40" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-white/70">My Inquiries</span>
                     </Link>
-                    <Link href="/checkout" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-5 py-4 border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <Link href="/checkout" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-5 py-4 hover:bg-white/5 transition-colors">
                       <MessageSquare size={14} className="text-white/40" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-white/70">Request a Free Quote</span>
                     </Link>
-                    <button onClick={() => { setMobileMenuOpen(false); signOut(); }} className="w-full flex items-center gap-3 px-5 py-4 hover:bg-red-600 hover:text-white transition-colors group">
-                      <LogOut size={14} className="text-white/40 group-hover:text-white" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-white/70 group-hover:text-white">Sign Out</span>
-                    </button>
                   </div>
                 )}
 
+                {/* NAV LINKS */}
                 <div className="flex flex-col justify-center space-y-8 mt-2">
                   <div className="h-[1px] w-8 bg-white/10" />
                   <Link href="/services" onClick={() => setMobileMenuOpen(false)} className="text-3xl font-black uppercase italic tracking-tighter text-white/90 leading-none">Services</Link>
                   <div className="text-3xl font-black uppercase italic tracking-tighter text-white/90 leading-none"><SolutionsMenu /></div>
                   <Link href="/company" onClick={() => setMobileMenuOpen(false)} className="text-3xl font-black uppercase italic tracking-tighter text-white/90 leading-none">Company</Link>
+
+                  {/* ── SIGN OUT — big text at the very bottom of nav ── */}
+                  {isAuthenticated && (
+                    <>
+                      <div className="h-[1px] w-full bg-white/5" />
+                      <button
+                        onClick={() => { setMobileMenuOpen(false); signOut(); }}
+                        className="text-3xl font-black uppercase italic tracking-tighter text-red-600/70 leading-none flex items-center gap-4 active:text-red-500 transition-colors text-left"
+                      >
+                        Sign Out
+                        <LogOut size={22} className="shrink-0" />
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
 
+              {/* CART FOOTER */}
               <div
                 onClick={() => { setMobileMenuOpen(false); setIsCartOpen(true); }}
                 className={cn("p-8 flex items-center justify-between border-t-[1px] border-white/[0.05] shrink-0 cursor-pointer", hasItems ? "bg-white/10 backdrop-blur-lg text-white" : "bg-white/[0.02] text-white/10")}

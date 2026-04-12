@@ -128,8 +128,6 @@ export function Header() {
   const inputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
-  // ── BODY SCROLL LOCK ──
-  // Lock body scroll whenever any mobile modal/overlay is open
   useEffect(() => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
     const anyModalOpen = mobileMenuOpen || showLoginModal || (isSearchOpen && isMobile);
@@ -142,7 +140,6 @@ export function Header() {
       document.body.style.touchAction = '';
     }
 
-    // Cleanup on unmount
     return () => {
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
@@ -526,7 +523,6 @@ export function Header() {
             exit={{ opacity: 0, x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed inset-0 z-[1000] bg-black flex flex-col overflow-hidden"
-            // Stop touch events from reaching the background
             onTouchMove={(e) => e.stopPropagation()}
           >
             <div className="px-6 pt-12 pb-6 border-b border-red-900/30 bg-[#050505] shrink-0">
@@ -562,7 +558,6 @@ export function Header() {
               </div>
             </div>
             
-            {/* ScrollArea handles its own scroll — background stays locked */}
             <ScrollArea className="flex-1 bg-[#050505]">
               <div className="px-4 py-6 space-y-2 pb-32">
                 {displayProducts.map((item, idx) => (
@@ -628,7 +623,6 @@ export function Header() {
               exit={{ x: "100%" }} 
               transition={{ type: "spring", damping: 30, stiffness: 300 }} 
               className="absolute top-0 right-0 w-[85%] h-full bg-black/95 backdrop-blur-xl flex flex-col border-l border-white/5 shadow-2xl"
-              // Stop touch from bleeding through to background
               onTouchMove={(e) => e.stopPropagation()}
             >
               {/* Header */}
@@ -642,9 +636,10 @@ export function Header() {
                 </button>
               </div>
 
+              {/* Scrollable content */}
               <div className="flex-1 flex flex-col px-8 py-8 overflow-y-auto overscroll-contain">
 
-                {/* USER INFO / SIGN IN */}
+                {/* USER INFO */}
                 <div className="mb-8">
                   <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest mb-2 block">
                     {isRoot ? "Admin" : isAuthenticated ? "Account" : "Get Started"}
@@ -670,7 +665,7 @@ export function Header() {
                   )}
                 </div>
 
-                {/* ACCOUNT LINKS */}
+                {/* ACCOUNT LINKS — no sign out here anymore */}
                 {isAuthenticated && (
                   <div className="mb-8 border border-white/5 rounded-2xl overflow-hidden">
                     {isRoot && (
@@ -683,14 +678,10 @@ export function Header() {
                       <LayoutDashboard size={14} className="text-white/40" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-white/70">My Inquiries</span>
                     </Link>
-                    <Link href="/checkout" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-5 py-4 border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <Link href="/checkout" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-5 py-4 hover:bg-white/5 transition-colors">
                       <MessageSquare size={14} className="text-white/40" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-white/70">Request a Free Quote</span>
                     </Link>
-                    <button onClick={() => { setMobileMenuOpen(false); signOut(); }} className="w-full flex items-center gap-3 px-5 py-4 hover:bg-red-600 hover:text-white transition-colors group">
-                      <LogOut size={14} className="text-white/40 group-hover:text-white" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-white/70 group-hover:text-white">Sign Out</span>
-                    </button>
                   </div>
                 )}
 
@@ -700,10 +691,24 @@ export function Header() {
                   <Link href="/services" onClick={() => setMobileMenuOpen(false)} className="text-3xl font-black uppercase italic tracking-tighter text-white/90 leading-none">Services</Link>
                   <div className="text-3xl font-black uppercase italic tracking-tighter text-white/90 leading-none"><SolutionsMenu /></div>
                   <Link href="/company" onClick={() => setMobileMenuOpen(false)} className="text-3xl font-black uppercase italic tracking-tighter text-white/90 leading-none">Company</Link>
+
+                  {/* ── SIGN OUT — big red text at the very bottom ── */}
+                  {isAuthenticated && (
+                    <>
+                      <div className="h-[1px] w-full bg-white/5" />
+                      <button
+                        onClick={() => { setMobileMenuOpen(false); signOut(); }}
+                        className="text-3xl font-black uppercase italic tracking-tighter text-red-600/70 leading-none flex items-center gap-4 active:text-red-500 transition-colors text-left"
+                      >
+                        Sign Out
+                        <LogOut size={22} className="shrink-0" />
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
 
-              {/* CART */}
+              {/* CART FOOTER */}
               <div
                 onClick={() => { setMobileMenuOpen(false); setIsCartOpen(true); }}
                 className={cn("p-8 flex items-center justify-between border-t-[1px] border-white/[0.05] shrink-0 cursor-pointer", hasItems ? "bg-white/10 backdrop-blur-lg text-white" : "bg-white/[0.02] text-white/10")}

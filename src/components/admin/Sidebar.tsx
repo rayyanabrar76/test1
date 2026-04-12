@@ -16,8 +16,8 @@ export default function Sidebar() {
 
   const SidebarContent = () => (
     <>
-      {/* Logo */}
-      <div style={{
+      {/* Logo — hidden on mobile since topbar shows it */}
+      <div className="sidebar-logo-block" style={{
         padding: '24px 20px',
         borderBottom: '1px solid var(--border)',
         display: 'flex',
@@ -90,25 +90,22 @@ export default function Sidebar() {
   return (
     <>
       <style>{`
-        /* ---- Inject top padding on mobile so page content clears the top bar ---- */
         @media (max-width: 768px) {
           body {
             padding-top: 56px !important;
           }
-        }
 
-        .sidebar-close-btn { display: none !important; }
+          /* Hide logo block inside drawer — topbar already shows title */
+          .sidebar-logo-block {
+            display: none !important;
+          }
 
-        /* Mobile top bar — hidden on desktop */
-        .sidebar-topbar {
-          display: none;
-        }
-
-        @media (max-width: 768px) {
           /* Show close button inside drawer */
-          .sidebar-close-btn { display: block !important; }
+          .sidebar-close-btn {
+            display: block !important;
+          }
 
-          /* Mobile top bar sits at the top, takes real space */
+          /* Mobile top bar — transparent, takes real space */
           .sidebar-topbar {
             display: flex;
             align-items: center;
@@ -119,8 +116,8 @@ export default function Sidebar() {
             right: 0;
             height: 56px;
             z-index: 1000;
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
+            background: transparent;
+            border-bottom: none;
             padding: 0 16px;
           }
 
@@ -135,12 +132,12 @@ export default function Sidebar() {
             display: none !important;
           }
 
-          /* Mobile drawer */
+          /* Mobile drawer — starts below topbar */
           .sidebar-drawer {
             position: fixed;
-            top: 0;
+            top: 56px;
             left: 0;
-            height: 100vh;
+            height: calc(100vh - 56px);
             width: 240px;
             z-index: 999;
             background: var(--surface);
@@ -174,8 +171,8 @@ export default function Sidebar() {
         }
       `}</style>
 
-      {/* ✅ Mobile top bar — takes real space, won't overlap content */}
-      <div className="sidebar-topbar">
+      {/* Mobile top bar */}
+      <div className="sidebar-topbar" style={{ display: 'none' }}>
         <button
           onClick={() => setOpen(true)}
           aria-label="Open menu"
