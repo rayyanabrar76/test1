@@ -12,7 +12,13 @@ interface Product {
   image: string; gallery: string[]; category: string; createdAt: string;
   pdf_link?: string; pdf_links?: string[];
   metadata?: Record<string, string>;
+  badges?: string[];
 }
+
+const toId = (str: string) =>
+  str.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-')
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? ''
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
@@ -26,10 +32,12 @@ export default function ProductsPage() {
   const [uploadingGallery, setUploadingGallery] = useState(false)
   const [uploadingPdf, setUploadingPdf] = useState(false)
   const [form, setForm] = useState({
+    id: '',
     name: '', brand: 'APS', description: '',
     image: '', gallery: [] as string[], category: '',
     pdf_link: '', pdf_links: [] as string[],
     metadata: [] as MetaEntry[],
+    badges: [] as string[],
   })
   const fileRef = useRef<HTMLInputElement>(null)
   const galleryRef = useRef<HTMLInputElement>(null)
@@ -43,7 +51,7 @@ export default function ProductsPage() {
 
   const openNew = () => {
     setEditing(null)
-    setForm({ name: '', brand: 'APS', description: '', image: '', gallery: [], category: '', pdf_link: '', pdf_links: [], metadata: [] })
+    setForm({ id: '', name: '', brand: 'APS', description: '', image: '', gallery: [], category: '', pdf_link: '', pdf_links: [], metadata: [], badges: [] as string[] })
     setModalOpen(true)
   }
 
@@ -52,11 +60,14 @@ export default function ProductsPage() {
     const metaEntries: MetaEntry[] = p.metadata
       ? Object.entries(p.metadata).map(([key, value]) => ({ key, value }))
       : []
+    const badgeEntries: string[] = Array.isArray(p.badges) ? p.badges : []
     setForm({
+      id: p.id || '',
       name: p.name, brand: p.brand, description: p.description,
       image: p.image, gallery: p.gallery || [],
       category: p.category, pdf_link: p.pdf_link || '', pdf_links: p.pdf_links || [],
       metadata: metaEntries,
+      badges: badgeEntries,
     })
     setModalOpen(true)
   }
@@ -102,20 +113,19 @@ export default function ProductsPage() {
     setForm(f => ({ ...f, gallery: f.gallery.filter((_, i) => i !== index) }))
   }
 
-  const addMetaRow = () => {
-    setForm(f => ({ ...f, metadata: [...f.metadata, { key: '', value: '' }] }))
-  }
-
-  const updateMetaRow = (index: number, field: 'key' | 'value', val: string) => {
-    setForm(f => ({
-      ...f,
-      metadata: f.metadata.map((entry, i) => i === index ? { ...entry, [field]: val } : entry)
-    }))
-  }
-
-  const removeMetaRow = (index: number) => {
+  // --- Metadata helpers ---
+  const addMetaRow = () => setForm(f => ({ ...f, metadata: [...f.metadata, { key: '', value: '' }] }))
+  const updateMetaRow = (index: number, field: 'key' | 'value', val: string) =>
+    setForm(f => ({ ...f, metadata: f.metadata.map((e, i) => i === index ? { ...e, [field]: val } : e) }))
+  const removeMetaRow = (index: number) =>
     setForm(f => ({ ...f, metadata: f.metadata.filter((_, i) => i !== index) }))
-  }
+
+  // --- Badge helpers ---
+  const addBadgeRow = () => setForm(f => ({ ...f, badges: [...f.badges, ''] }))
+  const updateBadgeRow = (index: number, val: string) =>
+    setForm(f => ({ ...f, badges: f.badges.map((b, i) => i === index ? val : b) }))
+  const removeBadgeRow = (index: number) =>
+    setForm(f => ({ ...f, badges: f.badges.filter((_, i) => i !== index) }))
 
   const getPublicId = (url: string) => {
     const match = url.match(/\/store-products\/(.+)$/)
@@ -131,7 +141,7 @@ export default function ProductsPage() {
   const save = async () => {
     setSaving(true)
     const method = editing ? 'PUT' : 'POST'
-    const url = editing ? `/admin/api/products/${editing.slug}` : '/admin/api/products'
+    const url = editing ? `/admin/api/products/${editing.id}` : '/admin/api/products'
 
     if (editing && editing.image && editing.image !== form.image) {
       await deleteCloudinaryImage(editing.image)
@@ -146,10 +156,14 @@ export default function ProductsPage() {
       return acc
     }, {} as Record<string, string>)
 
+    const badgesArray = form.badges.filter(v => v.trim() !== '')
+
+    const finalId = form.id.trim() ? toId(form.id) : toId(form.name)
+
     await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...form, metadata: metadataObject })
+      body: JSON.stringify({ ...form, id: finalId, metadata: metadataObject, badges: badgesArray })
     })
     await load(); setSaving(false); setModalOpen(false)
   }
@@ -166,6 +180,8 @@ export default function ProductsPage() {
 
   const filtered = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
   const isBusy = saving || uploading || uploadingGallery || uploadingPdf
+  const previewId = form.id.trim() ? toId(form.id) : (form.name ? toId(form.name) : '')
+  const previewUrl = previewId ? `${SITE_URL}/product/${previewId}` : ''
 
   return (
     <div>
@@ -263,6 +279,47 @@ export default function ProductsPage() {
           transition: color 0.15s, background 0.15s;
         }
         .icon-btn:hover { color: #e05252; background: #e0525210; }
+        .advanced-summary {
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--text-muted);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          cursor: pointer;
+          user-select: none;
+          list-style: none;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .advanced-summary::-webkit-details-marker { display: none; }
+        .advanced-summary::before {
+          content: '›';
+          font-size: 16px;
+          line-height: 1;
+          transition: transform 0.2s;
+          display: inline-block;
+        }
+        details[open] .advanced-summary::before { transform: rotate(90deg); }
+        .advanced-details {
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          padding: 14px 16px;
+        }
+        .id-preview {
+          font-size: 11px;
+          color: var(--text-muted);
+          margin-top: 6px;
+          word-break: break-all;
+          line-height: 1.5;
+        }
+        .id-preview-url {
+          color: var(--accent);
+          text-decoration: none;
+        }
+        .id-preview-url:hover {
+          text-decoration: underline;
+        }
         @media (max-width: 640px) {
           .products-header { flex-wrap: wrap; }
           .products-search { width: 100%; }
@@ -318,8 +375,17 @@ export default function ProductsPage() {
                         </div>
                       )}
                       <div>
-                        <div style={{ fontWeight: '500' }}>{product.name}</div>
-                        <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{product.category}</div>
+                        <a
+                          href={`${SITE_URL}/product/${product.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ fontWeight: '500', color: 'var(--text)', textDecoration: 'none' }}
+                          onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+                          onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+                        >
+                          {product.name}
+                        </a>
+                        <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'monospace' }}>{product.id}</div>
                       </div>
                     </div>
                   </td>
@@ -372,8 +438,19 @@ export default function ProductsPage() {
                   : <div className="product-card-thumb-placeholder" style={{ color: 'var(--text-muted)' }}><Package size={20} /></div>
                 }
                 <div className="product-card-body">
-                  <div className="product-card-name">{product.name}</div>
+                  <a
+                    href={`${SITE_URL}/product/${product.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="product-card-name"
+                    style={{ color: 'var(--text)', textDecoration: 'none', display: 'block' }}
+                    onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+                    onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+                  >
+                    {product.name}
+                  </a>
                   <div className="product-card-meta">{product.brand} · {product.category}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'monospace', marginTop: '2px' }}>{product.id}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px', flexWrap: 'wrap' }}>
                     {product.gallery?.length > 0 && (
                       <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '3px' }}>
@@ -508,35 +585,51 @@ export default function ProductsPage() {
                     <Plus size={13} /> Add Field
                   </button>
                 </div>
-
                 {form.metadata.length === 0 ? (
                   <div style={{ padding: '14px', border: '1px dashed var(--border)', borderRadius: '8px', textAlign: 'center', fontSize: '13px', color: 'var(--text-muted)' }}>
                     No metadata yet. Click "Add Field" to start.
                   </div>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {/* Header row */}
                     <div className="meta-row" style={{ paddingRight: '28px' }}>
                       <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Key</span>
                       <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Value</span>
                     </div>
                     {form.metadata.map((entry, i) => (
                       <div key={i} className="meta-row">
+                        <input className="meta-input" placeholder="e.g. voltage" value={entry.key} onChange={e => updateMetaRow(i, 'key', e.target.value)} />
+                        <input className="meta-input" placeholder="e.g. 220V" value={entry.value} onChange={e => updateMetaRow(i, 'value', e.target.value)} />
+                        <button onClick={() => removeMetaRow(i)} className="icon-btn"><X size={15} /></button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* BADGES */}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Badges</label>
+                  <button onClick={addBadgeRow}
+                    style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: '500', color: 'var(--accent)', background: 'none', border: '1px solid var(--accent)', borderRadius: '6px', padding: '4px 10px', cursor: 'pointer' }}>
+                    <Plus size={13} /> Add Badge
+                  </button>
+                </div>
+                {form.badges.length === 0 ? (
+                  <div style={{ padding: '14px', border: '1px dashed var(--border)', borderRadius: '8px', textAlign: 'center', fontSize: '13px', color: 'var(--text-muted)' }}>
+                    No badges yet. Click "Add Badge" to start.
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {form.badges.map((badge, i) => (
+                      <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '8px', alignItems: 'center' }}>
                         <input
                           className="meta-input"
-                          placeholder="e.g. apple"
-                          value={entry.key}
-                          onChange={e => updateMetaRow(i, 'key', e.target.value)}
+                          placeholder="e.g. New Arrival"
+                          value={badge}
+                          onChange={e => updateBadgeRow(i, e.target.value)}
                         />
-                        <input
-                          className="meta-input"
-                          placeholder="e.g. apple"
-                          value={entry.value}
-                          onChange={e => updateMetaRow(i, 'value', e.target.value)}
-                        />
-                        <button onClick={() => removeMetaRow(i)} className="icon-btn">
-                          <X size={15} />
-                        </button>
+                        <button onClick={() => removeBadgeRow(i)} className="icon-btn"><X size={15} /></button>
                       </div>
                     ))}
                   </div>
@@ -550,6 +643,45 @@ export default function ProductsPage() {
                   placeholder="Product description..."
                   style={{ width: '100%', padding: '9px 12px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface2)', color: 'var(--text)', fontSize: '14px', minHeight: '80px', resize: 'vertical', boxSizing: 'border-box' }} />
               </div>
+
+              {/* ADVANCED SETTINGS */}
+              <details className="advanced-details">
+                <summary className="advanced-summary">Advanced Settings</summary>
+                <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block' }}>
+                    Product ID
+                  </label>
+                  <input
+                    value={form.id}
+                    onChange={e => setForm(f => ({ ...f, id: toId(e.target.value) }))}
+                    placeholder={form.name ? toId(form.name) : 'auto-generated from name'}
+                    style={{
+                      width: '100%', padding: '9px 12px',
+                      border: '1px solid var(--border)', borderRadius: '8px',
+                      background: 'var(--surface2)', color: 'var(--text)',
+                      fontSize: '13px', fontFamily: 'monospace', boxSizing: 'border-box'
+                    }}
+                  />
+                  {previewUrl && (
+                    <div className="id-preview">
+                      URL:{' '}
+                      <a
+                        href={previewUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="id-preview-url"
+                      >
+                        {SITE_URL}/product/<strong>{previewId}</strong>
+                      </a>
+                    </div>
+                  )}
+                  {!form.id.trim() && (
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                      Leave blank to auto-generate from product name.
+                    </div>
+                  )}
+                </div>
+              </details>
 
               <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
                 <button onClick={() => setModalOpen(false)} style={{ padding: '9px 16px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text)', cursor: 'pointer' }}>Cancel</button>
