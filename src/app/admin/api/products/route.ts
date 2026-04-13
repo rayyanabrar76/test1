@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
+import { randomUUID } from 'crypto'
 
 function generateSlug(name: string): string {
   return name
@@ -29,6 +30,7 @@ export async function POST(req: Request) {
 
   const product = await prisma.product.create({
     data: {
+      id: randomUUID(),   // ← added: schema requires id without a default
       slug,
       name: body.name,
       brand: body.brand || 'APS',
