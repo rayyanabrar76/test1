@@ -19,44 +19,15 @@ export default function UpsClient({ allProductsFromDb }: UpsClientProps) {
 
   const handleCart = (p: Product) => addToCart({ ...p, productId: p.id });
 
-  /**
-   * SAFE DATABASE FILTERING
-   * We use Type Guards (typeof === 'string') to satisfy TypeScript
-   * and prevent .toLowerCase() from crashing on non-string types.
-   */
-  const apcProducts = allProductsFromDb.filter(p => {
-    // Safely extract brand string
-    const brandValue = p.brand;
-    const brandStr = typeof brandValue === 'string' ? brandValue.toLowerCase() : "";
+  /* ---------------- BRAND FILTERING ---------------- */
+  const byBrand = (brandName: string) =>
+    allProductsFromDb.filter((p) => {
+      const brand = typeof p.brand === "string" ? p.brand.toLowerCase() : "";
+      return brand === brandName.toLowerCase();
+    });
 
-    // Safely extract series string from metadata
-    const seriesValue = p.metadata?.series;
-    const seriesStr = typeof seriesValue === 'string' ? seriesValue.toLowerCase() : "";
-    
-    return (
-      brandStr.includes("apc") || 
-      seriesStr.includes("surt") || 
-      seriesStr.includes("3c3ex") ||
-      seriesStr.includes("smart-ups")
-    );
-  });
-
-  const eatonProducts = allProductsFromDb.filter(p => {
-    // Safely extract brand string
-    const brandValue = p.brand;
-    const brandStr = typeof brandValue === 'string' ? brandValue.toLowerCase() : "";
-
-    // Safely extract series string from metadata
-    const seriesValue = p.metadata?.series;
-    const seriesStr = typeof seriesValue === 'string' ? seriesValue.toLowerCase() : "";
-    
-    return (
-      brandStr.includes("eaton") || 
-      seriesStr.includes("9355") || 
-      seriesStr.includes("9390") || 
-      seriesStr.includes("9395")
-    );
-  });
+  const apcProducts   = byBrand("APC");
+  const eatonProducts = byBrand("Eaton");
 
   /* ---------------- BRAND TITLE COMPONENT ---------------- */
   const BrandTitle = ({
@@ -100,22 +71,22 @@ export default function UpsClient({ allProductsFromDb }: UpsClientProps) {
   return (
     <div className="min-h-screen bg-black text-white selection:bg-red-600/30">
       <NavbarWithCart />
-      
+
       <main className="w-screen pt-24 pb-10 space-y-0">
-        
+
         {/* APC SECTION */}
         {apcProducts.length > 0 ? (
-          <ProductGrid 
-            products={apcProducts} 
+          <ProductGrid
+            products={apcProducts}
             title={
-              <BrandTitle 
-                src="/images/brands/apc1.png" 
-                alt="APC" 
-                back 
-                wClass="w-56 md:w-72" 
+              <BrandTitle
+                src="/images/brands/apc1.png"
+                alt="APC"
+                back
+                wClass="w-56 md:w-72"
                 hClass="h-20 md:h-28"
               />
-            } 
+            }
             subtitle="Industrial Power Protection"
             onAddToCart={handleCart}
             showFooter={false}
@@ -129,16 +100,16 @@ export default function UpsClient({ allProductsFromDb }: UpsClientProps) {
 
         {/* EATON SECTION */}
         {eatonProducts.length > 0 ? (
-          <ProductGrid 
-            products={eatonProducts} 
+          <ProductGrid
+            products={eatonProducts}
             title={
-              <BrandTitle 
-                src="/images/brands/eaton.svg" 
-                alt="Eaton" 
+              <BrandTitle
+                src="/images/brands/eaton.svg"
+                alt="Eaton"
                 wClass="w-64 md:w-80"
                 hClass="h-24 md:h-32"
               />
-            } 
+            }
             subtitle="Enterprise UPS Solutions"
             onAddToCart={handleCart}
             showFooter={false}
@@ -149,6 +120,7 @@ export default function UpsClient({ allProductsFromDb }: UpsClientProps) {
             Searching Database for Eaton Enterprise Systems...
           </div>
         )}
+
       </main>
 
       {/* FOOTER SECTION */}
@@ -160,7 +132,7 @@ export default function UpsClient({ allProductsFromDb }: UpsClientProps) {
           <p className="text-3xl md:text-5xl font-light tracking-tighter mb-8 max-w-2xl text-balance">
             Industrial Power Architecture
           </p>
-          <button 
+          <button
             onClick={() => router.push('/request')}
             className="group relative px-10 py-5 bg-white text-black text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 hover:bg-red-600 hover:text-white"
           >
@@ -170,7 +142,7 @@ export default function UpsClient({ allProductsFromDb }: UpsClientProps) {
             Professional Grade Hardware • Global Compliance
           </p>
         </div>
-      </footer>       
+      </footer>
 
       {/* STYLES */}
       <style jsx global>{`
