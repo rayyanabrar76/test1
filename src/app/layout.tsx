@@ -5,7 +5,11 @@ import { CartDrawerContainer } from "@/components/CartDrawerContainer";
 import { Providers } from "@/components/Providers";
 import CartHydration from "@/components/CartHydration";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.aps.com.pk";
+if (!process.env.NEXT_PUBLIC_SITE_URL) {
+  throw new Error("NEXT_PUBLIC_SITE_URL is not set in environment variables");
+}
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -14,7 +18,7 @@ export const metadata: Metadata = {
     template: "%s | APS Power Systems",
   },
   description: "Advanced Power Solutions (APS) delivers industrial-grade generators engineered for 24/7 reliability.",
- openGraph: {
+  openGraph: {
     title: "Advanced Power Solutions | Industrial Energy Systems",
     description: "Advanced Power Solutions (APS) delivers industrial-grade generators engineered for 24/7 reliability.",
     url: siteUrl,
