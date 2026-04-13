@@ -57,12 +57,21 @@ export default function QuotesPage() {
   return (
     <div>
       <style>{`
+        /* Filters */
         .quotes-filters {
           display: flex;
           gap: 8px;
-          flex-wrap: wrap;
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
           margin-bottom: 16px;
+          padding-bottom: 4px;
+          scrollbar-width: none;
         }
+        .quotes-filters::-webkit-scrollbar { display: none; }
+        .quotes-filters button { flex-shrink: 0; }
+
+        /* Desktop table */
         .quotes-table-wrap {
           overflow-x: auto;
           -webkit-overflow-scrolling: touch;
@@ -72,8 +81,9 @@ export default function QuotesPage() {
           border-collapse: collapse;
           min-width: 520px;
         }
+        .quotes-table tr:hover { background: var(--surface2); }
 
-        /* Mobile card view */
+        /* Mobile cards */
         .quotes-cards {
           display: none;
           flex-direction: column;
@@ -82,24 +92,32 @@ export default function QuotesPage() {
         .quotes-card {
           background: var(--surface);
           border: 1px solid var(--border);
-          border-radius: 10px;
+          border-radius: 12px;
           padding: 14px 16px;
           cursor: pointer;
+          active-opacity: 0.7;
         }
+        .quotes-card:active { opacity: 0.75; }
         .quotes-card-top {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
-          margin-bottom: 10px;
+          gap: 12px;
+          margin-bottom: 12px;
         }
         .quotes-card-id {
           font-family: monospace;
           font-size: 12px;
           color: var(--text-muted);
+          margin-bottom: 2px;
         }
         .quotes-card-name {
-          font-weight: 500;
-          font-size: 14px;
+          font-weight: 600;
+          font-size: 15px;
+        }
+        .quotes-card-company {
+          font-size: 12px;
+          color: var(--text-muted);
           margin-top: 2px;
         }
         .quotes-card-bottom {
@@ -107,10 +125,88 @@ export default function QuotesPage() {
           justify-content: space-between;
           align-items: center;
           gap: 10px;
+          padding-top: 12px;
+          border-top: 1px solid var(--border);
         }
         .quotes-card-date {
           font-size: 12px;
           color: var(--text-muted);
+        }
+        .quotes-card-select {
+          padding: 6px 10px;
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          font-size: 13px;
+          background: var(--surface2);
+          color: var(--text);
+          cursor: pointer;
+          min-height: 36px;
+        }
+
+        /* Modal */
+        .quotes-modal-backdrop {
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.7);
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
+          z-index: 100;
+          padding: 0;
+        }
+        .quotes-modal {
+          background: var(--surface);
+          border-radius: 20px 20px 0 0;
+          width: 100%;
+          max-height: 92dvh;
+          overflow-y: auto;
+          border: 1px solid var(--border);
+          border-bottom: none;
+        }
+        .quotes-modal-handle {
+          width: 36px;
+          height: 4px;
+          background: var(--border);
+          border-radius: 2px;
+          margin: 10px auto 0;
+        }
+        .quotes-modal-header {
+          padding: 16px 20px;
+          border-bottom: 1px solid var(--border);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          position: sticky;
+          top: 0;
+          background: var(--surface);
+          z-index: 1;
+        }
+        .quotes-modal-body {
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          padding-bottom: max(20px, env(safe-area-inset-bottom));
+        }
+
+        @media (min-width: 641px) {
+          .quotes-table-wrap { display: block; }
+          .quotes-cards { display: none !important; }
+
+          .quotes-modal-backdrop {
+            align-items: center;
+            padding: 16px;
+          }
+          .quotes-modal {
+            border-radius: 14px;
+            width: 560px;
+            max-width: 100%;
+            max-height: 90vh;
+            border-bottom: 1px solid var(--border);
+          }
+          .quotes-modal-handle { display: none; }
+          .quotes-modal-header { padding: 20px 24px; }
+          .quotes-modal-body { padding: 24px; }
         }
 
         @media (max-width: 640px) {
@@ -129,10 +225,11 @@ export default function QuotesPage() {
         {['', ...STATUSES].map(s => (
           <button key={s} onClick={() => setStatusFilter(s)}
             style={{
-              padding: '6px 14px', borderRadius: '6px', border: '1px solid var(--border)',
+              padding: '7px 16px', borderRadius: '20px', border: '1px solid var(--border)',
               background: statusFilter === s ? 'var(--accent)' : 'var(--surface)',
               color: statusFilter === s ? '#fff' : 'var(--text-muted)',
               cursor: 'pointer', fontSize: '13px', fontWeight: '500',
+              minHeight: '36px',
             }}>
             {s === '' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
           </button>
@@ -190,18 +287,18 @@ export default function QuotesPage() {
             {filtered.map(quote => (
               <div key={quote.id} className="quotes-card" onClick={() => setSelected(quote)}>
                 <div className="quotes-card-top">
-                  <div>
+                  <div style={{ minWidth: 0 }}>
                     <div className="quotes-card-id">#{quote.id.slice(-6)}</div>
                     <div className="quotes-card-name">{quote.user?.name ?? 'Guest'}</div>
                     {quote.user?.companyName && (
-                      <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{quote.user.companyName}</div>
+                      <div className="quotes-card-company">{quote.user.companyName}</div>
                     )}
                   </div>
                   <span style={{
                     fontSize: '11px', fontWeight: '600', textTransform: 'uppercase',
                     color: statusColor[quote.status] ?? 'var(--text-muted)',
                     background: (statusColor[quote.status] ?? '#888') + '20',
-                    padding: '3px 8px', borderRadius: '4px', whiteSpace: 'nowrap',
+                    padding: '4px 10px', borderRadius: '20px', whiteSpace: 'nowrap', flexShrink: 0,
                   }}>{quote.status}</span>
                 </div>
                 <div className="quotes-card-bottom">
@@ -209,8 +306,7 @@ export default function QuotesPage() {
                     {new Date(quote.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
                   <div onClick={e => e.stopPropagation()}>
-                    <select value={quote.status} onChange={e => updateStatus(quote.id, e.target.value)}
-                      style={{ padding: '5px 8px', border: '1px solid var(--border)', borderRadius: '6px', fontSize: '12px', background: 'var(--surface2)', color: 'var(--text)', cursor: 'pointer' }}>
+                    <select value={quote.status} onChange={e => updateStatus(quote.id, e.target.value)} className="quotes-card-select">
                       {STATUSES.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
                     </select>
                   </div>
@@ -226,24 +322,27 @@ export default function QuotesPage() {
 
       {/* Quote Detail Modal */}
       {selected && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '16px' }} onClick={() => setSelected(null)}>
-          <div style={{ background: 'var(--surface)', borderRadius: '12px', width: '580px', maxWidth: '100%', maxHeight: '90vh', overflowY: 'auto', border: '1px solid var(--border)' }} onClick={e => e.stopPropagation()}>
-            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, background: 'var(--surface)', zIndex: 1 }}>
+        <div className="quotes-modal-backdrop" onClick={() => setSelected(null)}>
+          <div className="quotes-modal" onClick={e => e.stopPropagation()}>
+            <div className="quotes-modal-handle" />
+            <div className="quotes-modal-header">
               <h3 style={{ fontSize: '16px', fontWeight: '600' }}>Quote #{selected.id.slice(-6)}</h3>
-              <button onClick={() => setSelected(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '20px', cursor: 'pointer' }}>×</button>
+              <button onClick={() => setSelected(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '22px', cursor: 'pointer', lineHeight: 1, padding: '4px', minWidth: '36px', minHeight: '36px' }}>×</button>
             </div>
-            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+            <div className="quotes-modal-body">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>
                 <div>
                   <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>Customer</div>
                   <div style={{ fontWeight: '500' }}>{selected.user?.name ?? 'Guest'}</div>
                   <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{selected.user?.email ?? '—'}</div>
-                  <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{selected.user?.companyName ?? ''}</div>
+                  {selected.user?.companyName && (
+                    <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{selected.user.companyName}</div>
+                  )}
                 </div>
                 <div>
                   <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>Status</div>
                   <select value={selected.status} onChange={e => updateStatus(selected.id, e.target.value)}
-                    style={{ padding: '8px 12px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '14px', background: 'var(--surface2)', color: 'var(--text)', width: '100%' }}>
+                    style={{ padding: '10px 12px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '14px', background: 'var(--surface2)', color: 'var(--text)', width: '100%', minHeight: '44px' }}>
                     {STATUSES.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
                   </select>
                 </div>
@@ -251,13 +350,18 @@ export default function QuotesPage() {
 
               <div>
                 <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>Items</div>
-                <div style={{ border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden' }}>
-                  {Array.isArray(selected.items) && selected.items.map((item: any, i: number) => (
-                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', borderBottom: i < selected.items.length - 1 ? '1px solid var(--border)' : 'none', gap: '12px' }}>
-                      <span style={{ fontWeight: '500' }}>{item.name ?? item.productName ?? 'Product'}</span>
-                      <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>× {item.quantity ?? 1}</span>
-                    </div>
-                  ))}
+                <div style={{ border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden' }}>
+                  {Array.isArray(selected.items) && selected.items.length > 0
+                    ? selected.items.map((item: any, i: number) => (
+                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '13px 16px', borderBottom: i < selected.items.length - 1 ? '1px solid var(--border)' : 'none', gap: '12px' }}>
+                        <span style={{ fontWeight: '500', minWidth: 0, wordBreak: 'break-word' }}>{item.name ?? item.productName ?? 'Product'}</span>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '13px', whiteSpace: 'nowrap', flexShrink: 0 }}>× {item.quantity ?? 1}</span>
+                      </div>
+                    ))
+                    : (
+                      <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px' }}>No items</div>
+                    )
+                  }
                 </div>
               </div>
             </div>
