@@ -25,14 +25,14 @@ export const metadata: Metadata = {
     siteName: "Advanced Power Solutions",
     locale: "en_PK",
     type: "website",
-    images: [
-      {
-        url: `${siteUrl}/opengraph-image`,
-        width: 1200,
-        height: 630,
-        alt: "Advanced Power Solutions | Industrial Energy Systems",
-      },
-    ],
+   images: [
+  {
+    url: `${siteUrl}/og-image.png`,
+    width: 1200,
+    height: 630,
+    alt: "Advanced Power Solutions | Industrial Energy Systems",
+  },
+],
   },
 };
 
