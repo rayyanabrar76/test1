@@ -335,6 +335,7 @@ export default function ProductsPage() {
             margin-left: -8px;
             margin-right: -8px;
             border-radius: 14px;
+            margin-top: 12px;
           }
           .product-card {
             padding: 14px 16px;
