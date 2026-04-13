@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 
 interface Quote {
-  id: string; status: string; total: number; createdAt: string; category: string;
+  id: string; status: string; createdAt: string; category: string;
   user?: { name?: string; email?: string; companyName?: string }
   items: any[]
 }
@@ -70,7 +70,7 @@ export default function QuotesPage() {
         .quotes-table {
           width: 100%;
           border-collapse: collapse;
-          min-width: 620px;
+          min-width: 520px;
         }
 
         /* Mobile card view */
@@ -107,10 +107,6 @@ export default function QuotesPage() {
           justify-content: space-between;
           align-items: center;
           gap: 10px;
-        }
-        .quotes-card-total {
-          font-weight: 600;
-          font-size: 15px;
         }
         .quotes-card-date {
           font-size: 12px;
@@ -152,7 +148,7 @@ export default function QuotesPage() {
             <table className="quotes-table">
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                  {['Quote ID', 'Customer', 'Company', 'Status', 'Total', 'Date', 'Actions'].map(h => (
+                  {['Quote ID', 'Customer', 'Company', 'Status', 'Date', 'Actions'].map(h => (
                     <th key={h} style={{ padding: '12px 20px', textAlign: 'left', fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{h}</th>
                   ))}
                 </tr>
@@ -171,7 +167,6 @@ export default function QuotesPage() {
                         padding: '3px 8px', borderRadius: '4px',
                       }}>{quote.status}</span>
                     </td>
-                    <td style={{ padding: '14px 20px', fontWeight: '500', whiteSpace: 'nowrap' }}>${quote.total.toFixed(2)}</td>
                     <td style={{ padding: '14px 20px', color: 'var(--text-muted)', fontSize: '13px', whiteSpace: 'nowrap' }}>
                       {new Date(quote.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </td>
@@ -184,7 +179,7 @@ export default function QuotesPage() {
                   </tr>
                 ))}
                 {filtered.length === 0 && (
-                  <tr><td colSpan={7} style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)' }}>No quotes found</td></tr>
+                  <tr><td colSpan={6} style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)' }}>No quotes found</td></tr>
                 )}
               </tbody>
             </table>
@@ -210,7 +205,6 @@ export default function QuotesPage() {
                   }}>{quote.status}</span>
                 </div>
                 <div className="quotes-card-bottom">
-                  <div className="quotes-card-total">${quote.total.toFixed(2)}</div>
                   <div className="quotes-card-date">
                     {new Date(quote.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
@@ -260,17 +254,10 @@ export default function QuotesPage() {
                 <div style={{ border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden' }}>
                   {Array.isArray(selected.items) && selected.items.map((item: any, i: number) => (
                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', borderBottom: i < selected.items.length - 1 ? '1px solid var(--border)' : 'none', gap: '12px' }}>
-                      <div style={{ minWidth: 0 }}>
-                        <span style={{ fontWeight: '500' }}>{item.name ?? item.productName ?? 'Product'}</span>
-                        <span style={{ color: 'var(--text-muted)', marginLeft: '8px', fontSize: '13px' }}>× {item.quantity ?? 1}</span>
-                      </div>
-                      <span style={{ fontWeight: '500', whiteSpace: 'nowrap' }}>${((item.price ?? 0) * (item.quantity ?? 1)).toFixed(2)}</span>
+                      <span style={{ fontWeight: '500' }}>{item.name ?? item.productName ?? 'Product'}</span>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>× {item.quantity ?? 1}</span>
                     </div>
                   ))}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', background: 'var(--surface2)', borderTop: '1px solid var(--border)' }}>
-                    <span style={{ fontWeight: '600' }}>Total</span>
-                    <span style={{ fontWeight: '600' }}>${selected.total.toFixed(2)}</span>
-                  </div>
                 </div>
               </div>
             </div>
