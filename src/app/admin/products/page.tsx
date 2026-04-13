@@ -322,9 +322,32 @@ export default function ProductsPage() {
         }
         @media (max-width: 640px) {
           .products-header { flex-wrap: wrap; }
-          .products-search { width: 100%; }
+          .products-search {
+            width: 100%;
+            border-radius: 12px;
+            margin-bottom: 0;
+            font-size: 15px;
+            padding: 11px 14px;
+          }
           .products-table { display: none; }
           .product-cards { display: flex; }
+          .products-table-wrap {
+            margin-left: -16px;
+            margin-right: -16px;
+            border-radius: 0;
+            border-left: none;
+            border-right: none;
+          }
+          .product-card {
+            padding: 14px 16px;
+            gap: 14px;
+          }
+          .product-card-thumb { width: 56px; height: 56px; border-radius: 10px; }
+          .product-card-thumb-placeholder { width: 56px; height: 56px; border-radius: 10px; }
+          .product-card-name { font-size: 15px; }
+          .product-card-meta { font-size: 13px; }
+          .product-card-actions { gap: 8px; margin-top: 12px; }
+          .product-card-actions button { font-size: 14px; padding: 9px 0; border-radius: 10px; }
           .products-modal-inner {
             width: 100vw; max-width: 100vw;
             height: 100dvh; max-height: 100dvh;
