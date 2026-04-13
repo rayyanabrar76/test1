@@ -332,11 +332,9 @@ export default function ProductsPage() {
           .products-table { display: none; }
           .product-cards { display: flex; }
           .products-table-wrap {
-            margin-left: -16px;
-            margin-right: -16px;
-            border-radius: 0;
-            border-left: none;
-            border-right: none;
+            margin-left: -8px;
+            margin-right: -8px;
+            border-radius: 14px;
           }
           .product-card {
             padding: 14px 16px;
