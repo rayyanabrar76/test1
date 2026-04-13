@@ -15,14 +15,21 @@ export const metadata: Metadata = {
   },
   description: "Advanced Power Solutions (APS) delivers industrial-grade generators engineered for 24/7 reliability.",
  openGraph: {
-  title: "Advanced Power Solutions | Industrial Energy Systems",
-  description: "Advanced Power Solutions (APS) delivers industrial-grade generators engineered for 24/7 reliability.",
-  url: siteUrl,
-  siteName: "Advanced Power Solutions",
-  locale: "en_PK",
-  type: "website",
-  // ✅ No images needed here anymore
-},
+    title: "Advanced Power Solutions | Industrial Energy Systems",
+    description: "Advanced Power Solutions (APS) delivers industrial-grade generators engineered for 24/7 reliability.",
+    url: siteUrl,
+    siteName: "Advanced Power Solutions",
+    locale: "en_PK",
+    type: "website",
+    images: [
+      {
+        url: `${siteUrl}/opengraph-image`,
+        width: 1200,
+        height: 630,
+        alt: "Advanced Power Solutions | Industrial Energy Systems",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
