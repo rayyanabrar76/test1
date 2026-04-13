@@ -57,7 +57,6 @@ export default function QuotesPage() {
   return (
     <div>
       <style>{`
-        /* Filters */
         .quotes-filters {
           display: flex;
           gap: 8px;
@@ -71,7 +70,6 @@ export default function QuotesPage() {
         .quotes-filters::-webkit-scrollbar { display: none; }
         .quotes-filters button { flex-shrink: 0; }
 
-        /* Desktop table */
         .quotes-table-wrap {
           overflow-x: auto;
           -webkit-overflow-scrolling: touch;
@@ -83,7 +81,6 @@ export default function QuotesPage() {
         }
         .quotes-table tr:hover { background: var(--surface2); }
 
-        /* Mobile cards */
         .quotes-cards {
           display: none;
           flex-direction: column;
@@ -95,7 +92,6 @@ export default function QuotesPage() {
           border-radius: 12px;
           padding: 14px 16px;
           cursor: pointer;
-          active-opacity: 0.7;
         }
         .quotes-card:active { opacity: 0.75; }
         .quotes-card-top {
@@ -132,46 +128,28 @@ export default function QuotesPage() {
           font-size: 12px;
           color: var(--text-muted);
         }
-        .quotes-card-select {
-          padding: 6px 10px;
-          border: 1px solid var(--border);
-          border-radius: 8px;
-          font-size: 13px;
-          background: var(--surface2);
-          color: var(--text);
-          cursor: pointer;
-          min-height: 36px;
-        }
 
-        /* Modal */
         .quotes-modal-backdrop {
           position: fixed;
           inset: 0;
           background: rgba(0,0,0,0.7);
           display: flex;
-          align-items: flex-end;
+          align-items: center;
           justify-content: center;
           z-index: 100;
-          padding: 0;
+          padding: 16px;
         }
         .quotes-modal {
           background: var(--surface);
-          border-radius: 20px 20px 0 0;
+          border-radius: 14px;
           width: 100%;
-          max-height: 92dvh;
+          max-width: 560px;
+          max-height: 88dvh;
           overflow-y: auto;
           border: 1px solid var(--border);
-          border-bottom: none;
-        }
-        .quotes-modal-handle {
-          width: 36px;
-          height: 4px;
-          background: var(--border);
-          border-radius: 2px;
-          margin: 10px auto 0;
         }
         .quotes-modal-header {
-          padding: 16px 20px;
+          padding: 18px 20px;
           border-bottom: 1px solid var(--border);
           display: flex;
           justify-content: space-between;
@@ -186,27 +164,6 @@ export default function QuotesPage() {
           display: flex;
           flex-direction: column;
           gap: 20px;
-          padding-bottom: max(20px, env(safe-area-inset-bottom));
-        }
-
-        @media (min-width: 641px) {
-          .quotes-table-wrap { display: block; }
-          .quotes-cards { display: none !important; }
-
-          .quotes-modal-backdrop {
-            align-items: center;
-            padding: 16px;
-          }
-          .quotes-modal {
-            border-radius: 14px;
-            width: 560px;
-            max-width: 100%;
-            max-height: 90vh;
-            border-bottom: 1px solid var(--border);
-          }
-          .quotes-modal-handle { display: none; }
-          .quotes-modal-header { padding: 20px 24px; }
-          .quotes-modal-body { padding: 24px; }
         }
 
         @media (max-width: 640px) {
@@ -228,8 +185,7 @@ export default function QuotesPage() {
               padding: '7px 16px', borderRadius: '20px', border: '1px solid var(--border)',
               background: statusFilter === s ? 'var(--accent)' : 'var(--surface)',
               color: statusFilter === s ? '#fff' : 'var(--text-muted)',
-              cursor: 'pointer', fontSize: '13px', fontWeight: '500',
-              minHeight: '36px',
+              cursor: 'pointer', fontSize: '13px', fontWeight: '500', minHeight: '36px',
             }}>
             {s === '' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
           </button>
@@ -306,7 +262,8 @@ export default function QuotesPage() {
                     {new Date(quote.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
                   <div onClick={e => e.stopPropagation()}>
-                    <select value={quote.status} onChange={e => updateStatus(quote.id, e.target.value)} className="quotes-card-select">
+                    <select value={quote.status} onChange={e => updateStatus(quote.id, e.target.value)}
+                      style={{ padding: '6px 10px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '13px', background: 'var(--surface2)', color: 'var(--text)', cursor: 'pointer', minHeight: '36px' }}>
                       {STATUSES.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
                     </select>
                   </div>
@@ -320,11 +277,10 @@ export default function QuotesPage() {
         </>
       )}
 
-      {/* Quote Detail Modal */}
+      {/* Quote Detail Modal — centered on all screen sizes */}
       {selected && (
         <div className="quotes-modal-backdrop" onClick={() => setSelected(null)}>
           <div className="quotes-modal" onClick={e => e.stopPropagation()}>
-            <div className="quotes-modal-handle" />
             <div className="quotes-modal-header">
               <h3 style={{ fontSize: '16px', fontWeight: '600' }}>Quote #{selected.id.slice(-6)}</h3>
               <button onClick={() => setSelected(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '22px', cursor: 'pointer', lineHeight: 1, padding: '4px', minWidth: '36px', minHeight: '36px' }}>×</button>
@@ -358,9 +314,7 @@ export default function QuotesPage() {
                         <span style={{ color: 'var(--text-muted)', fontSize: '13px', whiteSpace: 'nowrap', flexShrink: 0 }}>× {item.quantity ?? 1}</span>
                       </div>
                     ))
-                    : (
-                      <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px' }}>No items</div>
-                    )
+                    : <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px' }}>No items</div>
                   }
                 </div>
               </div>
