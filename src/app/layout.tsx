@@ -14,12 +14,15 @@ export const metadata: Metadata = {
     template: "%s | APS Power Systems",
   },
   description: "Advanced Power Solutions (APS) delivers industrial-grade generators engineered for 24/7 reliability.",
-  openGraph: {
-    title: "Advanced Power Solutions | Industrial Energy Systems",
-    images: ["/images/aps-headquarters.png"],
-    locale: "en_PK",
-    type: "website",
-  },
+ openGraph: {
+  title: "Advanced Power Solutions | Industrial Energy Systems",
+  description: "Advanced Power Solutions (APS) delivers industrial-grade generators engineered for 24/7 reliability.",
+  url: siteUrl,
+  siteName: "Advanced Power Solutions",
+  locale: "en_PK",
+  type: "website",
+  // ✅ No images needed here anymore
+},
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
