@@ -293,7 +293,7 @@ export default function CategoriesSection() {
   }, []);
 
   return (
-    <section className="bg-[#050505] pb-12 md:pb-24 pt-0 px-4 md:px-6 border-t-[0.5px] border-white/5 relative overflow-hidden">
+    <section className="bg-[#050505] py-12 md:py-24 px-4 md:px-6 border-t-[0.5px] border-white/5 relative overflow-hidden">
       <div className="container mx-auto">
 
         <div className="mb-8 md:mb-16">
