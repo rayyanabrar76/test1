@@ -70,41 +70,11 @@ export default function HomePageClient({ allProductsFromDb }: HomePageClientProp
           />
         </section>
 
-        {/* 2. Primary Navigation Categories */}
+           {/* 2. Primary Navigation Categories */}
         <CategoriesSection />
 
-        {/* Visual Spacer */}
-        <div className="relative h-24 bg-gradient-to-b from-transparent to-[#050505] -mt-24 z-10" />
-
-        {/* 3. Industrial Stats / Trust Signals */}
-        <section className="bg-[#050505] border-y border-white/5 py-12 relative z-20">
-          <div className="container mx-auto px-6">
-            <div className="flex md:grid md:grid-cols-4 overflow-x-auto md:overflow-visible snap-x snap-mandatory no-scrollbar gap-8 opacity-40 grayscale hover:grayscale-0 transition-all duration-700 pb-4 md:pb-0">
-              {[
-                { icon: <ShieldCheck className="h-4 w-4" />, label: "ISO 9001 CERTIFIED" },
-                { icon: <Cog className="h-4 w-4" />, label: "PRECISION ENGINEERING" },
-                { icon: <Zap className="h-4 w-4" />, label: "3000 KVA CAPACITY" },
-                { icon: <Globe className="h-4 w-4" />, label: "NATIONWIDE LOGISTICS" },
-              ].map((stat, i) => (
-                <div
-                  key={i}
-                  className="min-w-[70%] md:min-w-full snap-center flex flex-col md:flex-row items-center justify-center gap-3 text-center md:text-left"
-                >
-                  <div className="p-2 rounded-lg bg-white/5 text-red-600 border border-white/5 shrink-0">
-                    {stat.icon}
-                  </div>
-                  <span className="text-[9px] font-black uppercase tracking-[3px] text-white leading-tight">
-                    {stat.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* 5. Client Logos / Social Proof */}
+              {/* 5. Client Logos / Social Proof */}
         <ClientSection />
-
       </main>
 
       {/* 6. Footer & Brand Story */}

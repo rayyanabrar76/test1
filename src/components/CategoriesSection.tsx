@@ -65,23 +65,26 @@ const categories = [
 
 const INTERVAL_MS = 3500;
 
-// ─── CategoryCard ────────────────────────────────────────────────────────────
+// ─── CategoryCard ─────────────────────────────────────────────────────────────
 function CategoryCard({
   cat,
   idx,
   isActive,
   onHoverStart,
   onHoverEnd,
+  onSwipeIntoView,
 }: {
   cat: typeof categories[0];
   idx: number;
   isActive: boolean;
   onHoverStart: () => void;
   onHoverEnd: () => void;
+  onSwipeIntoView: (idx: number) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
-  // Drive playback from isActive prop
+  // ── Drive video playback from isActive ──────────────────────────────────
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -93,8 +96,23 @@ function CategoryCard({
     }
   }, [isActive]);
 
+  // ── Mobile swipe: IntersectionObserver ──────────────────────────────────
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (window.innerWidth < 768 && entry.isIntersecting) {
+          onSwipeIntoView(idx);
+        }
+      },
+      { threshold: 0.6 }
+    );
+    if (cardRef.current) observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, [idx, onSwipeIntoView]);
+
   return (
     <div
+      ref={cardRef}
       onMouseEnter={onHoverStart}
       onMouseLeave={onHoverEnd}
       className="min-w-[80%] sm:min-w-[50%] md:min-w-[33%] lg:min-w-[25%] snap-start snap-always select-none will-change-transform"
@@ -181,58 +199,56 @@ function CategoryCard({
 export default function CategoriesSection() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const [activeIdx, setActiveIdx] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
-  const [progress, setProgress] = useState(0); // 0-100 for the progress bar
+  const [progress, setProgress] = useState(0);
 
   // ── Auto-advance timer ────────────────────────────────────────────────────
   const startTimer = useCallback(() => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (tickRef.current) clearInterval(tickRef.current);
 
-    const startTime = Date.now();
     setProgress(0);
+    const startTime = Date.now();
 
-    // Smooth progress tick
-    const tick = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const pct = Math.min((elapsed / INTERVAL_MS) * 100, 100);
-      setProgress(pct);
+    tickRef.current = setInterval(() => {
+      setProgress(Math.min(((Date.now() - startTime) / INTERVAL_MS) * 100, 100));
     }, 30);
 
-    // Advance slide
-    const advance = setTimeout(() => {
-      clearInterval(tick);
+    timerRef.current = setTimeout(() => {
+      if (tickRef.current) clearInterval(tickRef.current);
       setActiveIdx(prev => (prev + 1) % categories.length);
     }, INTERVAL_MS);
+  }, []);
 
-    intervalRef.current = advance as unknown as ReturnType<typeof setInterval>;
-    return () => { clearInterval(tick); clearTimeout(advance); };
+  const stopTimer = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (tickRef.current) clearInterval(tickRef.current);
   }, []);
 
   useEffect(() => {
     if (isPaused) return;
-    const cleanup = startTimer();
-    return cleanup;
-  }, [activeIdx, isPaused, startTimer]);
+    startTimer();
+    return stopTimer;
+  }, [activeIdx, isPaused, startTimer, stopTimer]);
 
-  // ── Scroll active card into view ──────────────────────────────────────────
+  // ── Auto-scroll active card into view (desktop only) ──────────────────────
   useEffect(() => {
+    if (window.innerWidth < 768) return; // mobile drives scroll itself via swipe
     const card = cardRefs.current[activeIdx];
     if (card && scrollRef.current) {
       const container = scrollRef.current;
-      const cardLeft = card.offsetLeft;
-      const cardWidth = card.offsetWidth;
-      const containerWidth = container.clientWidth;
-      const targetScroll = cardLeft - (containerWidth / 2) + (cardWidth / 2);
+      const targetScroll = card.offsetLeft - container.clientWidth / 2 + card.offsetWidth / 2;
       container.scrollTo({ left: targetScroll, behavior: 'smooth' });
     }
   }, [activeIdx]);
 
-  // ── Scroll state for nav arrows ───────────────────────────────────────────
+  // ── Scroll arrows state ───────────────────────────────────────────────────
   const checkScroll = () => {
     if (scrollRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
@@ -251,27 +267,33 @@ export default function CategoriesSection() {
 
   const handleManualScroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
-      const amount = direction === 'left'
-        ? -scrollRef.current.clientWidth / 2
-        : scrollRef.current.clientWidth / 2;
-      scrollRef.current.scrollBy({ left: amount, behavior: 'smooth' });
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollRef.current.clientWidth / 2 : scrollRef.current.clientWidth / 2,
+        behavior: 'smooth'
+      });
     }
   };
 
-  // ── Hover pause / resume ──────────────────────────────────────────────────
+  // ── Hover: pause + activate ───────────────────────────────────────────────
   const handleHoverStart = (idx: number) => {
     setIsPaused(true);
     setActiveIdx(idx);
-    if (intervalRef.current) clearInterval(intervalRef.current);
+    stopTimer();
   };
 
   const handleHoverEnd = () => {
     setIsPaused(false);
-    // activeIdx stays, timer restarts from that card
+    // timer restarts via useEffect when isPaused flips
   };
 
+  // ── Mobile swipe into view ────────────────────────────────────────────────
+  const handleSwipeIntoView = useCallback((idx: number) => {
+    setActiveIdx(idx);
+    // keep timer running — swipe just updates which card is active
+  }, []);
+
   return (
-    <section className="bg-[#050505] py-12 md:py-24 px-4 md:px-6 border-t-[0.5px] border-white/5 relative overflow-hidden">
+    <section className="bg-[#050505] pb-12 md:pb-24 pt-0 px-4 md:px-6 border-t-[0.5px] border-white/5 relative overflow-hidden">
       <div className="container mx-auto">
 
         <div className="mb-8 md:mb-16">
@@ -288,7 +310,6 @@ export default function CategoriesSection() {
 
         <div className="relative group/slider-container">
 
-          {/* NAV ARROWS */}
           <button
             onClick={() => handleManualScroll('left')}
             className={`absolute -left-4 top-1/2 -translate-y-1/2 z-40 p-4 bg-black/90 border border-white/10 text-white transition-all duration-300 hidden md:flex items-center justify-center rounded-full backdrop-blur-md
@@ -305,7 +326,6 @@ export default function CategoriesSection() {
             <ChevronRight size={28} />
           </button>
 
-          {/* CARD STRIP */}
           <div
             ref={scrollRef}
             className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-6 md:pb-0 scroll-smooth md:border-l-[0.5px] md:border-white/5"
@@ -323,6 +343,7 @@ export default function CategoriesSection() {
                   isActive={activeIdx === idx}
                   onHoverStart={() => handleHoverStart(idx)}
                   onHoverEnd={handleHoverEnd}
+                  onSwipeIntoView={handleSwipeIntoView}
                 />
               </div>
             ))}
@@ -339,14 +360,11 @@ export default function CategoriesSection() {
               style={{ width: activeIdx === idx ? 48 : 20, background: 'rgba(255,255,255,0.12)' }}
               aria-label={`Go to ${categories[idx].title}`}
             >
-              {activeIdx === idx && !isPaused && (
+              {activeIdx === idx && (
                 <span
-                  className="absolute inset-y-0 left-0 bg-red-600 transition-none"
-                  style={{ width: `${progress}%` }}
+                  className="absolute inset-y-0 left-0 bg-red-600"
+                  style={{ width: isPaused ? '100%' : `${progress}%` }}
                 />
-              )}
-              {activeIdx === idx && isPaused && (
-                <span className="absolute inset-0 bg-red-600" />
               )}
             </button>
           ))}

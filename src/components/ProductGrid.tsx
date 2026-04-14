@@ -168,7 +168,7 @@ const ProductGrid = ({
 
         {/* FOOTER ACTION */}
         {showFooter && (
-          <div className="mt-12 md:mt-32 flex flex-col items-center">
+  <div className="mt-12 md:mt-16 flex flex-col items-center">
             {products.length > 3 && (
               <div className="w-full max-w-[200px] h-[1px] bg-white/10 relative mb-8">
                 <motion.div 

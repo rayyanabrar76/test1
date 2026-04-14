@@ -27,7 +27,7 @@ const secondRow = CLIENTS.slice(13);
 
 export const ClientSection = () => {
   return (
-    <section className="bg-[#050505] py-24 relative overflow-hidden">
+   <section className="bg-[#050505] pb-24 pt-0 relative overflow-hidden">
       {/* 1. Header Section */}
       <div className="container mx-auto px-6 mb-24 text-center">
         <div className="flex items-center justify-center gap-2 mb-4">
