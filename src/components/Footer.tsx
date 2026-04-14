@@ -23,13 +23,13 @@ const Footer = () => {
           
           {/* Column 1: About */}
           <div className="space-y-8">
-            <a href="/" className="block">
-              <img 
-                src="/aps-logo.png" 
-                alt="APS Logo" 
-                className="h-12 w-auto object-contain hover:opacity-90 transition-opacity" 
-              />
-            </a>
+     <a href="/" className="block h-12">
+  <img 
+    src="/aps-logo.png" 
+    alt="APS Logo" 
+    className="h-20 w-auto object-contain hover:opacity-90 transition-opacity -mt-4" 
+  />
+</a>
             <p className="text-[11px] leading-relaxed uppercase tracking-wider text-neutral-500 max-w-xs">
               <strong>Advanced Power Solutions</strong> // Specialized engineering and energy solutions for industrial, commercial, and residential sectors across Pakistan.
             </p>
