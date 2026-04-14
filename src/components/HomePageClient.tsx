@@ -62,6 +62,14 @@ export default function HomePageClient({ allProductsFromDb }: HomePageClientProp
         {/* 1. Hero Section */}
         <HeroSection />
 
+           {/* 4. Product Catalog */}
+        <section id="products" className="relative scroll-mt-24">
+          <ProductGrid
+            products={allProductsFromDb}
+            onAddToCart={handleAddToCart}
+          />
+        </section>
+
         {/* 2. Primary Navigation Categories */}
         <CategoriesSection />
 
@@ -92,14 +100,6 @@ export default function HomePageClient({ allProductsFromDb }: HomePageClientProp
               ))}
             </div>
           </div>
-        </section>
-
-        {/* 4. Product Catalog */}
-        <section id="products" className="relative scroll-mt-24">
-          <ProductGrid
-            products={allProductsFromDb}
-            onAddToCart={handleAddToCart}
-          />
         </section>
 
         {/* 5. Client Logos / Social Proof */}

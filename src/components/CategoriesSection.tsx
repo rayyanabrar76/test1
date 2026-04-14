@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Zap, Sun, Battery, Wind, ArrowRight, Activity, ChevronLeft, ChevronRight } from "lucide-react";
 
 const categories = [
@@ -63,66 +63,71 @@ const categories = [
   }
 ];
 
-function CategoryCard({ cat, idx }: { cat: typeof categories[0], idx: number }) {
+const INTERVAL_MS = 3500;
+
+// ─── CategoryCard ────────────────────────────────────────────────────────────
+function CategoryCard({
+  cat,
+  idx,
+  isActive,
+  onHoverStart,
+  onHoverEnd,
+}: {
+  cat: typeof categories[0];
+  idx: number;
+  isActive: boolean;
+  onHoverStart: () => void;
+  onHoverEnd: () => void;
+}) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [isMobileActive, setIsMobileActive] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
 
+  // Drive playback from isActive prop
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (window.innerWidth < 768) {
-          setIsMobileActive(entry.isIntersecting);
-          if (entry.isIntersecting) videoRef.current?.play().catch(() => {});
-          else videoRef.current?.pause();
-        }
-      },
-      { threshold: 0.6 }
-    );
-
-    if (cardRef.current) observer.observe(cardRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  const isActive = isMobileActive || isHovered;
+    const video = videoRef.current;
+    if (!video) return;
+    if (isActive) {
+      video.currentTime = 0;
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [isActive]);
 
   return (
-    <div 
-      ref={cardRef}
-      onMouseEnter={() => { setIsHovered(true); videoRef.current?.play().catch(() => {}); }}
-      onMouseLeave={() => { setIsHovered(false); videoRef.current?.pause(); }}
+    <div
+      onMouseEnter={onHoverStart}
+      onMouseLeave={onHoverEnd}
       className="min-w-[80%] sm:min-w-[50%] md:min-w-[33%] lg:min-w-[25%] snap-start snap-always select-none will-change-transform"
     >
       <div className="group/card relative p-5 md:p-8 border-[0.5px] border-white/10 bg-[#080808] md:bg-transparent hover:bg-black transition-all duration-500 overflow-hidden min-h-[340px] md:min-h-[420px] h-full flex flex-col justify-between rounded-2xl md:rounded-none">
-        
-        {/* VIDEO CONTAINER: Always exists but opacity changes for smoothness */}
-        <div 
+
+        {/* VIDEO */}
+        <div
           className={`absolute inset-0 pointer-events-none z-0 transition-opacity duration-700 ease-in-out ${isActive ? 'opacity-40' : 'opacity-0'}`}
-          style={{ transform: 'translateZ(0)' }} 
+          style={{ transform: 'translateZ(0)' }}
         >
-          <video 
+          <video
             ref={videoRef}
-            src={cat.video} 
-            loop 
-            muted 
-            playsInline 
-            preload="metadata" // Instant visibility of first frame
-            className="w-full h-full object-cover" 
+            src={cat.video}
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
         </div>
 
         {/* TOP ACCENT LINE */}
-        <motion.div 
+        <motion.div
           initial={false}
           animate={{ width: isActive ? "100%" : "0%" }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
-          className={`absolute top-0 left-0 h-[2px] z-10 bg-red-600 ${isActive ? 'animate-pulse' : ''}`} 
+          className={`absolute top-0 left-0 h-[2px] z-10 bg-red-600 ${isActive ? 'animate-pulse' : ''}`}
         />
-        
+
         <div className="flex justify-between items-start relative z-10">
-          <div className={`transition-colors duration-500 ${isActive ? 'text-white' : cat.color + ' text-neutral-600'}`}>
+          <div className={`transition-colors duration-500 ${isActive ? 'text-white' : 'text-neutral-600'}`}>
             {cat.icon}
           </div>
           <span className="text-[8px] md:text-[9px] font-mono text-neutral-800 group-hover/card:text-neutral-500 transition-colors uppercase tracking-widest">
@@ -137,7 +142,7 @@ function CategoryCard({ cat, idx }: { cat: typeof categories[0], idx: number }) 
               {cat.title}
             </h3>
           </Link>
-          
+
           <div className="space-y-1.5 md:space-y-2 pointer-events-none">
             <div className="flex items-center gap-2">
               <span className="text-[7px] md:text-[8px] font-black border-[0.5px] border-red-600/30 px-1.5 py-0.5 text-red-500 uppercase">Cap</span>
@@ -153,20 +158,17 @@ function CategoryCard({ cat, idx }: { cat: typeof categories[0], idx: number }) 
             {cat.description}
           </p>
 
-          <Link 
+          <Link
             href={cat.href}
             className={`inline-flex pt-2 items-center gap-2 transition-all group/link active:scale-95
-              ${isActive 
-                ? 'text-white translate-x-1' 
-                : 'text-white/40 hover:text-white'}`}
+              ${isActive ? 'text-white translate-x-1' : 'text-white/40 hover:text-white'}`}
           >
-            <span className={`text-[8px] md:text-[9px] font-black uppercase tracking-[2px] 
-              ${isActive ? 'text-red-600' : ''}`}>
+            <span className={`text-[8px] md:text-[9px] font-black uppercase tracking-[2px] ${isActive ? 'text-red-600' : ''}`}>
               {cat.action}
             </span>
-            <ArrowRight 
-              size={12} 
-              className={`text-red-600 transition-transform group-hover/link:translate-x-1 ${isActive ? 'translate-x-1' : ''}`} 
+            <ArrowRight
+              size={12}
+              className={`text-red-600 transition-transform group-hover/link:translate-x-1 ${isActive ? 'translate-x-1' : ''}`}
             />
           </Link>
         </div>
@@ -175,11 +177,62 @@ function CategoryCard({ cat, idx }: { cat: typeof categories[0], idx: number }) 
   );
 }
 
+// ─── CategoriesSection ────────────────────────────────────────────────────────
 export default function CategoriesSection() {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [progress, setProgress] = useState(0); // 0-100 for the progress bar
 
+  // ── Auto-advance timer ────────────────────────────────────────────────────
+  const startTimer = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+
+    const startTime = Date.now();
+    setProgress(0);
+
+    // Smooth progress tick
+    const tick = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min((elapsed / INTERVAL_MS) * 100, 100);
+      setProgress(pct);
+    }, 30);
+
+    // Advance slide
+    const advance = setTimeout(() => {
+      clearInterval(tick);
+      setActiveIdx(prev => (prev + 1) % categories.length);
+    }, INTERVAL_MS);
+
+    intervalRef.current = advance as unknown as ReturnType<typeof setInterval>;
+    return () => { clearInterval(tick); clearTimeout(advance); };
+  }, []);
+
+  useEffect(() => {
+    if (isPaused) return;
+    const cleanup = startTimer();
+    return cleanup;
+  }, [activeIdx, isPaused, startTimer]);
+
+  // ── Scroll active card into view ──────────────────────────────────────────
+  useEffect(() => {
+    const card = cardRefs.current[activeIdx];
+    if (card && scrollRef.current) {
+      const container = scrollRef.current;
+      const cardLeft = card.offsetLeft;
+      const cardWidth = card.offsetWidth;
+      const containerWidth = container.clientWidth;
+      const targetScroll = cardLeft - (containerWidth / 2) + (cardWidth / 2);
+      container.scrollTo({ left: targetScroll, behavior: 'smooth' });
+    }
+  }, [activeIdx]);
+
+  // ── Scroll state for nav arrows ───────────────────────────────────────────
   const checkScroll = () => {
     if (scrollRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
@@ -189,37 +242,38 @@ export default function CategoriesSection() {
   };
 
   useEffect(() => {
-    const current = scrollRef.current;
-    let ticking = false;
-
-    const onScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          checkScroll();
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    if (current) {
-      current.addEventListener("scroll", onScroll, { passive: true });
-      checkScroll();
-      return () => current.removeEventListener("scroll", onScroll);
-    }
+    const el = scrollRef.current;
+    if (!el) return;
+    el.addEventListener('scroll', checkScroll, { passive: true });
+    checkScroll();
+    return () => el.removeEventListener('scroll', checkScroll);
   }, []);
 
   const handleManualScroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
-      const { clientWidth } = scrollRef.current;
-      const amount = direction === 'left' ? -clientWidth / 2 : clientWidth / 2;
-      scrollRef.current.scrollBy({ left: amount, behavior: "smooth" });
+      const amount = direction === 'left'
+        ? -scrollRef.current.clientWidth / 2
+        : scrollRef.current.clientWidth / 2;
+      scrollRef.current.scrollBy({ left: amount, behavior: 'smooth' });
     }
+  };
+
+  // ── Hover pause / resume ──────────────────────────────────────────────────
+  const handleHoverStart = (idx: number) => {
+    setIsPaused(true);
+    setActiveIdx(idx);
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  };
+
+  const handleHoverEnd = () => {
+    setIsPaused(false);
+    // activeIdx stays, timer restarts from that card
   };
 
   return (
     <section className="bg-[#050505] py-12 md:py-24 px-4 md:px-6 border-t-[0.5px] border-white/5 relative overflow-hidden">
       <div className="container mx-auto">
+
         <div className="mb-8 md:mb-16">
           <div className="flex items-center gap-3 mb-2 md:mb-4">
             <div className="h-[0.5px] w-8 md:w-12 bg-red-600" />
@@ -233,7 +287,9 @@ export default function CategoriesSection() {
         </div>
 
         <div className="relative group/slider-container">
-          <button 
+
+          {/* NAV ARROWS */}
+          <button
             onClick={() => handleManualScroll('left')}
             className={`absolute -left-4 top-1/2 -translate-y-1/2 z-40 p-4 bg-black/90 border border-white/10 text-white transition-all duration-300 hidden md:flex items-center justify-center rounded-full backdrop-blur-md
               ${canScrollLeft ? 'opacity-100' : 'opacity-0 pointer-events-none'} hover:border-red-600 hover:text-red-600 active:scale-90`}
@@ -241,7 +297,7 @@ export default function CategoriesSection() {
             <ChevronLeft size={28} />
           </button>
 
-          <button 
+          <button
             onClick={() => handleManualScroll('right')}
             className={`absolute -right-4 top-1/2 -translate-y-1/2 z-40 p-4 bg-black/90 border border-white/10 text-white transition-all duration-300 hidden md:flex items-center justify-center rounded-full backdrop-blur-md
               ${canScrollRight ? 'opacity-100' : 'opacity-0 pointer-events-none'} hover:border-red-600 hover:text-red-600 active:scale-90`}
@@ -249,16 +305,53 @@ export default function CategoriesSection() {
             <ChevronRight size={28} />
           </button>
 
-          <div 
+          {/* CARD STRIP */}
+          <div
             ref={scrollRef}
             className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-6 md:pb-0 scroll-smooth md:border-l-[0.5px] md:border-white/5"
             style={{ WebkitOverflowScrolling: 'touch' }}
           >
             {categories.map((cat, idx) => (
-              <CategoryCard key={idx} cat={cat} idx={idx} />
+              <div
+                key={idx}
+                ref={el => { cardRefs.current[idx] = el; }}
+                className="min-w-[80%] sm:min-w-[50%] md:min-w-[33%] lg:min-w-[25%] snap-start snap-always"
+              >
+                <CategoryCard
+                  cat={cat}
+                  idx={idx}
+                  isActive={activeIdx === idx}
+                  onHoverStart={() => handleHoverStart(idx)}
+                  onHoverEnd={handleHoverEnd}
+                />
+              </div>
             ))}
           </div>
         </div>
+
+        {/* PROGRESS DOTS */}
+        <div className="flex items-center gap-3 mt-6 md:mt-10">
+          {categories.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => { setActiveIdx(idx); setIsPaused(false); }}
+              className="relative h-[2px] rounded-full overflow-hidden transition-all duration-300"
+              style={{ width: activeIdx === idx ? 48 : 20, background: 'rgba(255,255,255,0.12)' }}
+              aria-label={`Go to ${categories[idx].title}`}
+            >
+              {activeIdx === idx && !isPaused && (
+                <span
+                  className="absolute inset-y-0 left-0 bg-red-600 transition-none"
+                  style={{ width: `${progress}%` }}
+                />
+              )}
+              {activeIdx === idx && isPaused && (
+                <span className="absolute inset-0 bg-red-600" />
+              )}
+            </button>
+          ))}
+        </div>
+
       </div>
 
       <style jsx global>{`
