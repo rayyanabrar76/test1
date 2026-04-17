@@ -75,6 +75,7 @@ export default function HomePageClient({ allProductsFromDb }: HomePageClientProp
 
               {/* 5. Client Logos / Social Proof */}
         <ClientSection />
+        
       </main>
 
       {/* 6. Footer & Brand Story */}
