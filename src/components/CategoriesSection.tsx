@@ -14,7 +14,7 @@ const categories = [
     icon: <Zap className="w-5 h-5 md:w-6 md:h-6" />,
     color: "group-hover:text-red-600",
     action: "View Inventory",
-    video: "https://res.cloudinary.com/dlrpyl28f/video/upload/v1775860873/slide-3_fzwcxo.mp4",
+video: "https://res.cloudinary.com/dlrpyl28f/video/upload/q_auto,f_auto/v1775860873/slide-3_fzwcxo.mp4",
     href: "/inventory/generators"
   },
   {
@@ -25,7 +25,7 @@ const categories = [
     icon: <Sun className="w-5 h-5 md:w-6 md:h-6" />,
     color: "group-hover:text-amber-500",
     action: "View Inventory",
-    video: "https://res.cloudinary.com/dlrpyl28f/video/upload/v1775860789/slide9_nbmytg.mp4",
+    video: "https://res.cloudinary.com/dlrpyl28f/video/upload/q_auto,f_auto/v1775860789/slide9_nbmytg.mp4",
     href: "/inventory/solar"
   },
   {
@@ -36,7 +36,7 @@ const categories = [
     icon: <Battery className="w-5 h-5 md:w-6 md:h-6" />,
     color: "group-hover:text-blue-500",
     action: "View Inventory",
-    video: "https://res.cloudinary.com/dlrpyl28f/video/upload/v1775861051/slide11_niieou.mp4",
+    video: "https://res.cloudinary.com/dlrpyl28f/video/upload/q_auto,f_auto/v1775861051/slide11_niieou.mp4",
     href: "/inventory/ups"
   },
   {
@@ -47,7 +47,7 @@ const categories = [
     icon: <Wind className="w-5 h-5 md:w-6 md:h-6" />,
     color: "group-hover:text-emerald-500",
     action: "View Inventory",
-    video: "https://res.cloudinary.com/dlrpyl28f/video/upload/v1775861060/slide10_jllas2.mp4",
+    video: "https://res.cloudinary.com/dlrpyl28f/video/upload/q_auto,f_auto/v1775861060/slide10_jllas2.mp4",
     href: "/inventory/aircompressor"
   },
   {
@@ -58,7 +58,7 @@ const categories = [
     icon: <Activity className="w-5 h-5 md:w-6 md:h-6" />,
     color: "group-hover:text-emerald-500",
     action: "View Inventory",
-    video: "https://res.cloudinary.com/dlrpyl28f/video/upload/v1775861067/slide12_slivw0.mp4",
+    video: "https://res.cloudinary.com/dlrpyl28f/video/upload/q_auto,f_auto/v1775861067/slide12_slivw0.mp4",
     href: "/inventory/panels"
   }
 ];
@@ -130,7 +130,7 @@ function CategoryCard({
             loop
             muted
             playsInline
-            preload="metadata"
+            preload="none"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
