@@ -10,17 +10,15 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: '*',
         allow: '/',
         disallow: [
-          '/admin', 
-          '/api', 
-          '/cart', 
-          '/account', 
-          '/_next/', 
-          '/static/'
+          '/admin',
+          '/api',
+          '/cart',
+          '/account',
+          '/_next/',
+          '/static/',
         ],
-        // @ts-ignore
-        crawlDelay: 10,
       },
     ],
-    sitemap: base ? `${base}/sitemap.xml` : undefined,
+    sitemap: `${base}/sitemap.xml`,
   };
 }
