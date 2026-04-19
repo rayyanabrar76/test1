@@ -17,7 +17,7 @@ export default function HeroSection() {
       description: "Engineering heavy-duty electrical infrastructure for Pakistan's industrial sectors since 1996.",
       stat: "3000",
       unit: "KVA",
-      videoSrc: "https://res.cloudinary.com/dlrpyl28f/video/upload/v1775860937/slide-2_y6nvfg.mp4",
+   videoSrc: "https://res.cloudinary.com/dlrpyl28f/video/upload/q_auto,f_auto/v1775860937/slide-2_y6nvfg.mp4",
     },
     {
       title: "ZERO",
@@ -25,7 +25,7 @@ export default function HeroSection() {
       description: "Seamless 24/7 power management with Tier-1 reliability and real-time monitoring.",
       stat: "99.9", 
       unit: "UPTIME",
-      videoSrc: "https://res.cloudinary.com/dlrpyl28f/video/upload/v1775860873/slide-3_fzwcxo.mp4",
+      videoSrc: "https://res.cloudinary.com/dlrpyl28f/video/upload/q_auto,f_auto/v1775860873/slide-3_fzwcxo.mp4",
     },
     {
       title: "EXPERT",
@@ -33,7 +33,7 @@ export default function HeroSection() {
       description: "Lahore-based expertise delivering international standards in power distribution.",
       stat: "TIER-1",
       unit: "ASSETS",
-      videoSrc: "https://res.cloudinary.com/dlrpyl28f/video/upload/v1775860789/slide9_nbmytg.mp4",
+      videoSrc: "https://res.cloudinary.com/dlrpyl28f/video/upload/q_auto,f_auto/v1775860789/slide9_nbmytg.mp4",
     },
   ];
 
