@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 
 interface Customer {
   id: string; name?: string; email?: string; companyName?: string;
@@ -128,7 +129,7 @@ export default function CustomersPage() {
                     <td style={{ padding: '14px 20px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         {customer.image ? (
-                          <img src={customer.image} alt={customer.name} style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
+<Image src={customer.image} alt={customer.name ?? 'customer'} width={32} height={32} style={{ borderRadius: '50%', objectFit: 'cover' }} />
                         ) : (
                           <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--surface2)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', color: 'var(--text-muted)', flexShrink: 0 }}>
                             {(customer.name ?? 'G')[0].toUpperCase()}
@@ -161,7 +162,7 @@ export default function CustomersPage() {
             {filtered.map(customer => (
               <div key={customer.id} className="cust-card">
                 {customer.image ? (
-                  <img src={customer.image} alt={customer.name} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                <Image src={customer.image} alt={customer.name ?? 'customer'} width={32} height={32} style={{ borderRadius: '50%', objectFit: 'cover' }} />
                 ) : (
                   <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--surface2)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px', color: 'var(--text-muted)', flexShrink: 0 }}>
                     {(customer.name ?? 'G')[0].toUpperCase()}

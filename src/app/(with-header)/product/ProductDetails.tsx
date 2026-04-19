@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Header } from "@/components/Header";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "@/hooks/use-toast";
+import Image from 'next/image';
 import {
   MessageCircle,
   ArrowLeft,
@@ -251,15 +252,17 @@ function ProductContent({ product }: Props) {
                         : "opacity-20 hover:opacity-50"
                     }`}
                   >
-                    <img
-                      src={img}
-                      className="h-16 w-auto object-contain"
-                      alt="thumbnail"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
+               <Image
+  src={img}
+  className="h-16 w-auto object-contain"
+  alt="thumbnail"
+  width={64}
+  height={64}
+/>
+  </button>
+))}
+</div>
+)}
           </div>
 
           {/* RIGHT: PRODUCT INFO */}
