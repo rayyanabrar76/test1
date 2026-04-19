@@ -2,6 +2,7 @@
 
 import React, { Suspense, useEffect } from 'react';
 import { signIn } from "next-auth/react";
+import Image from 'next/image'
 import { useSearchParams, useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
@@ -25,8 +26,8 @@ function SignInContent() {
 
   return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-center">
-      <img src="/aps-logo.png" alt="APS" className="h-12 w-auto mb-8 opacity-50 grayscale" />
-      
+        <Image src="/aps-logo.png" alt="APS" className="h-12 w-auto mb-8 opacity-50 grayscale" />
+        
       {error ? (
         <div className="space-y-4">
           <p className="text-red-600 text-[10px] font-black uppercase tracking-[0.3em]">System_Auth_Error</p>

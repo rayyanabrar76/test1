@@ -90,7 +90,16 @@ export default function HeroSection() {
             transition={{ duration: 1.2 }}
             className="absolute inset-0"
           >
-            <video autoPlay muted loop playsInline className="w-full h-full object-cover grayscale-[20%]" src={videoSlides[currentSlide].videoSrc} />
+<video 
+  key={currentSlide}
+  autoPlay 
+  muted 
+  loop 
+  playsInline 
+  preload="none"
+  className="w-full h-full object-cover grayscale-[20%]" 
+  src={videoSlides[currentSlide].videoSrc} 
+/>
           </motion.div>
         </AnimatePresence>
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:60px_60px]" />
@@ -186,7 +195,6 @@ export default function HeroSection() {
                         className={`object-contain transition-transform duration-300 
                           ${brand.isBlack ? 'invert brightness-200' : ''} 
                           ${brand.isLarge ? 'scale-110' : 'scale-90'}`}
-                        unoptimized
                       />
                     </div>
                   ))}

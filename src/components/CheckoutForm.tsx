@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import Image from 'next/image'
 import { 
   Zap, Activity, UserCheck, AlertTriangle, Wind, 
   Battery, Sun, Settings, Info, ShoppingCart, Trash2, ExternalLink 
@@ -91,9 +92,11 @@ export function CheckoutForm({
         <div className="flex items-center gap-4 overflow-hidden">
           <div className="h-10 w-10 flex-shrink-0 bg-white/5 border border-white/10 overflow-hidden relative">
             {item.image || item.primaryImage ? (
-              <img 
-                src={item.image || item.primaryImage} 
-                alt={item.name} 
+              <Image
+                src={item.image || item.primaryImage}
+                alt={item.name}
+                width={40}
+                height={40}
                 className="h-full w-full object-cover grayscale opacity-80 group-hover:grayscale-0 transition-all"
               />
             ) : (

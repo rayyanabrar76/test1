@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 import {
   Package, Upload, FileText, Plus, X, Trash2, Pencil, Image as ImageIcon
 } from 'lucide-react'
@@ -390,7 +391,7 @@ export default function ProductsPage() {
                   <td style={{ padding: '14px 20px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       {product.image ? (
-                        <img src={product.image} alt={product.name} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'cover', border: '1px solid var(--border)' }} />
+                        <Image src={product.image} alt={product.name} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'cover', border: '1px solid var(--border)' }} width={40} height={40} />
                       ) : (
                         <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'var(--surface2)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
                           <Package size={18} />
@@ -417,7 +418,7 @@ export default function ProductsPage() {
                     {product.gallery?.length > 0 ? (
                       <div style={{ display: 'flex', gap: '4px' }}>
                         {product.gallery.slice(0, 3).map((img, i) => (
-                          <img key={i} src={img} alt="" style={{ width: '24px', height: '24px', borderRadius: '4px', objectFit: 'cover', border: '1px solid var(--border)' }} />
+                          <Image key={i} src={img} alt="" style={{ width: '24px', height: '24px', borderRadius: '4px', objectFit: 'cover', border: '1px solid var(--border)' }} width={24} height={24} />
                         ))}
                         {product.gallery.length > 3 && <span style={{ fontSize: '11px', color: 'var(--text-muted)', alignSelf: 'center' }}>+{product.gallery.length - 3}</span>}
                       </div>
@@ -456,7 +457,7 @@ export default function ProductsPage() {
             {filtered.map(product => (
               <div key={product.id} className="product-card">
                 {product.image
-                  ? <img src={product.image} alt={product.name} className="product-card-thumb" />
+                  ? <Image src={product.image} alt={product.name} className="product-card-thumb" width={40} height={40} />
                   : <div className="product-card-thumb-placeholder" style={{ color: 'var(--text-muted)' }}><Package size={20} /></div>
                 }
                 <div className="product-card-body">
@@ -532,7 +533,7 @@ export default function ProductsPage() {
                 <label style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Main Image</label>
                 {form.image ? (
                   <div style={{ position: 'relative' }}>
-                    <img src={form.image} alt="preview" style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--border)' }} />
+                    <Image src={form.image} alt="preview" style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--border)' }} width={100} height={140} />
                     <button onClick={() => setForm(f => ({ ...f, image: '' }))}
                       style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(0,0,0,0.7)', border: 'none', color: '#fff', borderRadius: '50%', width: '28px', height: '28px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <X size={14} />
@@ -559,7 +560,7 @@ export default function ProductsPage() {
                 <div className="gallery-grid">
                   {form.gallery.map((img, i) => (
                     <div key={i} style={{ position: 'relative' }}>
-                      <img src={img} alt="" style={{ width: '100%', height: '70px', objectFit: 'cover', borderRadius: '6px', border: '1px solid var(--border)' }} />
+                      <Image src={img} alt="" style={{ width: '100%', height: '70px', objectFit: 'cover', borderRadius: '6px', border: '1px solid var(--border)' }} width={100} height={70} />
                       <button onClick={() => removeGalleryImage(i)}
                         style={{ position: 'absolute', top: '3px', right: '3px', background: 'rgba(0,0,0,0.7)', border: 'none', color: '#fff', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <X size={10} />

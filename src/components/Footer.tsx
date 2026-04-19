@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image'
 import { 
   Facebook, 
   Instagram, 
@@ -24,10 +25,12 @@ const Footer = () => {
           {/* Column 1: About */}
           <div className="space-y-8">
      <a href="/" className="block h-12">
-  <img 
+  <Image
     src="/aps-logo.png" 
     alt="APS Logo" 
     className="h-20 w-auto object-contain hover:opacity-90 transition-opacity -mt-4" 
+    width={80}
+    height={80}
   />
 </a>
             <p className="text-[11px] leading-relaxed uppercase tracking-wider text-neutral-500 max-w-xs">

@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { useSession } from "next-auth/react";
+import Image from 'next/image'
 import { cn } from "@/lib/utils";
 
 interface CartDrawerProps {
@@ -82,10 +83,12 @@ export const CartDrawer = ({ isOpen, onClose, items }: CartDrawerProps) => {
                     <div className="flex gap-4 relative z-10">
                       {/* Product Image */}
                       <div className="w-16 h-20 bg-black border border-white/10 flex-shrink-0 relative">
-                        <img 
-                          src={item.image} 
-                          className="w-full h-full object-cover opacity-50 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" 
-                          alt={item.name} 
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          width={64}
+                          height={80}
+                          className="w-full h-full object-cover opacity-50 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
                         />
                         <div className="absolute top-0 right-0 bg-red-600/20 text-red-600 text-[6px] font-bold px-1 py-0.5">
                           {item.id?.slice(0, 3) || "ITEM"}

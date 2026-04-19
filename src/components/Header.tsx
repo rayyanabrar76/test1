@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, useTransition } from "react";
 import Link from "next/link";
+
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -57,10 +58,12 @@ function LoginModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
               <X size={20} />
             </button>
             <div className="flex justify-center mb-8">
-              <img 
+              <Image
                 src="/aps-logo.png" 
                 alt="APS Industries" 
                 className="h-16 w-auto brightness-125 drop-shadow-[0_0_15px_rgba(220,38,38,0.2)]" 
+                width={64}
+                height={64}
               />
             </div>
             <div className="mb-8">
@@ -77,10 +80,12 @@ function LoginModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void 
                   <Loader2 className="h-4 w-4 animate-spin text-red-600" />
                 ) : (
                   <>
-                    <img 
+                    <Image
                       src="https://authjs.dev/img/providers/google.svg" 
                       className="h-4 w-4 mr-3 grayscale brightness-200 group-hover:grayscale-0 transition-all" 
                       alt="G" 
+                      width={16}
+                      height={16}
                     />
                     Connect via Google SSO
                   </>
@@ -287,7 +292,7 @@ export function Header() {
             className="flex-1 flex justify-start items-center"
           >
             <Link href="/" className="flex items-center gap-4 group">
-              <img src="/aps-logo.png" alt="APS" className="h-10 md:h-14 w-auto brightness-125 transition-transform duration-500 group-hover:scale-105" />
+              <Image src="/aps-logo.png" alt="APS" className="h-10 md:h-14 w-auto brightness-125 transition-transform duration-500 group-hover:scale-105" width={64} height={64} />
               <div className="hidden xs:flex flex-col border-l-[1px] border-white/[0.08] pl-4">
                 <span className="text-[10px] tracking-[0.5em] font-black uppercase text-white">APS</span>
                 <span className="text-[7px] tracking-[0.4em] font-bold uppercase text-red-600">Industries</span>
