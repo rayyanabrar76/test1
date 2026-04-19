@@ -95,16 +95,17 @@ const LogoItem = ({ client }: { client: any }) => {
       relative flex-shrink-0 transition-all duration-500 hover:scale-110
       ${isGMC ? 'w-48 h-28 md:w-56 md:h-36' : isTaller ? 'w-36 h-20 md:w-48 md:h-28' : 'w-32 h-16 md:w-44 md:h-24'}
     `}>
-      <Image
-        src={client.src}
-        alt={client.name}
-        fill
-        className={`
-          object-contain transition-all duration-300
-          ${isBlackLogo ? 'invert brightness-[300%] contrast-125' : 'brightness-110'}
-          ${isGMC ? 'scale-150' : isTaller ? 'scale-125' : 'scale-100'}
-        `}
-      />
+    <Image
+  src={client.src}
+  alt={client.name}
+  fill
+  sizes="(max-width: 768px) 128px, 176px"
+  className={`
+    object-contain transition-all duration-300
+    ${isBlackLogo ? 'invert brightness-[300%] contrast-125' : 'brightness-110'}
+    ${isGMC ? 'scale-150' : isTaller ? 'scale-125' : 'scale-100'}
+  `}
+/>
     </div>
   );
 };
