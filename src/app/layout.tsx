@@ -4,7 +4,6 @@ import "./globals.css";
 import { CartDrawerContainer } from "@/components/CartDrawerContainer";
 import { Providers } from "@/components/Providers";
 import CartHydration from "@/components/CartHydration";
-// 1. Added the import for Google Analytics
 import { GoogleAnalytics } from '@next/third-parties/google';
 
 if (!process.env.NEXT_PUBLIC_SITE_URL) {
@@ -40,15 +39,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
+      <head>
+        <link rel="preconnect" href="https://res.cloudinary.com" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+      </head>
       <body className="bg-[#050505] text-white antialiased">
         <Providers>
           <CartHydration />
           {children}
           <CartDrawerContainer />
         </Providers>
-        
-        {/* 2. Added Google Analytics with your specific ID */}
         <GoogleAnalytics gaId="G-PE9F73EHVK" />
       </body>
     </html>
