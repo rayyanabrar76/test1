@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import ProductDetailsClient from "@/app/(with-header)/product/ProductDetails";
 
-// ✅ Fix 3: force fresh data on every request, no caching
 export const dynamic = "force-dynamic";
 
 type Props = {
@@ -16,7 +15,18 @@ async function getProduct(id: string) {
   });
 }
 
-// ✅ NEW: compute fallback URL from category string
+// ✅ Extract keyword from category for flexible matching
+function getCategoryKeyword(category: string | null | undefined): string {
+  const cat = (category ?? "").toLowerCase();
+  if (cat.includes("ups")) return "ups";
+  if (cat.includes("solar")) return "solar";
+  if (cat.includes("compressor")) return "compressor";
+  if (cat.includes("panel") || cat.includes("gear") || cat.includes("switchgear")) return "panel";
+  if (cat.includes("cummins")) return "cummins";
+  if (cat.includes("yangdong")) return "yangdong";
+  return "perkins";
+}
+
 function getFallbackUrl(category: string | null | undefined): string {
   const cat = (category ?? "").toLowerCase();
   if (cat.includes("ups")) return "/inventory/ups";
@@ -72,17 +82,24 @@ export default async function ProductDetailsPage({ params }: Props) {
 
   if (!product) notFound();
 
-  // ✅ NEW: fetch up to 4 related products from same category, excluding current
+  const keyword = getCategoryKeyword(product.category);
+  const fallbackUrl = getFallbackUrl(product.category);
+
+  // ✅ Use contains instead of equals for flexible category matching
   const relatedProducts = await prisma.product.findMany({
     where: {
-      category: { equals: product.category, mode: "insensitive" },
-      id: { not: product.id },
+      AND: [
+        {
+          OR: [
+            { category: { contains: keyword, mode: "insensitive" } },
+            { brand: { contains: keyword, mode: "insensitive" } },
+          ],
+        },
+        { id: { not: product.id } },
+      ],
     },
     take: 4,
   });
-
-  // ✅ NEW: compute fallback URL for smart return button
-  const fallbackUrl = getFallbackUrl(product.category);
 
   return (
     <ProductDetailsClient

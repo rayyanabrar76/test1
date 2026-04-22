@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer"; // ✅ NEW
 import { useCart } from "@/hooks/useCart";
 import { toast } from "@/hooks/use-toast";
 import Image from 'next/image';
@@ -24,7 +25,6 @@ import { Product } from "@/types/store";
 
 interface Props {
   product: Product;
-  // ✅ NEW PROPS
   relatedProducts?: Product[];
   fallbackUrl?: string;
 }
@@ -39,7 +39,7 @@ function ProductContent({ product, relatedProducts = [], fallbackUrl = "/invento
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [isQuoteAdded, setIsQuoteAdded] = useState(false);
 
-  // ✅ NEW: track whether user came from within the site
+  // ✅ Smart return: track if user came from within the site
   const [cameFromSite, setCameFromSite] = useState(false);
 
   useEffect(() => {
@@ -50,7 +50,6 @@ function ProductContent({ product, relatedProducts = [], fallbackUrl = "/invento
     setCameFromSite(isFromSite);
   }, []);
 
-  // ✅ NEW: smart return handler
   const handleReturn = () => {
     if (cameFromSite) {
       router.back();
@@ -133,7 +132,6 @@ function ProductContent({ product, relatedProducts = [], fallbackUrl = "/invento
       )
     : [];
 
-  // Only show models that have a corresponding PDF link
   const hasAnyModelPdf =
     tableData &&
     tableData.length > 0 &&
@@ -182,7 +180,7 @@ function ProductContent({ product, relatedProducts = [], fallbackUrl = "/invento
       </AnimatePresence>
 
       <main className="container max-w-7xl pt-28 md:pt-32 pb-32 md:pb-20 px-4 md:px-8 mx-auto">
-        {/* ✅ UPDATED: smart return button */}
+        {/* ✅ Smart return button */}
         <button
           onClick={handleReturn}
           className="flex items-center gap-2 mb-6 md:mb-12 text-[10px] md:text-xs uppercase tracking-[0.3em] font-bold text-white/40 hover:text-white transition-colors group relative z-10"
@@ -530,7 +528,7 @@ function ProductContent({ product, relatedProducts = [], fallbackUrl = "/invento
           </div>
         </div>
 
-        {/* ✅ NEW: RELATED PRODUCTS SECTION */}
+        {/* ✅ RELATED PRODUCTS SECTION */}
         {relatedProducts.length > 0 && (
           <div className="mt-24 pt-12 border-t border-white/5">
             <div className="flex items-center justify-between mb-8">
@@ -580,6 +578,9 @@ function ProductContent({ product, relatedProducts = [], fallbackUrl = "/invento
           </div>
         )}
       </main>
+
+      {/* ✅ FOOTER */}
+      <Footer />
 
       {/* MOBILE STICKY ACTIONS */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 pb-8 bg-black/80 backdrop-blur-xl border-t border-white/10 z-50">
