@@ -24,9 +24,12 @@ import { Product } from "@/types/store";
 
 interface Props {
   product: Product;
+  // ✅ NEW PROPS
+  relatedProducts?: Product[];
+  fallbackUrl?: string;
 }
 
-function ProductContent({ product }: Props) {
+function ProductContent({ product, relatedProducts = [], fallbackUrl = "/inventory" }: Props) {
   const router = useRouter();
   const { addToCart } = useCart();
 
@@ -35,6 +38,26 @@ function ProductContent({ product }: Props) {
   const [isPaused, setIsPaused] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [isQuoteAdded, setIsQuoteAdded] = useState(false);
+
+  // ✅ NEW: track whether user came from within the site
+  const [cameFromSite, setCameFromSite] = useState(false);
+
+  useEffect(() => {
+    const referrer = document.referrer;
+    const isFromSite =
+      referrer.includes("apspower.vercel.app") ||
+      referrer.includes("aps.com.pk");
+    setCameFromSite(isFromSite);
+  }, []);
+
+  // ✅ NEW: smart return handler
+  const handleReturn = () => {
+    if (cameFromSite) {
+      router.back();
+    } else {
+      router.push(fallbackUrl);
+    }
+  };
 
   const displayImages = product?.gallery?.length
     ? product.gallery
@@ -159,8 +182,9 @@ function ProductContent({ product }: Props) {
       </AnimatePresence>
 
       <main className="container max-w-7xl pt-28 md:pt-32 pb-32 md:pb-20 px-4 md:px-8 mx-auto">
+        {/* ✅ UPDATED: smart return button */}
         <button
-          onClick={() => router.back()}
+          onClick={handleReturn}
           className="flex items-center gap-2 mb-6 md:mb-12 text-[10px] md:text-xs uppercase tracking-[0.3em] font-bold text-white/40 hover:text-white transition-colors group relative z-10"
         >
           <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
@@ -505,6 +529,56 @@ function ProductContent({ product }: Props) {
             </div>
           </div>
         </div>
+
+        {/* ✅ NEW: RELATED PRODUCTS SECTION */}
+        {relatedProducts.length > 0 && (
+          <div className="mt-24 pt-12 border-t border-white/5">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">
+                Related Products
+              </h2>
+              <button
+                onClick={() => router.push(fallbackUrl)}
+                className="text-[9px] font-bold uppercase tracking-[0.3em] text-white/20 hover:text-white transition-colors flex items-center gap-1.5"
+              >
+                View All <ExternalLink size={10} />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+              {relatedProducts.map((rp) => (
+                <button
+                  key={rp.id}
+                  onClick={() => router.push(`/product/${rp.id}`)}
+                  className="group flex flex-col gap-3 p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/10 transition-all text-left"
+                >
+                  {rp.image && (
+                    <div className="w-full aspect-square flex items-center justify-center overflow-hidden rounded-xl bg-white/[0.02]">
+                      <Image
+                        src={rp.image}
+                        alt={rp.name}
+                        width={200}
+                        height={200}
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  )}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[8px] font-black uppercase tracking-widest text-white/30">
+                      {rp.category}
+                    </span>
+                    <span className="text-xs font-bold uppercase tracking-tight text-white/80 group-hover:text-white transition-colors line-clamp-2">
+                      {rp.name}
+                    </span>
+                  </div>
+                  <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 group-hover:text-white/40 transition-colors flex items-center gap-1 mt-auto">
+                    View <ChevronRight size={10} />
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
 
       {/* MOBILE STICKY ACTIONS */}
@@ -553,7 +627,7 @@ function ProductContent({ product }: Props) {
   );
 }
 
-export default function ProductDetailsClient({ product }: Props) {
+export default function ProductDetailsClient({ product, relatedProducts, fallbackUrl }: Props) {
   return (
     <Suspense
       fallback={
@@ -562,7 +636,7 @@ export default function ProductDetailsClient({ product }: Props) {
         </div>
       }
     >
-      <ProductContent product={product} />
+      <ProductContent product={product} relatedProducts={relatedProducts} fallbackUrl={fallbackUrl} />
     </Suspense>
   );
 }

@@ -16,6 +16,17 @@ async function getProduct(id: string) {
   });
 }
 
+// ✅ NEW: compute fallback URL from category string
+function getFallbackUrl(category: string | null | undefined): string {
+  const cat = (category ?? "").toLowerCase();
+  if (cat.includes("ups")) return "/inventory/ups";
+  if (cat.includes("solar")) return "/inventory/solar";
+  if (cat.includes("compressor")) return "/inventory/aircompressor";
+  if (cat.includes("panel") || cat.includes("gear") || cat.includes("switchgear"))
+    return "/inventory/panels";
+  return "/inventory/generators";
+}
+
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata
@@ -61,5 +72,23 @@ export default async function ProductDetailsPage({ params }: Props) {
 
   if (!product) notFound();
 
-  return <ProductDetailsClient product={product as any} />;
+  // ✅ NEW: fetch up to 4 related products from same category, excluding current
+  const relatedProducts = await prisma.product.findMany({
+    where: {
+      category: { equals: product.category, mode: "insensitive" },
+      id: { not: product.id },
+    },
+    take: 4,
+  });
+
+  // ✅ NEW: compute fallback URL for smart return button
+  const fallbackUrl = getFallbackUrl(product.category);
+
+  return (
+    <ProductDetailsClient
+      product={product as any}
+      relatedProducts={relatedProducts as any}
+      fallbackUrl={fallbackUrl}
+    />
+  );
 }
