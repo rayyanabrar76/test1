@@ -464,7 +464,7 @@ function ProductContent({ product, relatedProducts = [], fallbackUrl = "/invento
             )}
 
             {/* BOTTOM SECTION */}
-            <div className="mt-6 pt-6 border-t border-white/10 pb-28 lg:pb-10">
+            <div className={`mt-6 pt-6 border-t border-white/10 pb-28 lg:pb-10 ${!hasAnyModelPdf && technicalDetails.length === 0 ? 'hidden' : ''}`}>
               {hasAnyModelPdf ? (
                 <>
                   <h3 className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.4em] mb-4 text-white/40">
