@@ -464,7 +464,7 @@ function ProductContent({ product, relatedProducts = [], fallbackUrl = "/invento
             )}
 
             {/* BOTTOM SECTION */}
-            <div className={`mt-0 pt-0 border-t border-white/10 pb-28 lg:pb-10 ${!hasAnyModelPdf && technicalDetails.length === 0 ? 'hidden' : ''}`}>
+            <div className="mt-6 pt-6 border-t border-white/10 pb-28 lg:pb-10">
               {hasAnyModelPdf ? (
                 <>
                   <h3 className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.4em] mb-4 text-white/40">
@@ -530,7 +530,7 @@ function ProductContent({ product, relatedProducts = [], fallbackUrl = "/invento
 
         {/* ✅ RELATED PRODUCTS SECTION */}
         {relatedProducts.length > 0 && (
-          <div className="mt-8 pt-8 border-t border-white/5">
+          <div className="mt-0 pt-4 border-t border-white/5">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">
                 Related Products
