@@ -530,7 +530,7 @@ function ProductContent({ product, relatedProducts = [], fallbackUrl = "/invento
 
         {/* ✅ RELATED PRODUCTS SECTION */}
         {relatedProducts.length > 0 && (
-          <div className="mt-24 pt-12 border-t border-white/5">
+          <div className="mt-8 pt-8 border-t border-white/5">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">
                 Related Products
