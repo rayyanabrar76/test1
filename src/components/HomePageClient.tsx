@@ -1,17 +1,21 @@
 'use client';
 
 import React, { useState, useEffect } from "react";
+import dynamic from 'next/dynamic'; // Optimized loading
 import { Header } from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
-import CategoriesSection from "@/components/CategoriesSection";
-import ProductGrid from "@/components/ProductGrid";
-import { ClientSection } from "@/components/ClientSection";
-import { Footer } from "@/components/Footer";
+// Static components are moved to Dynamic below for performance
 import { useCart } from "@/hooks/useCart";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, Cog, Zap, Globe } from "lucide-react";
+import { Zap } from "lucide-react";
 import { Product } from "@/types/store";
+
+// Lazy-load heavy sections so they don't block the initial mobile render
+const CategoriesSection = dynamic(() => import("@/components/CategoriesSection"), { ssr: true });
+const ProductGrid = dynamic(() => import("@/components/ProductGrid"), { ssr: true });
+const ClientSection = dynamic(() => import("@/components/ClientSection"), { ssr: true });
+const Footer = dynamic(() => import("@/components/Footer"), { ssr: true });
 
 interface HomePageClientProps {
   allProductsFromDb: Product[];
@@ -48,40 +52,42 @@ export default function HomePageClient({ allProductsFromDb }: HomePageClientProp
     router.push(`/product/${product.id}`);
   };
 
-  if (!mounted) return null;
+  // REMOVED: "if (!mounted) return null" 
+  // This allows the Hero and Header to show immediately while JS loads in the background.
 
   return (
     <div className="min-h-screen flex flex-col bg-[#050505] selection:bg-red-600 selection:text-white font-sans overflow-x-hidden">
-      {/* Scanline Overlay */}
-      <div className="fixed inset-0 pointer-events-none z-[100] opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,128,0.06))] bg-[length:100%_2px,3px_100%]" />
+      
+      {/* Scanline Overlay - Hidden on mobile to stop scroll-lag/stuttering */}
+      <div className="hidden lg:block fixed inset-0 pointer-events-none z-[100] opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,128,0.06))] bg-[length:100%_2px,3px_100%]" />
 
       <Header />
 
       <main className="flex-1 relative">
 
-        {/* 1. Hero Section */}
+        {/* Hero renders immediately for perceived speed */}
         <HeroSection />
 
-           {/* 4. Product Catalog */}
-        <section id="products" className="relative scroll-mt-24">
-          <ProductGrid
-            products={allProductsFromDb}
-            onAddToCart={handleAddToCart}
-          />
-        </section>
+        {/* We only render these heavy parts once the page is interactive to save mobile CPU */}
+        {mounted && (
+          <>
+            <section id="products" className="relative scroll-mt-24">
+              <ProductGrid
+                products={allProductsFromDb}
+                onAddToCart={handleAddToCart}
+              />
+            </section>
 
-           {/* 2. Primary Navigation Categories */}
-        <CategoriesSection />
-
-              {/* 5. Client Logos / Social Proof */}
-        <ClientSection />
+            <CategoriesSection />
+            <ClientSection />
+          </>
+        )}
         
       </main>
 
-      {/* 6. Footer & Brand Story */}
       <Footer />
 
-      {/* WhatsApp Floating Action Button */}
+      {/* WhatsApp Button */}
       <a
         href="https://wa.me/923008440485"
         target="_blank"
