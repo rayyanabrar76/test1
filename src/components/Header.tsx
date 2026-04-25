@@ -16,7 +16,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCart, useCartTotal } from "@/hooks/useCart";
-import { SolutionsMenu } from "./SolutionsMenu";
+import { SolutionsMenu } from "./SolutionsMenu"; 
+import { BottomNav } from "./BottomNav";
 import { Product } from "@/types/store";
 
 const STORAGE_KEY = "recently_viewed_assets";
@@ -728,6 +729,7 @@ export function Header() {
           </div>
         )}
       </AnimatePresence>
+      <BottomNav onMenuOpen={() => setMobileMenuOpen(true)} />
     </>
   );
 }
