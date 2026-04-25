@@ -98,7 +98,7 @@ const CartPage = () => {
       "py-12 border-t border-white/5 flex flex-wrap gap-x-8 gap-y-6 px-6 md:px-0 justify-center md:justify-start", 
       className
     )}>
-      {["Refund policy", "Privacy policy", "Terms of service", "Contact"].map((link) => (
+      {["Request", "Privacy", "Services", "Company"].map((link) => (
         <Link 
           key={link} 
           href={`/${link.toLowerCase().replace(/ /g, '-')}`} 
