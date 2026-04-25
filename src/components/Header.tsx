@@ -269,11 +269,10 @@ export function Header() {
 
   return (
     <>
-     <header className={cn(
-  "fixed top-0 left-0 w-full z-[100] transition-all duration-700 will-change-transform",
-  "hidden lg:block",
-  scrolled ? "py-0 md:pt-2" : "py-2 md:pt-6"
-)}>
+      <header className={cn(
+        "fixed top-0 left-0 w-full z-[100] transition-all duration-700 will-change-transform",
+        scrolled ? "py-0 md:pt-2" : "py-2 md:pt-6"
+      )}>
         <div className={cn(
           "container mx-auto flex items-center justify-between transition-all duration-500 relative h-14 md:h-20",
           isSearchOpen
