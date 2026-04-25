@@ -583,7 +583,7 @@ function ProductContent({ product, relatedProducts = [], fallbackUrl = "/invento
       <Footer />
 
       {/* MOBILE STICKY ACTIONS */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 pb-8 bg-black/80 backdrop-blur-xl border-t border-white/10 z-50">
+      <div className="lg:hidden fixed bottom-16 left-0 right-0 p-4 bg-black/80 backdrop-blur-xl border-t border-white/10 z-50">
         <div className="flex gap-3 max-w-lg mx-auto">
           <motion.button
             onClick={() => {

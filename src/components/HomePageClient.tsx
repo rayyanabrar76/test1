@@ -86,7 +86,7 @@ export default function HomePageClient({ allProductsFromDb }: HomePageClientProp
         href="https://wa.me/923008440485"
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-8 right-8 z-[60] group"
+        className="hidden lg:block fixed bottom-8 right-8 z-[60] group"
       >
         <div className="absolute inset-0 bg-red-600 rounded-full animate-ping opacity-20 group-hover:opacity-40 transition-opacity" />
         <div className="relative bg-red-600 p-4 rounded-xl shadow-[0_10px_30px_rgba(220,38,38,0.4)] text-white transition-transform group-hover:scale-110 active:scale-90">
