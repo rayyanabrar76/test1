@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, LayoutGrid, MessageCircle, Phone, Menu, Mail } from "lucide-react";
+import { Home, LayoutGrid, MessageCircle, Phone, Menu, Mail, X } from "lucide-react";
 import { useCart, useCartTotal } from "@/hooks/useCart";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -39,7 +39,7 @@ export function BottomNav({ onMenuOpen }: { onMenuOpen: () => void }) {
     <>
       {/* BOTTOM NAV */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[90] bg-black/95 backdrop-blur-xl border-t border-white/[0.06]">
-       <div className="flex items-center justify-around px-2 pt-2 pb-2">
+        <div className="flex items-center px-1 pt-2 pb-2">
           {navItems.map(({ id, label, icon: Icon, href }) => {
             const active = isActive(href);
             return href ? (
@@ -47,7 +47,7 @@ export function BottomNav({ onMenuOpen }: { onMenuOpen: () => void }) {
                 key={id}
                 href={href}
                 className={cn(
-                  "flex flex-col items-center gap-1 px-4 py-1 transition-all",
+                  "flex flex-col items-center gap-1 flex-1 min-w-0 py-1 transition-all",
                   active ? "text-white" : "text-white/30"
                 )}
               >
@@ -59,7 +59,7 @@ export function BottomNav({ onMenuOpen }: { onMenuOpen: () => void }) {
                 key={id}
                 onClick={() => handleTap(id)}
                 className={cn(
-                  "flex flex-col items-center gap-1 px-4 py-1 transition-all relative",
+                  "flex flex-col items-center gap-1 flex-1 min-w-0 py-1 transition-all relative",
                   id === "quote" && hasItems ? "text-white" : "text-white/30"
                 )}
               >
@@ -82,77 +82,103 @@ export function BottomNav({ onMenuOpen }: { onMenuOpen: () => void }) {
       <AnimatePresence>
         {contactOpen && (
           <div className="lg:hidden fixed inset-0 z-[200]">
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setContactOpen(false)}
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/90 backdrop-blur-sm"
             />
+
+            {/* Sheet */}
             <motion.div
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="absolute bottom-0 left-0 right-0 bg-[#0a0a0a] border-t border-white/10 rounded-t-3xl p-6 pb-12"
+              className="absolute bottom-0 left-0 right-0 bg-[#080808] rounded-t-2xl overflow-hidden"
             >
-              <div className="w-10 h-1 bg-white/10 rounded-full mx-auto mb-8" />
+              {/* Red top bar accent */}
+              <div className="h-1 w-full bg-red-600" />
 
-              <p className="text-[9px] font-black uppercase tracking-[0.4em] text-white/30 mb-6">
-                Contact APS
-              </p>
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/[0.06]">
+                <div>
+                  <p className="text-[8px] font-black uppercase tracking-[0.4em] text-red-600 mb-0.5">
+                    Advanced Power Solutions
+                  </p>
+                  <p className="text-lg font-black uppercase tracking-tight text-white">
+                    Get In Touch
+                  </p>
+                </div>
+                <button
+                  onClick={() => setContactOpen(false)}
+                  className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-white/40 active:bg-white/10"
+                >
+                  <X size={14} />
+                </button>
+              </div>
 
-              <div className="space-y-3">
+              {/* Contact Options */}
+              <div className="px-6 py-5 space-y-2 pb-10">
+
+                {/* Call */}
                 <a
                   href="tel:+923008112242"
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/5 active:bg-white/10 transition-all"
+                  className="group flex items-center justify-between p-4 border border-white/[0.06] active:border-red-600/50 active:bg-red-600/5 transition-all"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-green-600/20 flex items-center justify-center">
-                    <Phone size={18} className="text-green-500" />
+                  <div className="flex items-center gap-4">
+                    <div className="w-9 h-9 border border-white/10 flex items-center justify-center">
+                      <Phone size={15} className="text-white/60" />
+                    </div>
+                    <div>
+                      <p className="text-[7px] font-black uppercase tracking-[0.3em] text-white/30 mb-0.5">Call Us</p>
+                      <p className="text-sm font-bold text-white">+92 300 811 2242</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[8px] font-black uppercase tracking-widest text-white/30">Call Us</p>
-                    <p className="text-sm font-bold text-white">+92 300 811 2242</p>
-                  </div>
+                  <span className="text-xs font-black text-red-600">→</span>
                 </a>
 
+                {/* WhatsApp */}
                 <a
                   href="https://wa.me/923008112242"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/5 active:bg-white/10 transition-all"
+                  className="group flex items-center justify-between p-4 border border-white/[0.06] active:border-red-600/50 active:bg-red-600/5 transition-all"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
-                    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-green-400">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                    </svg>
+                  <div className="flex items-center gap-4">
+                    <div className="w-9 h-9 border border-white/10 flex items-center justify-center">
+                      <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white/60">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-[7px] font-black uppercase tracking-[0.3em] text-white/30 mb-0.5">WhatsApp</p>
+                      <p className="text-sm font-bold text-white">+92 300 811 2242</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[8px] font-black uppercase tracking-widest text-white/30">WhatsApp</p>
-                    <p className="text-sm font-bold text-white">+92 300 811 2242</p>
-                  </div>
+                  <span className="text-xs font-black text-red-600">→</span>
                 </a>
 
+                {/* Email */}
                 <a
                   href="mailto:info@aps.com.pk"
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/5 active:bg-white/10 transition-all"
+                  className="group flex items-center justify-between p-4 border border-white/[0.06] active:border-red-600/50 active:bg-red-600/5 transition-all"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-red-600/20 flex items-center justify-center">
-                    <Mail size={18} className="text-red-500" />
+                  <div className="flex items-center gap-4">
+                    <div className="w-9 h-9 border border-white/10 flex items-center justify-center">
+                      <Mail size={15} className="text-white/60" />
+                    </div>
+                    <div>
+                      <p className="text-[7px] font-black uppercase tracking-[0.3em] text-white/30 mb-0.5">Email</p>
+                      <p className="text-sm font-bold text-white">info@aps.com.pk</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[8px] font-black uppercase tracking-widest text-white/30">Email</p>
-                    <p className="text-sm font-bold text-white">info@aps.com.pk</p>
-                  </div>
+                  <span className="text-xs font-black text-red-600">→</span>
                 </a>
-              </div>
 
-              <button
-                onClick={() => setContactOpen(false)}
-                className="mt-6 w-full py-4 rounded-2xl border border-white/10 text-[10px] font-black uppercase tracking-widest text-white/30 active:bg-white/5"
-              >
-                Close
-              </button>
+              </div>
             </motion.div>
           </div>
         )}
