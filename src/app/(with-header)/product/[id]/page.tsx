@@ -101,6 +101,7 @@ export default async function ProductDetailsPage({ params }: Props) {
       "@type": "Offer",
       "url": `${siteUrl}/product/${product.id}`,
       "priceCurrency": "PKR",
+      "price": product.price || "0", // 👈 ADD THIS LINE
       "availability": "https://schema.org/InStock"
     }
   };
