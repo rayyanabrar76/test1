@@ -38,6 +38,15 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // This JSON-LD object explicitly tells Google the Name of your Site
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Advanced Power Solutions",
+    "alternateName": "APS Power Systems",
+    "url": siteUrl,
+  };
+
   return (
     <html lang="en" className="scroll-smooth">
       <head>
@@ -45,6 +54,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#0a0a0a" />
+
+        {/* This script is the key to removing "Vercel" from the Google Search header */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body className="bg-[#050505] text-white antialiased">
         <Providers>

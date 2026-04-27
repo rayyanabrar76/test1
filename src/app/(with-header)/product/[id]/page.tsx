@@ -9,6 +9,9 @@ type Props = {
   params: Promise<{ id: string }>;
 };
 
+// Pulling the URL strictly from Environment Variables
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
 async function getProduct(id: string) {
   return prisma.product.findFirst({
     where: { id: { equals: id, mode: "insensitive" } },
@@ -44,13 +47,13 @@ export async function generateMetadata(
   const { id } = await params;
   const product = await getProduct(id);
 
-  if (!product) return { title: "Product Not Found" };
+  if (!product || !siteUrl) return { title: "Product Not Found" };
 
-  const baseUrl = "https://aps.com.pk";
-  const productUrl = `${baseUrl}/product/${id}`;
+  const productUrl = `${siteUrl}/product/${id}`;
   const productImage = product.image || "/default-og-image.jpg";
 
   return {
+    metadataBase: new URL(siteUrl),
     title: `${product.name} | APS Industrial Asset`,
     description:
       product.description ||
@@ -60,7 +63,7 @@ export async function generateMetadata(
       title: `${product.name} | APS Industrial Asset`,
       description: product.description ?? undefined,
       url: productUrl,
-      siteName: "APS Industrial Asset",
+      siteName: "Advanced Power Solutions", 
       images: [
         { url: productImage, width: 1200, height: 630, alt: product.name },
       ],
@@ -81,11 +84,30 @@ export default async function ProductDetailsPage({ params }: Props) {
   const product = await getProduct(id);
 
   if (!product) notFound();
+  if (!siteUrl) throw new Error("NEXT_PUBLIC_SITE_URL is not defined");
+
+  // JSON-LD for Google Product Image Snippet
+  const productJsonLd = {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": product.name,
+    "image": product.image ? [product.image] : [],
+    "description": product.description || `Industrial grade ${product.name}`,
+    "brand": {
+      "@type": "Brand",
+      "name": product.brand || "APS"
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": `${siteUrl}/product/${product.id}`,
+      "priceCurrency": "PKR",
+      "availability": "https://schema.org/InStock"
+    }
+  };
 
   const keyword = getCategoryKeyword(product.category);
   const fallbackUrl = getFallbackUrl(product.category);
 
-  // ✅ Use contains instead of equals for flexible category matching
   const relatedProducts = await prisma.product.findMany({
     where: {
       AND: [
@@ -102,10 +124,16 @@ export default async function ProductDetailsPage({ params }: Props) {
   });
 
   return (
-    <ProductDetailsClient
-      product={product as any}
-      relatedProducts={relatedProducts as any}
-      fallbackUrl={fallbackUrl}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <ProductDetailsClient
+        product={product as any}
+        relatedProducts={relatedProducts as any}
+        fallbackUrl={fallbackUrl}
+      />
+    </>
   );
 }
