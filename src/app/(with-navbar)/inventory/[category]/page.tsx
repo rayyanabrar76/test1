@@ -1,22 +1,73 @@
 import React from "react";
 import type { Metadata } from "next";
-// Import from the same folder now that you moved the file
+import { prisma } from "@/lib/prisma";
+import { Product } from "@/types/store";
 import InventoryClient from "../InventoryClient";
 
-// PERFORMANCE: Keep it static but revalidate every hour for SEO speed
+// PERFORMANCE: Static with hourly revalidation
 export const revalidate = 3600;
 
-// Dynamic Base URL logic
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 const base = siteUrl.replace(/\/$/, "");
 
-const categoryLabels: Record<string, string> = {
-  generators: "Industrial Diesel Generators",
-  solar: "Solar Power Solutions",
-  ups: "Uninterruptible Power Supply (UPS)",
-  panels: "Control Panels & ATS",
-  aircompressor: "Industrial Air Compressors",
+// --- Types -----------------------------------------------------------
+
+interface CategoryMeta {
+  label: string;
+  description: string;
+  ogImage: string; // path relative to your /public folder
+}
+
+// --- Category config -------------------------------------------------
+// One place to update labels, descriptions, and OG images per category
+
+const categoryConfig: Record<string, CategoryMeta> = {
+  generators: {
+    label: "Industrial Diesel Generators",
+    description:
+      "Premium industrial diesel generators available at APS Power Solutions. " +
+      "Authorized dealer offering 24/7 technical support and professional installation across Pakistan.",
+    ogImage: "/og/generators.jpg",
+  },
+  solar: {
+    label: "Solar Power Solutions",
+    description:
+      "High-efficiency solar power systems and panels at APS Power Solutions. " +
+      "Authorized dealer with expert installation and after-sales support across Pakistan.",
+    ogImage: "/og/solar.jpg",
+  },
+  ups: {
+    label: "Uninterruptible Power Supply (UPS)",
+    description:
+      "Industrial and commercial UPS systems at APS Power Solutions. " +
+      "Reliable power backup with 24/7 technical support and installation across Pakistan.",
+    ogImage: "/og/ups.jpg",
+  },
+  panels: {
+    label: "Control Panels & ATS",
+    description:
+      "Control panels and automatic transfer switches (ATS) at APS Power Solutions. " +
+      "Expert supply and installation for industrial and commercial projects across Pakistan.",
+    ogImage: "/og/panels.jpg",
+  },
+  aircompressor: {
+    label: "Industrial Air Compressors",
+    description:
+      "Heavy-duty industrial air compressors at APS Power Solutions. " +
+      "Authorized dealer with professional installation and maintenance support across Pakistan.",
+    ogImage: "/og/aircompressor.jpg",
+  },
 };
+
+const fallbackMeta: CategoryMeta = {
+  label: "Power Solutions",
+  description:
+    "Quality power solutions from APS Power Solutions — authorized dealer with " +
+    "24/7 technical support and installation across Pakistan.",
+  ogImage: "/og/default.jpg",
+};
+
+// --- Metadata --------------------------------------------------------
 
 export async function generateMetadata({
   params,
@@ -24,46 +75,140 @@ export async function generateMetadata({
   params: { category: string };
 }): Promise<Metadata> {
   const key = params.category?.toLowerCase();
-  const label = categoryLabels[key] || params.category;
-  
-  // SEO TITLE: Targeted specifically for the Pakistan industrial market
-  const seoTitle = `${label} in Pakistan | APS Power Solutions`;
-  const seoDesc = `Premium quality ${label} available at APS Power. Leading authorized dealer offering 24/7 technical support and professional installation across Pakistan.`;
+  const meta = categoryConfig[key] ?? fallbackMeta;
+
+  const seoTitle = `${meta.label} in Pakistan | APS Power Solutions`;
+  const canonicalUrl = `${base}/inventory/${key}`;
+  const ogImageUrl = `${base}${meta.ogImage}`;
 
   return {
     title: seoTitle,
-    description: seoDesc,
-    alternates: {
-      // CANONICAL: Points to the official URL Google should show in search
-      canonical: `${base}/inventory/${key}`,
+    description: meta.description,
+
+    // Tell Google: index this page and follow all links on it
+    robots: {
+      index: true,
+      follow: true,
     },
+
+    alternates: {
+      canonical: canonicalUrl,
+    },
+
     openGraph: {
       title: seoTitle,
-      description: seoDesc,
-      url: `${base}/inventory/${key}`,
+      description: meta.description,
+      url: canonicalUrl,
       siteName: "APS Power Solutions",
       locale: "en_PK",
       type: "website",
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${meta.label} — APS Power Solutions Pakistan`,
+        },
+      ],
+    },
+
+    // Controls WhatsApp, Twitter/X previews
+    twitter: {
+      card: "summary_large_image",
+      title: seoTitle,
+      description: meta.description,
+      images: [ogImageUrl],
     },
   };
 }
 
-export default function CategoryPage({
+// --- JSON-LD schema --------------------------------------------------
+
+function CategorySchema({
+  label,
+  canonicalUrl,
+}: {
+  label: string;
+  canonicalUrl: string;
+}) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      // Organization — helps Google understand who you are
+      {
+        "@type": "Organization",
+        name: "APS Power Solutions",
+        url: base,
+        areaServed: {
+          "@type": "Country",
+          name: "Pakistan",
+        },
+        contactPoint: {
+          "@type": "ContactPoint",
+          contactType: "customer support",
+          availableLanguage: ["English", "Urdu"],
+          hoursAvailable: "Mo-Su 00:00-24:00",
+        },
+      },
+      // BreadcrumbList — shows the path in Google search results
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: base,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Inventory",
+            item: `${base}/inventory`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: label,
+            item: canonicalUrl,
+          },
+        ],
+      },
+    ],
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+// --- Page component --------------------------------------------------
+
+export default async function CategoryPage({
   params,
 }: {
   params: { category: string };
 }) {
-  // Pass the category to the client component (e.g., "GENERATORS")
-  const category = params.category?.toUpperCase();
+  const key = params.category?.toLowerCase();
+  const meta = categoryConfig[key] ?? fallbackMeta;
+  const canonicalUrl = `${base}/inventory/${key}`;
+  const category = key.toUpperCase();
 
-  // Cast InventoryClient to avoid JSX prop type errors
-  const InventoryClientAny = InventoryClient as unknown as React.ComponentType<{
-    initialCategory?: string | null;
-  }>;
+  // Fetch all products — InventoryClient filters client-side by initialCategory
+  const allProducts = (await prisma.product.findMany({
+    orderBy: { name: "asc" },
+  })) as unknown as Product[];
 
   return (
     <main className="min-h-screen bg-[#050505]">
-      <InventoryClientAny initialCategory={category} />
+      <CategorySchema label={meta.label} canonicalUrl={canonicalUrl} />
+      <InventoryClient
+        allProductsFromDb={allProducts}
+        initialCategory={category}
+      />
     </main>
   );
 }

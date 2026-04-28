@@ -68,10 +68,9 @@ export default function HomePageClient({ allProductsFromDb }: HomePageClientProp
         </section>
 
         <CategoriesSection />
-            <LandingFAQ />
         <ClientSection />
       </main>
-  
+     <LandingFAQ />
       <Footer />
 
       {/* 2. THE HANG FIX: Ping animations and fixed buttons can stutter on older mobiles. 
