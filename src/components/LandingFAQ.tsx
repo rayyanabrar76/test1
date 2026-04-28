@@ -5,7 +5,7 @@ import React, { useState } from "react";
 const faqs = [
   {
     q: "Where can I find the best Industrial Power Generators in Pakistan?",
-    a: "APS Power is the premier supplier of high-performance industrial generators across Pakistan. We specialize in Perkins and Cummins engines, providing robust backup power solutions for factories in Lahore, Karachi, and Islamabad. Our systems are engineered for the local climate and 24/7 industrial demands.",
+    a: "Advanced Power Solutions is the premier supplier of high-performance industrial generators across Pakistan. We specialize in Perkins and Cummins engines, providing robust backup power solutions for factories in Lahore, Karachi, and Islamabad. Our systems are engineered for the local climate and 24/7 industrial demands.",
   },
   {
     q: "What is the Perkins 30kVA generator price in Pakistan for 2026?",
