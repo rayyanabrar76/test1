@@ -54,13 +54,18 @@ export async function generateMetadata(
 
   return {
     metadataBase: new URL(siteUrl),
-    title: `${product.name} | APS Industrial Asset`,
+    title: `${product.name} Price in Pakistan | APS Industrial Asset`,
     description:
       product.description ||
-      `High-quality ${product.name} at APS Industrial Asset.`,
-    alternates: { canonical: productUrl },
+      `High-quality ${product.name} available for industrial and commercial use in Pakistan.`,
+    alternates: { 
+        canonical: productUrl,
+        languages: {
+            'en-PK': productUrl,
+        },
+    },
     openGraph: {
-      title: `${product.name} | APS Industrial Asset`,
+      title: `${product.name} | Pakistan Industrial Power`,
       description: product.description ?? undefined,
       url: productUrl,
       siteName: "Advanced Power Solutions", 
@@ -86,23 +91,28 @@ export default async function ProductDetailsPage({ params }: Props) {
   if (!product) notFound();
   if (!siteUrl) throw new Error("NEXT_PUBLIC_SITE_URL is not defined");
 
-  // JSON-LD for Google Product Image Snippet
+  // JSON-LD for Google Product Snippet - Locked to Pakistan
   const productJsonLd = {
     "@context": "https://schema.org/",
     "@type": "Product",
-    "name": product.name,
+    "name": `${product.name} in Pakistan`,
     "image": product.image ? [product.image] : [],
-    "description": product.description || `Industrial grade ${product.name}`,
+    "description": product.description || `Industrial grade ${product.name} for Pakistani market.`,
     "brand": {
       "@type": "Brand",
-      "name": product.brand || "APS"
+      "name": product.brand || "APS Industrial"
     },
     "offers": {
       "@type": "Offer",
       "url": `${siteUrl}/product/${product.id}`,
       "priceCurrency": "PKR",
-      "price": product.price || "0", // 👈 ADD THIS LINE
-      "availability": "https://schema.org/InStock"
+      "price": product.price && product.price > 0 ? product.price : "0",
+      "availability": "https://schema.org/InStock",
+      "areaServed": "PK",
+      "eligibleRegion": {
+        "@type": "Country",
+        "name": "PK"
+      }
     }
   };
 
