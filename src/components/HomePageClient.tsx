@@ -6,6 +6,7 @@ import HeroSection from "@/components/HeroSection";
 import CategoriesSection from "@/components/CategoriesSection";
 import ProductGrid from "@/components/ProductGrid";
 import { ClientSection } from "@/components/ClientSection";
+import { LandingFAQ } from "@/components/LandingFAQ";
 import { Footer } from "@/components/Footer";
 import { useCart } from "@/hooks/useCart";
 import { useToast } from "@/hooks/use-toast";
@@ -67,9 +68,10 @@ export default function HomePageClient({ allProductsFromDb }: HomePageClientProp
         </section>
 
         <CategoriesSection />
+            <LandingFAQ />
         <ClientSection />
       </main>
-
+  
       <Footer />
 
       {/* 2. THE HANG FIX: Ping animations and fixed buttons can stutter on older mobiles. 
