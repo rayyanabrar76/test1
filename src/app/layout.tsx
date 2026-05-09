@@ -5,6 +5,7 @@ import { CartDrawerContainer } from "@/components/CartDrawerContainer";
 import { Providers } from "@/components/Providers";
 import CartHydration from "@/components/CartHydration";
 import { GoogleAnalytics } from '@next/third-parties/google';
+import Script from "next/script";
 
 if (!process.env.NEXT_PUBLIC_SITE_URL) {
   throw new Error("NEXT_PUBLIC_SITE_URL is not set in environment variables");
@@ -38,7 +39,6 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  // This JSON-LD object explicitly tells Google the Name of your Site
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -54,8 +54,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#0a0a0a" />
-
-        {/* This script is the key to removing "Vercel" from the Google Search header */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -68,6 +66,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CartDrawerContainer />
         </Providers>
         <GoogleAnalytics gaId="G-PE9F73EHVK" />
+
+        {/* Replyr Chat Widget */}
+        <Script
+          src="https://replyr-zeta.vercel.app/widget.js"
+          data-key="68167a36-0e37-44e9-90b3-778c427977aa"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
