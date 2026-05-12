@@ -66,13 +66,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CartDrawerContainer />
         </Providers>
         <GoogleAnalytics gaId="G-PE9F73EHVK" />
-
-        {/* Replyr Chat Widget */}
-        <Script
-          src="https://replyr-zeta.vercel.app/widget.js"
-          data-key="68167a36-0e37-44e9-90b3-778c427977aa"
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   );
