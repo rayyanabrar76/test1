@@ -7,11 +7,11 @@ const description =
   "Advanced Power Solutions: 15+ years supplying Cummins & Perkins generators, solar, UPS, and air compressors to factories and hospitals across Pakistan.";
 
 export const metadata: Metadata = {
-  title: "Company",
+  title: "About Advanced Power Solutions",
   description,
   alternates: { canonical: url },
   openGraph: {
-    title: "Company | APS Power Systems",
+    title: "About Advanced Power Solutions | APS Power Systems",
     description,
     url,
     siteName: "Advanced Power Solutions",
