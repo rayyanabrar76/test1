@@ -147,7 +147,7 @@ export default function PrivacyPage() {
               {[
                 { label: "Email", value: "info@aps.com.pk" },
                 { label: "Phone", value: "+92 300 811 2242" },
-                { label: "Address", value: "Office #205, Asad Business Centre, Model Town, Lahore" },
+                { label: "Address", value: "Office #205, M Block Market, Block M, Model Town, Lahore 54700" },
               ].map(({ label, value }) => (
                 <div key={label} className="flex gap-4 py-3 border-b border-white/[0.04]">
                   <span className="text-[10px] font-black uppercase tracking-widest text-white/40 w-20 shrink-0">{label}</span>

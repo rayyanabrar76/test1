@@ -108,7 +108,7 @@ const Footer = () => {
                   rel="noopener noreferrer" 
                   className="text-neutral-500 hover:text-white transition-colors leading-relaxed group"
                 >
-                  Office #205, Asad Business Centre, Model Town, Lahore
+                  Office #205, M Block Market, Block M, Model Town, Lahore 54700
                   <span className="block text-[9px] text-red-600 font-bold mt-2 group-hover:translate-x-1 transition-transform tracking-[0.2em]">Open in Maps →</span>
                 </a>
               </li>

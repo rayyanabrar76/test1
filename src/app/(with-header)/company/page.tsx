@@ -136,7 +136,7 @@ export default function CompanyPage() {
               <div className="flex flex-col gap-3">
                 <div className="flex items-start gap-3 text-sm text-neutral-500 font-light">
                   <MapPin size={14} className="text-neutral-700 mt-0.5 flex-shrink-0" />
-                  Office #205, Asad Business Centre, Model Town, Lahore
+                  Office #205, M Block Market, Block M, Model Town, Lahore 54700
                 </div>
                 <a href="mailto:info@aps.com.pk" className="flex items-center gap-3 text-sm text-neutral-500 font-light hover:text-white transition-colors">
                   <Mail size={14} className="text-neutral-700 flex-shrink-0" />

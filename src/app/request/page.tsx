@@ -298,7 +298,7 @@ export default function EngineeringQuotePage() {
               <div className="space-y-8">
                 <ContactNode icon={Phone} label="Phone" value="+92 300 8112242" href="tel:+923008112242" />
                 <ContactNode icon={Mail} label="Email" value="info@aps.com.pk" href="mailto:info@aps.com.pk" />
-                <ContactNode icon={MapPin} label="Location" value="Office 205, Asad Business Centre, Model Town" />
+                <ContactNode icon={MapPin} label="Location" value="Office #205, M Block Market, Block M, Model Town, Lahore 54700" />
                 
                 <div className="pt-4 overflow-hidden rounded-sm opacity-60 hover:opacity-100 transition-opacity duration-700 grayscale hover:grayscale-0">
                   <iframe
