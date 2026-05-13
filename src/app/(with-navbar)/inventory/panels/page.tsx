@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     "Synchronizing Panels",
     "Electrical Panel Manufacturer"
   ],
+  alternates: { canonical: `${process.env.NEXT_PUBLIC_SITE_URL!}/inventory/panels` },
 };
 
 export default async function ElectricGearInventoryPage() {

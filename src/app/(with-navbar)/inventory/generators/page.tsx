@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Power Systems & Industrial Generators | Perkins & Cummins",
   description: "Explore our premium generator inventory featuring Perkins and Cummins power systems. Engineered for resilience in industrial and commercial infrastructure.",
   keywords: ["Perkins Generators", "Cummins Power Systems", "Industrial Generators", "Power Density"],
+  alternates: { canonical: `${process.env.NEXT_PUBLIC_SITE_URL!}/inventory/generators` },
 };
 
 export default async function GeneratorsInventoryPage() {

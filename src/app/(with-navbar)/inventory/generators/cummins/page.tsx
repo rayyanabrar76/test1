@@ -14,6 +14,7 @@ export const metadata: Metadata = {
     "Industrial Cummins Generators Lahore",
     "Cummins Silent Generator Karachi"
   ],
+  alternates: { canonical: `${process.env.NEXT_PUBLIC_SITE_URL!}/inventory/generators/cummins` },
   openGraph: {
     title: "Cummins Global Power Series | Reliability Without Compromise",
     description: "Industrial-grade Cummins power solutions for the Pakistani market.",

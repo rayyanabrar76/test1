@@ -16,6 +16,7 @@ export const metadata: Metadata = {
     "Industrial Air Audit Pakistan",
     "Laser Cutting Air Station"
   ],
+  alternates: { canonical: `${process.env.NEXT_PUBLIC_SITE_URL!}/inventory/aircompressor` },
 };
 
 export default async function AirCompressorInventoryPage() {

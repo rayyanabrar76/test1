@@ -14,6 +14,7 @@ export const metadata: Metadata = {
     "APS Series Perkins",
     "Industrial Power Solutions Pakistan"
   ],
+  alternates: { canonical: `${process.env.NEXT_PUBLIC_SITE_URL!}/inventory/generators/perkins` },
   openGraph: {
     title: "Perkins Powered APS Series | High-Performance Generators",
     description: "The gold standard for residential and industrial power in Pakistan.",

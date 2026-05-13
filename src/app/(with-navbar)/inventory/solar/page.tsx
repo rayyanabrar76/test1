@@ -14,6 +14,7 @@ export const metadata: Metadata = {
     "N-Type TOPCon Solar Panels", 
     "Net Metering Solutions Lahore"
   ],
+  alternates: { canonical: `${process.env.NEXT_PUBLIC_SITE_URL!}/inventory/solar` },
 };
 
 export default async function SolarInventoryPage() {
