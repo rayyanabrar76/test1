@@ -75,7 +75,8 @@ export default function AirCompressorClient({ allProductsFromDb }: AirCompressor
       <NavbarWithCart />
 
       <main className="w-screen pt-24 pb-20 space-y-0">
-        
+        <h1 className="sr-only">Industrial Air Compressors in Pakistan</h1>
+
         {/* DARI SERIES - ID: #dari */}
         {dariProducts.length > 0 && (
           <section id="dari" className="scroll-mt-32">

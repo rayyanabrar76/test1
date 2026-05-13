@@ -72,7 +72,8 @@ export default function SolarClient({ allProductsFromDb = [] }: SolarClientProps
       <NavbarWithCart />
 
       <main className="max-w-[1600px] mx-auto pt-24 pb-10 space-y-0">
-        
+        <h1 className="sr-only">Solar Power Systems for Industrial and Commercial Use in Pakistan</h1>
+
         {/* LONGI SECTION */}
         {longiProducts.length > 0 ? (
           <ProductGrid

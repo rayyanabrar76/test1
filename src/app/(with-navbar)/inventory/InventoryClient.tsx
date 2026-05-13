@@ -52,6 +52,7 @@ export default function InventoryClient({
       <NavbarWithCart />
 
       <main className="max-w-[1600px] mx-auto pt-24 md:pt-24 pb-10 md:pb-20 space-y-4 md:space-y-8">
+        <h1 className="sr-only">Industrial Power Equipment in Pakistan</h1>
 
         {/* 01. GENERATORS */}
         {show("GENERATORS") && (

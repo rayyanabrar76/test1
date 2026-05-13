@@ -73,6 +73,7 @@ export default function UpsClient({ allProductsFromDb }: UpsClientProps) {
       <NavbarWithCart />
 
       <main className="w-screen pt-24 pb-10 space-y-0">
+        <h1 className="sr-only">Industrial UPS Systems in Pakistan — APC, Eaton, Custom</h1>
 
         {/* APC SECTION */}
         {apcProducts.length > 0 ? (

@@ -34,7 +34,8 @@ export default function ElectricGearClient({ allProductsFromDb }: PanelClientPro
       <NavbarWithCart />
       
       <main className="max-w-[1600px] mx-auto pt-32 md:pt-24 pb-20 space-y-0">
-        
+        <h1 className="sr-only">ATS, AMF and Control Panels — Industrial Grade for Pakistan</h1>
+
         {/* POWER SECTION - ID: #power */}
         <section id="power" className="scroll-mt-32">
           <ProductGrid 
