@@ -31,14 +31,14 @@ const services = [
   {
     id: '04',
     title: 'Air Compressors',
-    href: '/inventory/air-compressors',
+    href: '/inventory/aircompressor',
     description: 'High-pressure coaxial and piston systems engineered for sustained industrial production.',
     specs: ['Oil-Free Options', 'Direct Drive', 'Stationary', 'Full Service'],
   },
   {
     id: '05',
     title: 'Switchgear & Panels',
-    href: '/inventory/switchgear',
+    href: '/inventory/panels',
     description: 'Custom-built LT/HT panels and synchronization systems designed for maximum efficiency.',
     specs: ['Custom Build', 'MV / LV', 'Fault Protection', 'Smart Sync'],
   },
