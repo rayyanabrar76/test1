@@ -13,6 +13,12 @@ const CATEGORY_SLUG_MAP: Record<string, string> = {
   aircompressor: "aircompressor",
 };
 
+// Generator subcategory drill-downs — first-class SEO targets
+const SUBCATEGORY_SLUGS = [
+  "generators/cummins",
+  "generators/perkins",
+];
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 1. MAIN STATIC ROUTES
@@ -41,6 +47,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    {
+      url: `${base}/request`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: `${base}/privacy`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
   ];
 
   let categoryRoutes: MetadataRoute.Sitemap = [];
@@ -68,13 +86,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     }));
 
-    // 3. PRODUCT ROUTES — pull real updatedAt from DB
+    // 3. PRODUCT ROUTES — pull real updatedAt from DB.
+    // Use the DB-stored id as-is. Route handler is case-insensitive
+    // (Prisma mode: 'insensitive'), so DB case = canonical URL form.
     const allProducts = await prisma.product.findMany({
       select: { id: true, updatedAt: true },
     });
 
     productRoutes = allProducts.map((product) => ({
-      url: `${base}/product/${product.id.toLowerCase()}`,
+      url: `${base}/product/${product.id}`,
       lastModified: product.updatedAt,
       changeFrequency: "monthly" as const,
       priority: 0.6,
@@ -83,5 +103,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Sitemap error: failed to fetch data from database", error);
   }
 
-  return [...mainRoutes, ...categoryRoutes, ...productRoutes];
+  // 4. SUBCATEGORY DRILL-DOWN ROUTES
+  const subcategoryRoutes: MetadataRoute.Sitemap = SUBCATEGORY_SLUGS.map((slug) => ({
+    url: `${base}/inventory/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.75,
+  }));
+
+  return [...mainRoutes, ...categoryRoutes, ...subcategoryRoutes, ...productRoutes];
 }
