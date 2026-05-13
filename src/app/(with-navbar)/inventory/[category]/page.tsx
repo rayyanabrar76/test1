@@ -134,22 +134,6 @@ function CategorySchema({
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
-      // Organization — helps Google understand who you are
-      {
-        "@type": "Organization",
-        name: "APS Power Solutions",
-        url: base,
-        areaServed: {
-          "@type": "Country",
-          name: "Pakistan",
-        },
-        contactPoint: {
-          "@type": "ContactPoint",
-          contactType: "customer support",
-          availableLanguage: ["English", "Urdu"],
-          hoursAvailable: "Mo-Su 00:00-24:00",
-        },
-      },
       // BreadcrumbList — shows the path in Google search results
       {
         "@type": "BreadcrumbList",

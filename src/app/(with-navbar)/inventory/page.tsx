@@ -61,21 +61,6 @@ function InventorySchema() {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Organization",
-        name: "APS Power Solutions",
-        url: base,
-        areaServed: {
-          "@type": "Country",
-          name: "Pakistan",
-        },
-        contactPoint: {
-          "@type": "ContactPoint",
-          contactType: "customer support",
-          availableLanguage: ["English", "Urdu"],
-          hoursAvailable: "Mo-Su 00:00-24:00",
-        },
-      },
-      {
         "@type": "BreadcrumbList",
         itemListElement: [
           {
