@@ -20,6 +20,33 @@ export const metadata: Metadata = {
   },
 };
 
+const aboutPageJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "About Advanced Power Solutions",
+  "description": description,
+  "url": url,
+  "inLanguage": "en-PK",
+  "mainEntity": { "@id": `${siteUrl}/#localbusiness` },
+  "primaryImageOfPage": {
+    "@type": "ImageObject",
+    "url": `${siteUrl}/aps-logo.png`,
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Advanced Power Solutions",
+    "url": siteUrl,
+  },
+};
+
 export default function CompanyPage() {
-  return <CompanyContent />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutPageJsonLd) }}
+      />
+      <CompanyContent />
+    </>
+  );
 }
