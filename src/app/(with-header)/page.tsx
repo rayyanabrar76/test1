@@ -1,11 +1,5 @@
-import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import HomePageClient from "@/components/HomePageClient";
-
-export const metadata: Metadata = {
-  title: "Advanced Power Solutions | Industrial Power Systems Pakistan",
-  description: "Enterprise-grade power solutions in Pakistan.",
-};
 
 export default async function HomePage() {
   const products = await prisma.product.findMany({
