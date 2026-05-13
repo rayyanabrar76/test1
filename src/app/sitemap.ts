@@ -4,15 +4,14 @@ import { prisma } from "@/lib/prisma";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 const base = siteUrl.replace(/\/$/, "");
 
-// Category slugs with their last-touched dates
-// Update these manually whenever you make meaningful changes to a category
-const categories: { slug: string; updatedAt: Date }[] = [
-  { slug: "generators",   updatedAt: new Date("2025-01-01") },
-  { slug: "solar",        updatedAt: new Date("2025-01-01") },
-  { slug: "ups",          updatedAt: new Date("2025-01-01") },
-  { slug: "panels",       updatedAt: new Date("2025-01-01") },
-  { slug: "aircompressor",updatedAt: new Date("2025-01-01") },
-];
+// Maps product category strings (DB values) to inventory URL slugs
+const CATEGORY_SLUG_MAP: Record<string, string> = {
+  generators:    "generators",
+  solar:         "solar",
+  ups:           "ups",
+  panels:        "panels",
+  aircompressor: "aircompressor",
+};
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
@@ -44,33 +43,44 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // 2. CATEGORY ROUTES — real dates, not new Date()
-  const categoryRoutes: MetadataRoute.Sitemap = categories.map(({ slug, updatedAt }) => ({
-    url: `${base}/inventory/${slug}`,
-    lastModified: updatedAt,
-    changeFrequency: "weekly",
-    priority: 0.8,
-  }));
-
-  // 3. PRODUCT ROUTES — pull real updatedAt from DB
+  let categoryRoutes: MetadataRoute.Sitemap = [];
   let productRoutes: MetadataRoute.Sitemap = [];
 
   try {
+    // 2. CATEGORY ROUTES — max(updatedAt) per category from DB
+    const categoryMaxDates = await prisma.product.groupBy({
+      by: ["category"],
+      _max: { updatedAt: true },
+    });
+
+    // Build a lookup: normalised category key → latest product updatedAt
+    const categoryDateMap = new Map<string, Date>();
+    for (const row of categoryMaxDates) {
+      const key = row.category.toLowerCase().replace(/\s+/g, "");
+      const date = row._max.updatedAt ?? new Date();
+      categoryDateMap.set(key, date);
+    }
+
+    categoryRoutes = Object.entries(CATEGORY_SLUG_MAP).map(([key, slug]) => ({
+      url: `${base}/inventory/${slug}`,
+      lastModified: categoryDateMap.get(key) ?? new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
+
+    // 3. PRODUCT ROUTES — pull real updatedAt from DB
     const allProducts = await prisma.product.findMany({
-      select: {
-        id: true,
-        updatedAt: true, // ← real timestamp instead of new Date()
-      },
+      select: { id: true, updatedAt: true },
     });
 
     productRoutes = allProducts.map((product) => ({
       url: `${base}/product/${product.id.toLowerCase()}`,
-      lastModified: product.updatedAt,   // ← actual last-modified date
-      changeFrequency: "monthly",
+      lastModified: product.updatedAt,
+      changeFrequency: "monthly" as const,
       priority: 0.6,
     }));
   } catch (error) {
-    console.error("Sitemap error: failed to fetch products from database", error);
+    console.error("Sitemap error: failed to fetch data from database", error);
   }
 
   return [...mainRoutes, ...categoryRoutes, ...productRoutes];
