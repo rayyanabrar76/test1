@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "APC UPS Power Solutions | Smart-UPS & Symmetra Modular",
-  description: "Enterprise-grade APC UPS systems in Pakistan. High-efficiency Schneider Electric power architecture.",
+  description: "Industrial UPS systems in Pakistan: APC Smart-UPS, Symmetra modular, and Eaton solutions for data centres, factories, and hospitals. Get a quote in 24 hours.",
   keywords: ["APC UPS Pakistan", "Schneider Electric", "Smart-UPS", "Eaton UPS"],
 };
 
