@@ -60,10 +60,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     "alternateName": "APS",
     "url": siteUrl,
     "logo": `${siteUrl}/aps-logo.png`,
+    "telephone": "+92-300-811-2242",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "334, 3rd Floor Land Mark Plaza, Jail Road",
+      "streetAddress": "Office #205, M Block Market, Block M, Model Town",
       "addressLocality": "Lahore",
+      "addressRegion": "Punjab",
+      "postalCode": "54700",
       "addressCountry": "PK",
     },
     "areaServed": "PK",
@@ -71,6 +74,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       "https://www.facebook.com/aps8308/",
       "https://www.instagram.com/apspowerpk/",
       "https://www.linkedin.com/company/apspower/",
+    ],
+    "contactPoint": [
+      {
+        "@type": "ContactPoint",
+        "telephone": "+92-300-811-2242",
+        "email": "info@aps.com.pk",
+        "contactType": "sales",
+        "areaServed": "PK",
+        "availableLanguage": ["English", "Urdu"],
+      },
     ],
   };
 
