@@ -179,7 +179,7 @@ function ProductContent({ product, relatedProducts = [], fallbackUrl = "/invento
           {/* LEFT: IMAGE GALLERY */}
           <div className="lg:col-span-7 w-full flex flex-col gap-6 md:gap-8">
             <div
-              className="relative w-full flex items-center justify-center overflow-hidden group"
+              className="relative w-full aspect-square max-h-[70vh] flex items-center justify-center overflow-hidden group"
               style={{
                 touchAction: displayImages.length > 1 ? "pan-y" : "auto",
               }}
@@ -199,7 +199,7 @@ function ProductContent({ product, relatedProducts = [], fallbackUrl = "/invento
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
-                  className={`w-full h-auto max-h-[70vh] object-contain ${
+                  className={`w-full h-full object-contain ${
                     displayImages.length > 1
                       ? "cursor-grab active:cursor-grabbing"
                       : "cursor-default"
