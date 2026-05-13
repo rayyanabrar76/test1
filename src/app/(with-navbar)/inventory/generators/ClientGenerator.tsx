@@ -74,7 +74,9 @@ export default function GeneratorsClient({ allProductsFromDb }: GeneratorsClient
       <NavbarWithCart />
 
       <main className="w-screen pt-24 pb-10 space-y-0">
-        <h1 className="sr-only">Diesel Generators in Pakistan — Cummins, Perkins, APS</h1>
+        <h1 className="text-3xl md:text-5xl font-bold uppercase tracking-tight text-white px-4 md:px-8 pt-8 mb-4">
+          Diesel Generators in Pakistan
+        </h1>
         {/* PERKINS */}
         <ProductGrid
           products={perkinsSeries}

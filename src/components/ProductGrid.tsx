@@ -26,11 +26,14 @@ interface ProductGridProps {
   cardWidth?: string;
   gapClassName?: string;
   showArrows?: boolean;
-  showBackButton?: boolean; 
+  showBackButton?: boolean;
+  // Renders the title element with the chosen tag. Use "h1" for the first
+  // ProductGrid on a page (so the page has exactly one h1). Defaults to h2.
+  titleAs?: "h1" | "h2";
 }
 
-const ProductGrid = ({ 
-  products, 
+const ProductGrid = ({
+  products,
   onAddToCart,
   title = "Featured",
   subtitle = "Collection",
@@ -46,8 +49,10 @@ const ProductGrid = ({
   cardWidth = "flex-[0_0_85%] md:flex-[0_0_45%] lg:flex-[0_0_33.33%]",
   gapClassName = "-ml-4 md:-ml-6",
   showArrows = true,
-  showBackButton = false 
+  showBackButton = false,
+  titleAs = "h2",
 }: ProductGridProps) => {
+  const TitleTag = titleAs;
   const router = useRouter();
   
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -111,14 +116,14 @@ const ProductGrid = ({
                 </button>
               )}
               
-              <h2 className="text-3xl sm:text-4xl md:text-7xl font-black text-white leading-[0.9] tracking-tighter uppercase italic flex flex-wrap items-baseline">
-                <span className="whitespace-nowrap">{title}</span> 
+              <TitleTag className="text-3xl sm:text-4xl md:text-7xl font-black text-white leading-[0.9] tracking-tighter uppercase italic flex flex-wrap items-baseline">
+                <span className="whitespace-nowrap">{title}</span>
                 {subtitle && (
                   <span className="text-neutral-700 not-italic font-light text-xl sm:text-2xl md:text-5xl ml-2 md:ml-4 whitespace-nowrap">
                     {subtitle}
                   </span>
                 )}
-              </h2>
+              </TitleTag>
             </div>
           </div>
 

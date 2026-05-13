@@ -82,7 +82,9 @@ export default function PerkinsClient({ allProductsFromDb }: PerkinsClientProps)
       <NavbarWithCart />
 
       <main className="max-w-[1600px] mx-auto pt-28 md:pt-24 pb-0">
-        <h1 className="sr-only">Perkins Generators in Pakistan — 20kVA to 1375kVA</h1>
+        <h1 className="text-3xl md:text-5xl font-bold uppercase tracking-tight text-white px-4 md:px-8 pt-8 mb-4">
+          Perkins Generators in Pakistan
+        </h1>
         {sections.map((section) => (
           <section key={section.id} id={section.id} className="scroll-mt-32">
             <ProductGrid
