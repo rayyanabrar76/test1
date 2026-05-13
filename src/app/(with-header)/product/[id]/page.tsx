@@ -45,6 +45,16 @@ function getFallbackUrl(category: string | null | undefined): string {
   return "/inventory/generators";
 }
 
+function getCategoryLabel(category: string | null | undefined): string {
+  const cat = (category ?? "").toLowerCase();
+  if (cat.includes("ups")) return "UPS Systems";
+  if (cat.includes("solar")) return "Solar Systems";
+  if (cat.includes("compressor")) return "Air Compressors";
+  if (cat.includes("panel") || cat.includes("gear") || cat.includes("switchgear"))
+    return "Control Panels";
+  return "Generators";
+}
+
 export async function generateMetadata(
   { params }: Props
 ): Promise<Metadata> {
@@ -110,6 +120,19 @@ export default async function ProductDetailsPage({ params }: Props) {
 
   const keyword = getCategoryKeyword(product.category);
   const fallbackUrl = getFallbackUrl(product.category);
+  const categoryLabel = getCategoryLabel(product.category);
+  const productUrl = `${siteUrl}/product/${id}`;
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": siteUrl },
+      { "@type": "ListItem", "position": 2, "name": "Inventory", "item": `${siteUrl}/inventory` },
+      { "@type": "ListItem", "position": 3, "name": categoryLabel, "item": `${siteUrl}${fallbackUrl}` },
+      { "@type": "ListItem", "position": 4, "name": product.name, "item": productUrl },
+    ],
+  };
 
   const relatedProducts = await prisma.product.findMany({
     where: {
@@ -131,6 +154,10 @@ export default async function ProductDetailsPage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <ProductDetailsClient
         product={product as any}
