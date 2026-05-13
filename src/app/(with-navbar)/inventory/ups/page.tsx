@@ -2,7 +2,7 @@ import { Metadata } from "next";
 // This is your pre-configured client that uses 'ws' and '@prisma/adapter-neon'
 import { prisma } from "@/lib/prisma"; 
 import Clientups from "./UpsClient";
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "APC UPS Power Solutions | Smart-UPS & Symmetra Modular",

@@ -2,7 +2,7 @@ import { Metadata } from "next";
 // Using your pre-configured client
 import { prisma } from "@/lib/prisma"; 
 import SolarClient from "./SolarClient";
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Solar Solutions | Canadian Solar, Jinko & SolarMax | APS",
