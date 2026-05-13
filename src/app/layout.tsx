@@ -19,10 +19,10 @@ export const metadata: Metadata = {
     default: "Advanced Power Solutions | Industrial Energy Systems",
     template: "%s | APS Power Systems",
   },
-  description: "Advanced Power Solutions (APS) delivers industrial-grade generators engineered for 24/7 reliability.",
+  description: "Authorized supplier of Cummins & Perkins generators, industrial solar systems, UPS, and air compressors across Pakistan. Get a quote in 24 hours. Serving Lahore, Karachi, Islamabad.",
   openGraph: {
     title: "Advanced Power Solutions | Industrial Energy Systems",
-    description: "Advanced Power Solutions (APS) delivers industrial-grade generators engineered for 24/7 reliability.",
+    description: "Authorized supplier of Cummins & Perkins generators, industrial solar systems, UPS, and air compressors across Pakistan. Get a quote in 24 hours. Serving Lahore, Karachi, Islamabad.",
     url: siteUrl,
     siteName: "Advanced Power Solutions",
     locale: "en_PK",
@@ -36,15 +36,42 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Advanced Power Solutions | Industrial Energy Systems",
+    description: "Authorized supplier of Cummins & Perkins generators, industrial solar systems, UPS, and air compressors across Pakistan.",
+    images: [`${siteUrl}/og-image.png`],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const jsonLd = {
+  const websiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Advanced Power Solutions",
     "alternateName": "APS Power Systems",
     "url": siteUrl,
+  };
+
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Advanced Power Solutions",
+    "alternateName": "APS",
+    "url": siteUrl,
+    "logo": `${siteUrl}/aps-logo.png`,
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "334, 3rd Floor Land Mark Plaza, Jail Road",
+      "addressLocality": "Lahore",
+      "addressCountry": "PK",
+    },
+    "areaServed": "PK",
+    "sameAs": [
+      "https://www.facebook.com/aps8308/",
+      "https://www.instagram.com/apspowerpk/",
+      "https://www.linkedin.com/company/apspower/",
+    ],
   };
 
   return (
@@ -54,9 +81,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#0a0a0a" />
+
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
       </head>
       <body className="bg-[#050505] text-white antialiased">
