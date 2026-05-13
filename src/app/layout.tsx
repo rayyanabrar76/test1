@@ -87,6 +87,56 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     ],
   };
 
+  const localBusinessJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    "@id": `${siteUrl}/#localbusiness`,
+    "name": "Advanced Power Solutions",
+    "alternateName": "APS",
+    "url": siteUrl,
+    "logo": `${siteUrl}/aps-logo.png`,
+    "image": `${siteUrl}/aps-logo.png`,
+    "telephone": "+92-300-811-2242",
+    "priceRange": "$$$",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Office #205, M Block Market, Block M, Model Town",
+      "addressLocality": "Lahore",
+      "addressRegion": "Punjab",
+      "postalCode": "54700",
+      "addressCountry": "PK",
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 31.4841615,
+      "longitude": 74.3081391,
+    },
+    "areaServed": "PK",
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "opens": "09:00",
+        "closes": "19:00",
+      },
+    ],
+    "sameAs": [
+      "https://www.facebook.com/aps8308/",
+      "https://www.instagram.com/apspowerpk/",
+      "https://www.linkedin.com/company/apspower/",
+    ],
+    "contactPoint": [
+      {
+        "@type": "ContactPoint",
+        "telephone": "+92-300-811-2242",
+        "email": "info@aps.com.pk",
+        "contactType": "sales",
+        "areaServed": "PK",
+        "availableLanguage": ["English", "Urdu"],
+      },
+    ],
+  };
+
   return (
     <html lang="en" className="scroll-smooth">
       <head>
@@ -102,6 +152,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
         />
       </head>
       <body className="bg-[#050505] text-white antialiased">
