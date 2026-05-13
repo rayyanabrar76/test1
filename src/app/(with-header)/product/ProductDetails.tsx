@@ -43,10 +43,8 @@ function ProductContent({ product, relatedProducts = [], fallbackUrl = "/invento
   const [cameFromSite, setCameFromSite] = useState(false);
 
   useEffect(() => {
-    const referrer = document.referrer;
-    const isFromSite =
-      referrer.includes("apspower.vercel.app") ||
-      referrer.includes("aps.com.pk");
+    const siteOrigin = (process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/\/$/, "");
+    const isFromSite = Boolean(siteOrigin) && document.referrer.startsWith(siteOrigin);
     setCameFromSite(isFromSite);
   }, []);
 
@@ -93,25 +91,6 @@ function ProductContent({ product, relatedProducts = [], fallbackUrl = "/invento
 
   if (!product) return null;
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: product.name,
-    image: displayImages,
-    description: product.description,
-    category: product.category,
-    brand: {
-      "@type": "Brand",
-      name: "APS Industrial Asset",
-    },
-    offers: {
-      "@type": "Offer",
-      availability: "https://schema.org/InStock",
-      priceCurrency: "USD",
-      price: "0",
-    },
-  };
-
   // @ts-ignore
   const productBadges = product.badges || [];
   const tableData = product.metadata?.table_data as any[] | undefined;
@@ -140,12 +119,6 @@ function ProductContent({ product, relatedProducts = [], fallbackUrl = "/invento
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-sans antialiased selection:bg-white selection:text-black overflow-x-hidden">
-      <script
-        type="application/ld+json"
-        suppressHydrationWarning
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-
       <Header />
 
       <AnimatePresence>

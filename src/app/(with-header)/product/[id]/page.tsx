@@ -1,4 +1,4 @@
-import type { Metadata, ResolvingMetadata } from "next";
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import ProductDetailsClient from "@/app/(with-header)/product/ProductDetails";
@@ -41,8 +41,7 @@ function getFallbackUrl(category: string | null | undefined): string {
 }
 
 export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata
+  { params }: Props
 ): Promise<Metadata> {
   const { id } = await params;
   const product = await getProduct(id);
@@ -101,18 +100,6 @@ export default async function ProductDetailsPage({ params }: Props) {
     "brand": {
       "@type": "Brand",
       "name": product.brand || "APS Industrial"
-    },
-    "offers": {
-      "@type": "Offer",
-      "url": `${siteUrl}/product/${product.id}`,
-      "priceCurrency": "PKR",
-      "price": product.price && product.price > 0 ? product.price : "0",
-      "availability": "https://schema.org/InStock",
-      "areaServed": "PK",
-      "eligibleRegion": {
-        "@type": "Country",
-        "name": "PK"
-      }
     }
   };
 
