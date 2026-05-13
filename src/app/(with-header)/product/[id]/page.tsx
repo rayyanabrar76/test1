@@ -3,7 +3,12 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import ProductDetailsClient from "@/app/(with-header)/product/ProductDetails";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const products = await prisma.product.findMany({ select: { id: true } });
+  return products.map((p) => ({ id: p.id }));
+}
 
 type Props = {
   params: Promise<{ id: string }>;
