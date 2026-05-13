@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer"; // ✅ NEW
+import { InventoryBreadcrumb } from "@/components/InventoryBreadcrumb";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "@/hooks/use-toast";
 import Image from 'next/image';
@@ -27,9 +28,10 @@ interface Props {
   product: Product;
   relatedProducts?: Product[];
   fallbackUrl?: string;
+  categoryLabel?: string;
 }
 
-function ProductContent({ product, relatedProducts = [], fallbackUrl = "/inventory" }: Props) {
+function ProductContent({ product, relatedProducts = [], fallbackUrl = "/inventory", categoryLabel = "Inventory" }: Props) {
   const router = useRouter();
   const { addToCart } = useCart();
 
@@ -153,6 +155,17 @@ function ProductContent({ product, relatedProducts = [], fallbackUrl = "/invento
       </AnimatePresence>
 
       <main className="container max-w-7xl pt-28 md:pt-32 pb-32 md:pb-20 px-4 md:px-8 mx-auto">
+        <div className="-mx-4 md:-mx-8 mb-6">
+          <InventoryBreadcrumb
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Inventory", href: "/inventory" },
+              { label: categoryLabel, href: fallbackUrl },
+              { label: product.name },
+            ]}
+          />
+        </div>
+
         {/* ✅ Smart return button */}
         <button
           onClick={handleReturn}
@@ -601,7 +614,7 @@ function ProductContent({ product, relatedProducts = [], fallbackUrl = "/invento
   );
 }
 
-export default function ProductDetailsClient({ product, relatedProducts, fallbackUrl }: Props) {
+export default function ProductDetailsClient({ product, relatedProducts, fallbackUrl, categoryLabel }: Props) {
   return (
     <Suspense
       fallback={
@@ -610,7 +623,7 @@ export default function ProductDetailsClient({ product, relatedProducts, fallbac
         </div>
       }
     >
-      <ProductContent product={product} relatedProducts={relatedProducts} fallbackUrl={fallbackUrl} />
+      <ProductContent product={product} relatedProducts={relatedProducts} fallbackUrl={fallbackUrl} categoryLabel={categoryLabel} />
     </Suspense>
   );
 }

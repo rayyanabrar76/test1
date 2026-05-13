@@ -163,6 +163,7 @@ export default async function ProductDetailsPage({ params }: Props) {
         product={product as any}
         relatedProducts={relatedProducts as any}
         fallbackUrl={fallbackUrl}
+        categoryLabel={categoryLabel}
       />
     </>
   );

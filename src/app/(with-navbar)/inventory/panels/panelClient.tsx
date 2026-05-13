@@ -4,6 +4,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { NavbarWithCart } from "@/components/NavbarWithCart";
 import ProductGrid from "@/components/ProductGrid";
+import { InventoryBreadcrumb } from "@/components/InventoryBreadcrumb";
 import { useCart } from "@/hooks/useCart";
 import { Product } from "@/types/store";
 
@@ -34,6 +35,13 @@ export default function ElectricGearClient({ allProductsFromDb }: PanelClientPro
       <NavbarWithCart />
       
       <main className="max-w-[1600px] mx-auto pt-32 md:pt-24 pb-20 space-y-0">
+        <InventoryBreadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Inventory", href: "/inventory" },
+            { label: "Panels" },
+          ]}
+        />
 
         {/* POWER SECTION - ID: #power */}
         <section id="power" className="scroll-mt-32">

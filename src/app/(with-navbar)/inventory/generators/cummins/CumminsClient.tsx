@@ -4,6 +4,7 @@ import React, { useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { NavbarWithCart } from "@/components/NavbarWithCart";
 import ProductGrid from "@/components/ProductGrid";
+import { InventoryBreadcrumb } from "@/components/InventoryBreadcrumb";
 import { useCart } from "@/hooks/useCart";
 import { Product } from "@/types/store";
 
@@ -64,6 +65,14 @@ export default function CumminsClient({ allProductsFromDb }: CumminsClientProps)
       <NavbarWithCart />
 
       <main className="max-w-[1600px] mx-auto pt-32 md:pt-24 pb-0">
+        <InventoryBreadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Inventory", href: "/inventory" },
+            { label: "Generators", href: "/inventory/generators" },
+            { label: "Cummins" },
+          ]}
+        />
         <h1 className="text-3xl md:text-5xl font-bold uppercase tracking-tight text-white px-4 md:px-8 pt-8 mb-4">
           Cummins Generators in Pakistan
         </h1>

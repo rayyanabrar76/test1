@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { NavbarWithCart } from "@/components/NavbarWithCart";
 import ProductGrid from "@/components/ProductGrid";
+import { InventoryBreadcrumb } from "@/components/InventoryBreadcrumb";
 import { Product } from "@/types/store";
 import { useCart } from "@/hooks/useCart";
 import { MoveLeft } from "lucide-react";
@@ -73,6 +74,13 @@ export default function UpsClient({ allProductsFromDb }: UpsClientProps) {
       <NavbarWithCart />
 
       <main className="w-screen pt-24 pb-10 space-y-0">
+        <InventoryBreadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Inventory", href: "/inventory" },
+            { label: "UPS" },
+          ]}
+        />
         <h1 className="text-3xl md:text-5xl font-bold uppercase tracking-tight text-white px-4 md:px-8 pt-8 mb-4">
           Industrial UPS Systems in Pakistan
         </h1>

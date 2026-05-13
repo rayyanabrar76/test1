@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { NavbarWithCart } from "@/components/NavbarWithCart";
 import ProductGrid from "@/components/ProductGrid";
+import { InventoryBreadcrumb } from "@/components/InventoryBreadcrumb";
 import { useCart } from "@/hooks/useCart";
 import { Product } from "@/types/store";
 
@@ -47,11 +48,23 @@ export default function InventoryClient({
   const cat = initialCategory?.toUpperCase() ?? null;
   const show = (sectionKey: string) => cat === null || cat === sectionKey;
 
+  const breadcrumbs = cat
+    ? [
+        { label: "Home", href: "/" },
+        { label: "Inventory", href: "/inventory" },
+        { label: cat.charAt(0) + cat.slice(1).toLowerCase() },
+      ]
+    : [
+        { label: "Home", href: "/" },
+        { label: "Inventory" },
+      ];
+
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden selection:bg-emerald-500/30">
       <NavbarWithCart />
 
       <main className="max-w-[1600px] mx-auto pt-24 md:pt-24 pb-10 md:pb-20 space-y-4 md:space-y-8">
+        <InventoryBreadcrumb items={breadcrumbs} />
 
         {/* 01. GENERATORS */}
         {show("GENERATORS") && (
