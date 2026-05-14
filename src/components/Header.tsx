@@ -311,11 +311,11 @@ export function Header() {
             transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
             className="hidden lg:flex items-center justify-center gap-8 px-4"
           >
-            <Link href="/services" className="px-2 py-2 text-[9px] font-bold uppercase tracking-[0.4em] text-white/30 hover:text-red-500 transition-all">Services</Link>
+            <Link href="/services" className="px-2 py-2 text-[9px] font-bold uppercase tracking-[0.4em] text-white/30 hover:text-red-500 transition-colors">Services</Link>
             <div className="w-[1px] h-2 bg-white/10 shrink-0" />
             <SolutionsMenu />
             <div className="w-[1px] h-2 bg-white/10 shrink-0" />
-            <Link href="/company" className="px-2 py-2 text-[9px] font-bold uppercase tracking-[0.4em] text-white/30 hover:text-red-500 transition-all">Company</Link>
+            <Link href="/company" className="px-2 py-2 text-[9px] font-bold uppercase tracking-[0.4em] text-white/30 hover:text-red-500 transition-colors">Company</Link>
           </motion.nav>
 
           {/* ── RIGHT ACTIONS ── */}

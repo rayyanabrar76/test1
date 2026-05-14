@@ -233,7 +233,7 @@ function ProductContent({ product, relatedProducts = [], fallbackUrl = "/invento
                     {displayImages.map((_, i) => (
                       <div
                         key={i}
-                        className={`transition-all duration-300 rounded-full ${
+                        className={`transition-[width,background-color] duration-300 rounded-full ${
                           activeView === i
                             ? "w-6 h-0.5 bg-white"
                             : "w-1 h-0.5 bg-white/20"

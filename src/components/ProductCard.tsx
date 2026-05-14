@@ -61,7 +61,7 @@ export function ProductCard({
   };
 
   return (
-    <div className="group relative bg-[#080808] border border-white/5 p-0 transition-all duration-700 hover:border-white/20 overflow-visible shadow-2xl">
+    <div className="group relative bg-[#080808] border border-white/5 p-0 transition-colors duration-700 hover:border-white/20 overflow-visible shadow-2xl">
       
       {/* --- TOP STATUS HUD --- */}
       <div className="flex justify-between items-center px-3 py-1.5 md:px-4 md:py-2 border-b border-white/5 bg-white/[0.01]">
@@ -84,7 +84,7 @@ export function ProductCard({
           fill
           priority={index < 2} 
           quality={75}
-          className="object-cover group-hover:scale-110 transition-all duration-1000 ease-out"
+          className="object-cover group-hover:scale-110 transition-transform duration-1000 ease-out"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         
@@ -93,7 +93,7 @@ export function ProductCard({
 
         {/* DESKTOP ONLY: Technical Data UI Overlay */}
         <div className="hidden md:flex absolute inset-x-0 bottom-0 justify-center p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-10">
-          <div className="w-full bg-black/90 backdrop-blur-md border border-white/10 py-3 flex items-center justify-center gap-3 group/link transition-all duration-300 hover:bg-white hover:text-black">
+          <div className="w-full bg-black/90 backdrop-blur-md border border-white/10 py-3 flex items-center justify-center gap-3 group/link transition-colors duration-300 hover:bg-white hover:text-black">
             <Eye size={14} className={textTheme} />
             <span className="text-[10px] font-black uppercase tracking-[4px]">
               Technical Data
@@ -143,7 +143,7 @@ export function ProductCard({
         <div className="flex gap-2">
           <Button
             onClick={handleQuickInquiry}
-            className="flex-1 rounded-none h-10 md:h-12 text-[8px] md:text-[10px] font-black uppercase tracking-[2px] transition-all duration-300 flex items-center justify-center gap-2 bg-white text-black hover:bg-red-600 hover:text-white border-none"
+            className="flex-1 rounded-none h-10 md:h-12 text-[8px] md:text-[10px] font-black uppercase tracking-[2px] transition-colors duration-300 flex items-center justify-center gap-2 bg-white text-black hover:bg-red-600 hover:text-white border-none"
           >
             {isRedirecting ? <span className="animate-pulse">...</span> : <><ShoppingBag size={14} /> Get A Quote</>}
           </Button>
