@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 
-// Static hero image — the LCP element. Same Cloudinary still-frame the
-// video used to fall back to (so_2.5 = mid-action frame), now served
-// directly as an image with priority + fetchPriority="high" so the
-// browser preloads it before any JS runs.
+// Static hero image — the LCP element. Cloudinary still-frame at 2.5s
+// from the original slide-2 video, resized server-side to 1280x720
+// (w_1280,h_720,c_fill) so the payload over Slow 4G is small enough to
+// paint quickly. priority + fetchPriority="high" make the browser
+// preload it before any JS runs.
 const HERO_IMAGE_SRC =
-  "https://res.cloudinary.com/dlrpyl28f/video/upload/q_auto,f_auto,so_2.5/v1775860937/slide-2_y6nvfg.jpg";
+  "https://res.cloudinary.com/dlrpyl28f/video/upload/q_auto,f_auto,so_2.5,w_1280,h_720,c_fill/v1775860937/slide-2_y6nvfg.jpg";
 
 const brandLogos = [
   { name: "Perkins", src: "/images/brands/perkins.png", isBlack: false, isLarge: false },
@@ -53,8 +54,8 @@ export default function HeroSection() {
           <Image
             src={HERO_IMAGE_SRC}
             alt="Heavy-duty industrial diesel generator at an APS Power Solutions facility in Pakistan"
-            width={1920}
-            height={1080}
+            width={1280}
+            height={720}
             priority
             fetchPriority="high"
             sizes="100vw"

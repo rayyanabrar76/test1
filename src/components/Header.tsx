@@ -313,16 +313,17 @@ export function Header() {
           </div>
         </div>
 
-        {/* ─── DESKTOP SEARCH PILL OVERLAY (lazy) ─── */}
-        <DesktopSearchOverlay
-          isOpen={isSearchOpen}
-          onClose={closeSearch}
-          query={query}
-          onQueryChange={handleQueryChange}
-          onKeyDown={handleKeyDown}
-          displayProducts={displayProducts}
-          onProductSelect={handleProductSelect}
-        />
+        {/* ─── DESKTOP SEARCH PILL OVERLAY (lazy — chunk loads on first open) ─── */}
+        {isSearchOpen && (
+          <DesktopSearchOverlay
+            onClose={closeSearch}
+            query={query}
+            onQueryChange={handleQueryChange}
+            onKeyDown={handleKeyDown}
+            displayProducts={displayProducts}
+            onProductSelect={handleProductSelect}
+          />
+        )}
 
         {/* MOBILE SEARCH TRIGGER */}
         <div className={cn(
@@ -340,33 +341,37 @@ export function Header() {
         </div>
       </header>
 
-      {/* LOGIN MODAL */}
-      <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+      {/* LOGIN MODAL (lazy — chunk loads on first open) */}
+      {showLoginModal && (
+        <LoginModal onClose={() => setShowLoginModal(false)} />
+      )}
 
-      {/* MOBILE ONLY SEARCH MODAL (lazy) */}
-      <MobileSearchModal
-        isOpen={isSearchOpen && typeof window !== "undefined" && window.innerWidth < 1024}
-        onClose={closeSearch}
-        query={query}
-        onQueryChange={handleQueryChange}
-        onKeyDown={handleKeyDown}
-        displayProducts={displayProducts}
-        onProductSelect={handleProductSelect}
-      />
+      {/* MOBILE SEARCH MODAL (lazy — chunk loads on first open on mobile) */}
+      {isSearchOpen && typeof window !== "undefined" && window.innerWidth < 1024 && (
+        <MobileSearchModal
+          onClose={closeSearch}
+          query={query}
+          onQueryChange={handleQueryChange}
+          onKeyDown={handleKeyDown}
+          displayProducts={displayProducts}
+          onProductSelect={handleProductSelect}
+        />
+      )}
 
-      {/* MOBILE MENU MODAL (lazy) */}
-      <MobileMenuDrawer
-        isOpen={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        isAuthenticated={isAuthenticated}
-        isRoot={isRoot}
-        userName={session?.user?.name}
-        userEmail={session?.user?.email}
-        displayCount={displayCount}
-        hasItems={hasItems}
-        onCartOpen={() => setIsCartOpen(true)}
-        onSignInClick={() => setShowLoginModal(true)}
-      />
+      {/* MOBILE MENU DRAWER (lazy — chunk loads on first open) */}
+      {mobileMenuOpen && (
+        <MobileMenuDrawer
+          onClose={() => setMobileMenuOpen(false)}
+          isAuthenticated={isAuthenticated}
+          isRoot={isRoot}
+          userName={session?.user?.name}
+          userEmail={session?.user?.email}
+          displayCount={displayCount}
+          hasItems={hasItems}
+          onCartOpen={() => setIsCartOpen(true)}
+          onSignInClick={() => setShowLoginModal(true)}
+        />
+      )}
       <BottomNav onMenuOpen={() => setMobileMenuOpen(true)} />
     </>
   );

@@ -8,7 +8,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { type SearchableProduct } from "@/lib/search-utils";
 
 interface DesktopSearchOverlayProps {
-  isOpen: boolean;
   onClose: () => void;
   query: string;
   onQueryChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -17,8 +16,8 @@ interface DesktopSearchOverlayProps {
   onProductSelect: (p: SearchableProduct) => void;
 }
 
+// Mounted only when the overlay should be open (parent gates).
 export default function DesktopSearchOverlay({
-  isOpen,
   onClose,
   query,
   onQueryChange,
@@ -29,9 +28,8 @@ export default function DesktopSearchOverlay({
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Focus input on open.
+  // Focus input on mount.
   useEffect(() => {
-    if (!isOpen) return;
     const timer = setTimeout(() => {
       inputRef.current?.focus();
       if (inputRef.current) {
@@ -41,11 +39,11 @@ export default function DesktopSearchOverlay({
       }
     }, 10);
     return () => clearTimeout(timer);
-  }, [isOpen]);
+  }, []);
 
-  // Click-outside + Escape close. Only attach when open.
+  // Click-outside + Escape close. Listeners attached for the lifetime
+  // of the mounted component (parent unmounts on close).
   useEffect(() => {
-    if (!isOpen) return;
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         onClose();
@@ -60,20 +58,17 @@ export default function DesktopSearchOverlay({
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEsc);
     };
-  }, [isOpen, onClose]);
+  }, [onClose]);
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          key="search-pill"
-          initial={{ opacity: 0, scaleX: 0.6, y: -4 }}
-          animate={{ opacity: 1, scaleX: 1, y: 0 }}
-          exit={{ opacity: 0, scaleX: 0.6, y: -4 }}
-          transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
-          style={{ originX: 1 }}
-          className="absolute inset-0 z-[110] hidden lg:flex items-center justify-center bg-transparent px-4 md:px-12 lg:px-24"
-        >
+    <motion.div
+      key="search-pill"
+      initial={{ opacity: 0, scaleX: 0.6, y: -4 }}
+      animate={{ opacity: 1, scaleX: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
+      style={{ originX: 1 }}
+      className="absolute inset-0 z-[110] hidden lg:flex items-center justify-center bg-transparent px-4 md:px-12 lg:px-24"
+    >
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-red-600/40 to-transparent" />
           <div ref={containerRef} className="relative w-full max-w-4xl flex flex-col items-center">
             <motion.div
@@ -136,9 +131,7 @@ export default function DesktopSearchOverlay({
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      </div>
+    </motion.div>
   );
 }

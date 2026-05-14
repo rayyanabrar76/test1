@@ -2,13 +2,12 @@
 
 import React, { useEffect, useRef } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Search, X, ArrowRight } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { type SearchableProduct } from "@/lib/search-utils";
 
 interface MobileSearchModalProps {
-  isOpen: boolean;
   onClose: () => void;
   query: string;
   onQueryChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -17,8 +16,8 @@ interface MobileSearchModalProps {
   onProductSelect: (p: SearchableProduct) => void;
 }
 
+// Mounted only when the modal should be open (parent gates).
 export default function MobileSearchModal({
-  isOpen,
   onClose,
   query,
   onQueryChange,
@@ -30,7 +29,6 @@ export default function MobileSearchModal({
 
   // Focus the input shortly after mount so iOS Safari opens the keyboard.
   useEffect(() => {
-    if (!isOpen) return;
     const timer = setTimeout(() => {
       inputRef.current?.focus();
       if (inputRef.current) {
@@ -40,19 +38,16 @@ export default function MobileSearchModal({
       }
     }, 10);
     return () => clearTimeout(timer);
-  }, [isOpen]);
+  }, []);
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0, x: "100%" }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: "100%" }}
-          transition={{ type: "spring", damping: 25, stiffness: 200 }}
-          className="fixed inset-0 z-[1000] bg-black flex flex-col overflow-hidden"
-          onTouchMove={(e) => e.stopPropagation()}
-        >
+    <motion.div
+      initial={{ opacity: 0, x: "100%" }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ type: "spring", damping: 25, stiffness: 200 }}
+      className="fixed inset-0 z-[1000] bg-black flex flex-col overflow-hidden"
+      onTouchMove={(e) => e.stopPropagation()}
+    >
           <div className="px-6 pt-12 pb-6 border-b border-red-900/30 bg-[#050505] shrink-0">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-3">
@@ -133,8 +128,6 @@ export default function MobileSearchModal({
             </div>
             <span className="text-[7px] font-mono text-white/20 tracking-tighter">REF: 2026-XQ-4</span>
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    </motion.div>
   );
 }

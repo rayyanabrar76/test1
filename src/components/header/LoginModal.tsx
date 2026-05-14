@@ -2,17 +2,14 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { signIn } from "next-auth/react";
 import { X, Lock, Loader2 } from "lucide-react";
 
-export default function LoginModal({
-  isOpen,
-  onClose,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-}) {
+// Component is mounted only when the modal should be open — the parent
+// gates the conditional render so the dynamic chunk only loads on first
+// open. No internal isOpen prop needed; entry animations run on mount.
+export default function LoginModal({ onClose }: { onClose: () => void }) {
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
   const handleLogin = async (provider: string) => {
@@ -26,22 +23,18 @@ export default function LoginModal({
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="absolute inset-0 bg-black/90 backdrop-blur-md"
-          />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-sm bg-[#0a0a0a] border border-red-900/30 rounded-[2.5rem] shadow-2xl p-10 overflow-hidden text-center"
-          >
+    <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        onClick={onClose}
+        className="absolute inset-0 bg-black/90 backdrop-blur-md"
+      />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        className="relative w-full max-w-sm bg-[#0a0a0a] border border-red-900/30 rounded-[2.5rem] shadow-2xl p-10 overflow-hidden text-center"
+      >
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-red-600 blur-sm opacity-50" />
             <button onClick={onClose} className="absolute top-6 right-6 text-white/20 hover:text-red-500 transition-colors">
               <X size={20} />
@@ -88,9 +81,7 @@ export default function LoginModal({
               </div>
               <p className="text-[6px] text-white/10 font-bold uppercase tracking-widest">APS Industries © 2026</p>
             </div>
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>
+      </motion.div>
+    </div>
   );
 }

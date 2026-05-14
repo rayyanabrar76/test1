@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { signOut } from "next-auth/react";
 import {
   X,
@@ -17,7 +17,6 @@ import { cn } from "@/lib/utils";
 import { SolutionsMenu } from "../SolutionsMenu";
 
 interface MobileMenuDrawerProps {
-  isOpen: boolean;
   onClose: () => void;
   isAuthenticated: boolean;
   isRoot: boolean;
@@ -29,8 +28,8 @@ interface MobileMenuDrawerProps {
   onSignInClick: () => void;
 }
 
+// Mounted only when the drawer should be open (parent gates).
 export default function MobileMenuDrawer({
-  isOpen,
   onClose,
   isAuthenticated,
   isRoot,
@@ -42,20 +41,16 @@ export default function MobileMenuDrawer({
   onSignInClick,
 }: MobileMenuDrawerProps) {
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-[200] lg:hidden">
+    <div className="fixed inset-0 z-[200] lg:hidden">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
             onClick={onClose}
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           />
           <motion.div
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
-            exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
             className="absolute top-0 right-0 w-[85%] h-full bg-black/95 backdrop-blur-xl flex flex-col border-l border-white/5 shadow-2xl"
             onTouchMove={(e) => e.stopPropagation()}
@@ -161,9 +156,7 @@ export default function MobileMenuDrawer({
               </div>
               <ShoppingBag strokeWidth={1.5} className="w-8 h-8" />
             </div>
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>
+      </motion.div>
+    </div>
   );
 }
