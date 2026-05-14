@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 
-// Static hero image — the LCP element. Cloudinary still-frame at 2.5s
-// from the original slide-2 video, resized server-side to 1280x720
-// (w_1280,h_720,c_fill) so the payload over Slow 4G is small enough to
-// paint quickly. priority + fetchPriority="high" make the browser
-// preload it before any JS runs.
-const HERO_IMAGE_SRC =
-  "https://res.cloudinary.com/dlrpyl28f/video/upload/q_auto,f_auto,so_2.5,w_1280,h_720,c_fill/v1775860937/slide-2_y6nvfg.jpg";
+// Static hero image — the LCP element. Served from /public so there's
+// zero CDN round-trip and Next.js can preload it directly from our own
+// origin. The file (49 KB at 1280x720) was generated once from the
+// Cloudinary still-frame and committed; it does NOT need a fresh
+// network call to a third-party host on every cold load like the
+// previous Cloudinary URL did.
+const HERO_IMAGE_SRC = "/hero.jpg";
 
 const brandLogos = [
   { name: "Perkins", src: "/images/brands/perkins.png", isBlack: false, isLarge: false },
