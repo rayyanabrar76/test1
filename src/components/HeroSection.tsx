@@ -2,9 +2,19 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button"; 
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
+
+// Build a Cloudinary still-frame URL from a video URL by injecting the
+// start-offset transform and swapping the extension. so_2.5 grabs a
+// mid-action frame so the poster is representative of the clip rather
+// than landing on a black opening frame.
+function getVideoPoster(videoSrc: string, seconds = 2.5): string {
+  return videoSrc
+    .replace(/(\/q_auto,f_auto)\//, `$1,so_${seconds}/`)
+    .replace(/\.mp4$/, ".jpg");
+}
 
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -90,15 +100,16 @@ export default function HeroSection() {
             transition={{ duration: 1.2 }}
             className="absolute inset-0"
           >
-<video 
+<video
   key={currentSlide}
-  autoPlay 
-  muted 
-  loop 
-  playsInline 
-  preload="none"
-  className="w-full h-full object-cover grayscale-[20%]" 
-  src={videoSlides[currentSlide].videoSrc} 
+  autoPlay
+  muted
+  loop
+  playsInline
+  preload="metadata"
+  poster={getVideoPoster(videoSlides[currentSlide].videoSrc)}
+  className="w-full h-full object-cover grayscale-[20%]"
+  src={videoSlides[currentSlide].videoSrc}
 />
           </motion.div>
         </AnimatePresence>
