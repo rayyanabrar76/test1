@@ -1,6 +1,5 @@
 'use client';
 
-import React, { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import CategoriesSection from "@/components/CategoriesSection";
@@ -22,11 +21,6 @@ export default function HomePageClient({ allProductsFromDb }: HomePageClientProp
   const router = useRouter();
   const { addToCart } = useCart();
   const { toast } = useToast();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleAddToCart = (product: Product) => {
     addToCart({
@@ -44,9 +38,6 @@ export default function HomePageClient({ allProductsFromDb }: HomePageClientProp
         "bg-[#0A0A0B] border-red-600/50 text-white rounded-none border-l-4 border-l-red-600 font-sans tracking-widest z-[200]",
     });
   };
-
-  // Standard safety gate to prevent hydration errors
-  if (!mounted) return null;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#050505] selection:bg-red-600 selection:text-white font-sans overflow-x-hidden">
