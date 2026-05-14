@@ -5,107 +5,32 @@ import Link from "next/link";
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
-import { useSession, signOut, signIn } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 
 import { getAllProducts, searchProducts, type SearchableProduct } from "@/lib/search-utils";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { 
-  Search, X, ShoppingBag, Menu,
-  ArrowRight, User, ShieldCheck, LogOut, MessageSquare, LayoutDashboard, ClipboardList, Lock, Loader2
+import {
+  Search, Menu,
+  User, ShieldCheck, LogOut, MessageSquare, LayoutDashboard, ClipboardList,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCart, useCartTotal } from "@/hooks/useCart";
-import { SolutionsMenu } from "./SolutionsMenu"; 
+import { SolutionsMenu } from "./SolutionsMenu";
 import { BottomNav } from "./BottomNav";
 import { Product } from "@/types/store";
+
+// Lazy-load each modal/overlay so its JSX tree, framer-motion subtree,
+// and modal-only icons (X, Lock, Loader2, ArrowRight) only ship when
+// the user actually opens that surface.
+const LoginModal = dynamic(() => import("./header/LoginModal"), { ssr: false });
+const DesktopSearchOverlay = dynamic(() => import("./header/DesktopSearchOverlay"), { ssr: false });
+const MobileSearchModal = dynamic(() => import("./header/MobileSearchModal"), { ssr: false });
+const MobileMenuDrawer = dynamic(() => import("./header/MobileMenuDrawer"), { ssr: false });
 
 const STORAGE_KEY = "recently_viewed_assets";
 const MAX_ITEMS = 10;
 const RECENT_UPDATED_EVENT = "recent_viewed_updated";
-
-function LoginModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
-  const [isLoading, setIsLoading] = useState<string | null>(null);
-
-  const handleLogin = async (provider: string) => {
-    setIsLoading(provider);
-    try {
-      await signIn(provider, { callbackUrl: window.location.href });
-    } catch (err) {
-      console.error(err);
-      setIsLoading(null);
-    }
-  };
-
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="absolute inset-0 bg-black/90 backdrop-blur-md"
-          />
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-sm bg-[#0a0a0a] border border-red-900/30 rounded-[2.5rem] shadow-2xl p-10 overflow-hidden text-center"
-          >
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-red-600 blur-sm opacity-50" />
-            <button onClick={onClose} className="absolute top-6 right-6 text-white/20 hover:text-red-500 transition-colors">
-              <X size={20} />
-            </button>
-            <div className="flex justify-center mb-8">
-              <Image
-                src="/aps-logo.png" 
-                alt="APS Industries" 
-                className="h-16 w-auto brightness-125 drop-shadow-[0_0_15px_rgba(220,38,38,0.2)]" 
-                width={64}
-                height={64}
-              />
-            </div>
-            <div className="mb-8">
-              <h2 className="text-2xl font-black uppercase italic tracking-tighter text-white">Secure Access</h2>
-              <p className="text-[8px] uppercase tracking-[0.4em] text-red-600/60 font-black mt-2">Authorization Required</p>
-            </div>
-            <div className="space-y-3">
-              <button
-                onClick={() => handleLogin('google')}
-                disabled={!!isLoading}
-                className="group w-full flex justify-center items-center py-4 border border-white/5 rounded-2xl bg-white/[0.02] text-[10px] font-black uppercase tracking-[0.2em] text-white hover:bg-white/[0.05] hover:border-red-900/40 transition-all active:scale-[0.98] disabled:opacity-50"
-              >
-                {isLoading === 'google' ? (
-                  <Loader2 className="h-4 w-4 animate-spin text-red-600" />
-                ) : (
-                  <>
-                    <Image
-                      src="https://authjs.dev/img/providers/google.svg" 
-                      className="h-4 w-4 mr-3 grayscale brightness-200 group-hover:grayscale-0 transition-all" 
-                      alt="G" 
-                      width={16}
-                      height={16}
-                    />
-                    Connect via Google SSO
-                  </>
-                )}
-              </button>
-            </div>
-            <div className="mt-10 flex flex-col items-center gap-4">
-              <div className="flex items-center gap-2 opacity-20">
-                <Lock size={10} className="text-white" />
-                <span className="text-[7px] font-bold uppercase tracking-[0.3em] text-white">Encrypted Session</span>
-              </div>
-              <p className="text-[6px] text-white/10 font-bold uppercase tracking-widest">APS Industries © 2026</p>
-            </div>
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>
-  );
-}
 
 export function Header() {
   const router = useRouter();
@@ -131,13 +56,11 @@ export function Header() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const searchContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
     const anyModalOpen = mobileMenuOpen || showLoginModal || (isSearchOpen && isMobile);
-    
+
     if (anyModalOpen) {
       document.body.style.overflow = 'hidden';
       document.body.style.touchAction = 'none';
@@ -151,41 +74,6 @@ export function Header() {
       document.body.style.touchAction = '';
     };
   }, [mobileMenuOpen, showLoginModal, isSearchOpen]);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
-        if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
-          setIsSearchOpen(false);
-        }
-      }
-    }
-    function handleEsc(event: KeyboardEvent) {
-      if (event.key === 'Escape') setIsSearchOpen(false);
-    }
-    if (isSearchOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("keydown", handleEsc);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleEsc);
-    };
-  }, [isSearchOpen]);
-
-  useEffect(() => {
-    if (isSearchOpen) {
-      const timer = setTimeout(() => {
-        inputRef.current?.focus();
-        if (inputRef.current) {
-          const val = inputRef.current.value;
-          inputRef.current.value = "";
-          inputRef.current.value = val;
-        }
-      }, 10);
-      return () => clearTimeout(timer);
-    }
-  }, [isSearchOpen]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -257,8 +145,7 @@ export function Header() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      inputRef.current?.blur();
-      if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+      e.currentTarget.blur();
     }
   };
 
@@ -426,80 +313,16 @@ export function Header() {
           </div>
         </div>
 
-        {/* ─── DESKTOP SEARCH PILL OVERLAY ─── */}
-        <AnimatePresence>
-          {isSearchOpen && (
-            <motion.div
-              key="search-pill"
-              initial={{ opacity: 0, scaleX: 0.6, y: -4 }}
-              animate={{ opacity: 1, scaleX: 1, y: 0 }}
-              exit={{ opacity: 0, scaleX: 0.6, y: -4 }}
-              transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
-              style={{ originX: 1 }}
-              className="absolute inset-0 z-[110] hidden lg:flex items-center justify-center bg-transparent px-4 md:px-12 lg:px-24"
-            >
-              <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-red-600/40 to-transparent" />
-              <div ref={searchContainerRef} className="relative w-full max-w-4xl flex flex-col items-center">
-                <motion.div
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 6 }}
-                  transition={{ duration: 0.25, delay: 0.1 }}
-                  className="w-full flex items-center gap-4 border border-white/10 rounded-full py-3 px-6 focus-within:border-red-600/60 transition-all duration-300"
-                >
-                  <Search className="h-4 w-4 text-red-600 shrink-0" />
-                  <input
-                    ref={inputRef}
-                    placeholder="ENTER PROTOCOL OR ASSET NAME..."
-                    className="flex-1 bg-transparent text-[10px] md:text-[12px] font-black uppercase tracking-[0.3em] text-white outline-none placeholder:text-white/10 min-w-0"
-                    value={query}
-                    onChange={handleQueryChange}
-                    onKeyDown={handleKeyDown}
-                  />
-                  <button onClick={closeSearch} className="shrink-0 text-white/20 hover:text-red-600 transition-colors">
-                    <X size={16} />
-                  </button>
-                </motion.div>
-
-                <AnimatePresence>
-                  {query.length > 0 && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 12, scale: 0.98 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 8, scale: 0.98 }}
-                      transition={{ duration: 0.2, ease: "easeOut" }}
-                      className="absolute top-full mt-4 w-full bg-[#070707]/95 backdrop-blur-2xl border border-white/10 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] rounded-[2rem] overflow-hidden z-[200]"
-                    >
-                      <ScrollArea className="h-[400px]">
-                        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {displayProducts.map((item, idx) => (
-                            <motion.div
-                              key={item.id}
-                              initial={{ opacity: 0, y: 8 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: idx * 0.03 }}
-                              onClick={() => handleProductSelect(item)}
-                              className="flex items-center gap-4 p-3 bg-white/[0.02] border border-white/5 hover:border-white/10 hover:bg-white/[0.05] transition-all cursor-pointer group rounded-xl"
-                            >
-                              <div className="h-10 w-12 bg-black border border-white/5 relative shrink-0">
-                                <Image src={item.image} alt={item.name} fill className="object-contain p-1" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-[9px] font-black text-white uppercase italic leading-tight line-clamp-2">{item.name}</p>
-                                <p className="text-[7px] text-white/30 uppercase tracking-widest mt-0.5">{item.category}</p>
-                              </div>
-                              <ArrowRight size={12} className="text-white/0 group-hover:text-red-600 transition-all -translate-x-2 group-hover:translate-x-0" />
-                            </motion.div>
-                          ))}
-                        </div>
-                      </ScrollArea>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* ─── DESKTOP SEARCH PILL OVERLAY (lazy) ─── */}
+        <DesktopSearchOverlay
+          isOpen={isSearchOpen}
+          onClose={closeSearch}
+          query={query}
+          onQueryChange={handleQueryChange}
+          onKeyDown={handleKeyDown}
+          displayProducts={displayProducts}
+          onProductSelect={handleProductSelect}
+        />
 
         {/* MOBILE SEARCH TRIGGER */}
         <div className={cn(
@@ -520,215 +343,30 @@ export function Header() {
       {/* LOGIN MODAL */}
       <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
 
-      {/* MOBILE ONLY SEARCH MODAL */}
-      <AnimatePresence>
-        {isSearchOpen && (typeof window !== 'undefined' && window.innerWidth < 1024) && (
-          <motion.div 
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-[1000] bg-black flex flex-col overflow-hidden"
-            onTouchMove={(e) => e.stopPropagation()}
-          >
-            <div className="px-6 pt-12 pb-6 border-b border-red-900/30 bg-[#050505] shrink-0">
-              <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="flex flex-col">
-                    <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 bg-red-600 rounded-full animate-pulse shadow-[0_0_8px_rgba(220,38,38,0.8)]" />
-                      <span className="text-[10px] font-black text-white tracking-[0.3em] uppercase italic">Inventory_Scan</span>
-                    </div>
-                    <span className="text-[6px] font-bold text-white/30 uppercase tracking-[0.5em] mt-1 ml-3">Node: APS_SECURE_01</span>
-                  </div>
-                </div>
-                <button onClick={closeSearch} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/[0.03] border border-white/10 text-white/40 active:scale-90">
-                  <X size={20}/>
-                </button>
-              </div>
-              <div className="relative group">
-                <div className="absolute -inset-[1px] bg-red-600/30 rounded-xl blur-[2px] opacity-100" />
-                <div className="relative flex items-center bg-[#0a0a0a] border border-white/10 rounded-xl px-4 py-4">
-                  <Search className="h-4 w-4 text-red-600 shrink-0" />
-                  <input 
-                    ref={inputRef}
-                    autoFocus 
-                    placeholder="SEARCH PROTOCOL..." 
-                    className="w-full bg-transparent pl-4 text-sm font-black uppercase tracking-widest text-white outline-none placeholder:text-white/10" 
-                    value={query} 
-                    onChange={handleQueryChange} 
-                    onKeyDown={handleKeyDown}
-                    enterKeyHint="search"
-                  />
-                </div>
-              </div>
-            </div>
-            
-            <ScrollArea className="flex-1 bg-[#050505]">
-              <div className="px-4 py-6 space-y-2 pb-32">
-                {displayProducts.map((item, idx) => (
-                  <motion.div 
-                    key={item.id} 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.03 }}
-                    onClick={(e) => { e.stopPropagation(); handleProductSelect(item); }} 
-                    className="group relative w-full p-2 flex items-center gap-4 bg-white/[0.02] border border-white/5 rounded-lg active:bg-white/[0.08] active:border-red-600/50 transition-all"
-                  >
-                    <div className="h-14 w-16 bg-black border border-white/10 relative shrink-0 rounded overflow-hidden">
-                      <Image src={item.image} alt={item.name} fill sizes="100px" className="object-contain p-2" />
-                      <div className="absolute bottom-0 left-0 w-full h-[2px] bg-red-600/20" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-[6px] font-bold text-red-600 uppercase tracking-widest">Active_Asset</span>
-                        <div className="h-[1px] w-4 bg-white/10" />
-                      </div>
-                      <h3 className="text-[11px] font-black text-white uppercase italic leading-tight line-clamp-1 tracking-tighter">{item.name}</h3>
-                      <p className="text-[8px] font-bold uppercase text-white/30 tracking-[0.2em] mt-1">{item.category}</p>
-                    </div>
-                    <div className="pr-2">
-                      <ArrowRight size={14} className="text-white/10 group-active:text-red-600" />
-                    </div>
-                  </motion.div>
-                ))}
-                {displayProducts.length === 0 && (
-                  <div className="py-20 flex flex-col items-center">
-                    <div className="w-12 h-[1px] bg-red-600/30 mb-4" />
-                    <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.5em]">Zero_Matches_Found</p>
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
+      {/* MOBILE ONLY SEARCH MODAL (lazy) */}
+      <MobileSearchModal
+        isOpen={isSearchOpen && typeof window !== "undefined" && window.innerWidth < 1024}
+        onClose={closeSearch}
+        query={query}
+        onQueryChange={handleQueryChange}
+        onKeyDown={handleKeyDown}
+        displayProducts={displayProducts}
+        onProductSelect={handleProductSelect}
+      />
 
-            <div className="p-4 border-t border-white/5 bg-black flex justify-between items-center shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="w-1 h-3 bg-red-600" />
-                <span className="text-[8px] font-black text-white/60 uppercase tracking-widest italic">APS_MOBILE_SCANNER</span>
-              </div>
-              <span className="text-[7px] font-mono text-white/20 tracking-tighter">REF: 2026-XQ-4</span>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* MOBILE MENU MODAL */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <div className="fixed inset-0 z-[200] lg:hidden">
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }} 
-              onClick={() => setMobileMenuOpen(false)} 
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
-            />
-            <motion.div 
-              initial={{ x: "100%" }} 
-              animate={{ x: 0 }} 
-              exit={{ x: "100%" }} 
-              transition={{ type: "spring", damping: 30, stiffness: 300 }} 
-              className="absolute top-0 right-0 w-[85%] h-full bg-black/95 backdrop-blur-xl flex flex-col border-l border-white/5 shadow-2xl"
-              onTouchMove={(e) => e.stopPropagation()}
-            >
-              {/* Header */}
-              <div className="flex justify-between items-center p-6 border-b-[1px] border-white/[0.03] shrink-0">
-                <div className="flex items-center gap-2">
-                  <div className={cn("w-1.5 h-1.5 rounded-full", isAuthenticated ? "bg-white shadow-[0_0_5px_white]" : "bg-white/20")} />
-                  <span className="text-[8px] font-black tracking-widest text-white/40 uppercase italic">{isAuthenticated ? "Signed In" : "Navigation"}</span>
-                </div>
-                <button onClick={() => setMobileMenuOpen(false)} className="w-10 h-10 flex items-center justify-center border-[1px] border-white/[0.08] rounded-full text-white/40">
-                  <X size={20} />
-                </button>
-              </div>
-
-              {/* Scrollable content */}
-              <div className="flex-1 flex flex-col px-8 py-8 overflow-y-auto overscroll-contain">
-
-                {/* USER INFO */}
-                <div className="mb-8">
-                  <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest mb-2 block">
-                    {isRoot ? "Admin" : isAuthenticated ? "Account" : "Get Started"}
-                  </span>
-                  {isAuthenticated ? (
-                    <div className="flex items-center gap-3">
-                      <div className="flex flex-col">
-                        <span className="text-2xl font-black uppercase italic tracking-tighter text-white">
-                          {session?.user?.name?.split(' ')[0]}
-                        </span>
-                        <span className="text-[10px] text-white/30 mt-0.5">{session?.user?.email}</span>
-                      </div>
-                      {isRoot ? <ShieldCheck size={24} className="text-red-600 shrink-0" /> : <User size={24} className="text-white/40 shrink-0" />}
-                    </div>
-                  ) : (
-                    <div
-                      onClick={() => { setMobileMenuOpen(false); setShowLoginModal(true); }}
-                      className="text-2xl font-black uppercase italic tracking-tighter text-white flex items-center gap-3 cursor-pointer"
-                    >
-                      <span>Sign In</span>
-                      <User size={24} className="text-white shrink-0" />
-                    </div>
-                  )}
-                </div>
-
-                {/* ACCOUNT LINKS — no sign out here anymore */}
-                {isAuthenticated && (
-                  <div className="mb-8 border border-white/5 rounded-2xl overflow-hidden">
-                    {isRoot && (
-                      <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-5 py-4 bg-red-600/10 border-b border-white/5 hover:bg-red-600 hover:text-white transition-colors group">
-                        <ClipboardList size={14} className="text-red-600 group-hover:text-white" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white">Admin Panel</span>
-                      </Link>
-                    )}
-                    <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-5 py-4 border-b border-white/5 hover:bg-white/5 transition-colors">
-                      <LayoutDashboard size={14} className="text-white/40" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-white/70">My Inquiries</span>
-                    </Link>
-                    <Link href="/checkout" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-5 py-4 hover:bg-white/5 transition-colors">
-                      <MessageSquare size={14} className="text-white/40" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-white/70">Request a Free Quote</span>
-                    </Link>
-                  </div>
-                )}
-
-                {/* NAV LINKS */}
-                <div className="flex flex-col justify-center space-y-8 mt-2">
-                  <div className="h-[1px] w-8 bg-white/10" />
-                  <Link href="/services" onClick={() => setMobileMenuOpen(false)} className="text-3xl font-black uppercase italic tracking-tighter text-white/90 leading-none">Services</Link>
-                  <div className="text-3xl font-black uppercase italic tracking-tighter text-white/90 leading-none"><SolutionsMenu /></div>
-                  <Link href="/company" onClick={() => setMobileMenuOpen(false)} className="text-3xl font-black uppercase italic tracking-tighter text-white/90 leading-none">Company</Link>
-
-                  {/* ── SIGN OUT — big red text at the very bottom ── */}
-                  {isAuthenticated && (
-                    <>
-                      <div className="h-[1px] w-full bg-white/5" />
-                      <button
-                        onClick={() => { setMobileMenuOpen(false); signOut(); }}
-                        className="text-3xl font-black uppercase italic tracking-tighter text-red-600/70 leading-none flex items-center gap-4 active:text-red-500 transition-colors text-left"
-                      >
-                        Sign Out
-                        <LogOut size={22} className="shrink-0" />
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* CART FOOTER */}
-              <div
-                onClick={() => { setMobileMenuOpen(false); setIsCartOpen(true); }}
-                className={cn("p-8 flex items-center justify-between border-t-[1px] border-white/[0.05] shrink-0 cursor-pointer", hasItems ? "bg-white/10 backdrop-blur-lg text-white" : "bg-white/[0.02] text-white/10")}
-              >
-                <div>
-                  <span className="block text-[8px] font-black tracking-widest opacity-50 uppercase">Secured Quote</span>
-                  <span className="text-2xl font-black uppercase italic tracking-tighter">Cart ({displayCount})</span>
-                </div>
-                <ShoppingBag strokeWidth={1.5} className="w-8 h-8" />
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {/* MOBILE MENU MODAL (lazy) */}
+      <MobileMenuDrawer
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        isAuthenticated={isAuthenticated}
+        isRoot={isRoot}
+        userName={session?.user?.name}
+        userEmail={session?.user?.email}
+        displayCount={displayCount}
+        hasItems={hasItems}
+        onCartOpen={() => setIsCartOpen(true)}
+        onSignInClick={() => setShowLoginModal(true)}
+      />
       <BottomNav onMenuOpen={() => setMobileMenuOpen(true)} />
     </>
   );
