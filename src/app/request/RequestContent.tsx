@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import emailjs from '@emailjs/browser';
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
 // Project Imports
