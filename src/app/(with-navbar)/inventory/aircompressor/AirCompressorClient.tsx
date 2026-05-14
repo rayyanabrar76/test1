@@ -83,7 +83,7 @@ export default function AirCompressorClient({ allProductsFromDb }: AirCompressor
             { label: "Air Compressors" },
           ]}
         />
-        <h1 className="text-3xl md:text-5xl font-bold uppercase tracking-tight text-white px-4 md:px-8 pt-8 mb-4">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-black italic uppercase tracking-tighter text-white px-4 md:px-8 pt-6 mb-2 leading-tight">
           Industrial Air Compressors in Pakistan
         </h1>
 
