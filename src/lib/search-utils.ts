@@ -8,16 +8,33 @@ export interface SearchableProduct extends Product {
   searchScore?: number;
 }
 
-// ✅ Fetch all products from the Prisma API route
+// Module-level promise so simultaneous callers (Header + NavLink both fire
+// on mount) share a single network request, and subsequent calls in the
+// same SPA session reuse the cached array without re-hitting the network.
+let cachedProductsPromise: Promise<Product[]> | null = null;
+
+// Fetch all products from the Prisma API route. Browser + Vercel edge cache
+// the response via Cache-Control headers set by the route handler; this
+// in-memory promise dedupes within a single page-load session.
 export async function getAllProducts(): Promise<Product[]> {
-  try {
-    const res = await fetch("/api/products", { cache: "no-store" });
-    if (!res.ok) return [];
-    return res.json();
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    return [];
-  }
+  if (cachedProductsPromise) return cachedProductsPromise;
+
+  cachedProductsPromise = (async () => {
+    try {
+      const res = await fetch("/api/products");
+      if (!res.ok) {
+        cachedProductsPromise = null; // allow retry on next call
+        return [];
+      }
+      return res.json();
+    } catch (error) {
+      cachedProductsPromise = null; // allow retry on next call
+      console.error("Error fetching products:", error);
+      return [];
+    }
+  })();
+
+  return cachedProductsPromise;
 }
 
 // Build comprehensive search index from ALL metadata fields
